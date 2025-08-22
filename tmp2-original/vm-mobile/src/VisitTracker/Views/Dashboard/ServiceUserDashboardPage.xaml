@@ -1,0 +1,415 @@
+<?xml version="1.0" encoding="utf-8" ?>
+
+<local:BaseContentPage
+    x:Class="VisitTracker.ServiceUserDashboardPage"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:domain="clr-namespace:VisitTracker.Domain;assembly=VisitTracker.Domain"
+    xmlns:local="clr-namespace:VisitTracker"
+    xmlns:material="http://schemas.enisn-projects.io/dotnet/maui/uraniumui/material"
+    xmlns:mct="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
+    xmlns:skia="clr-namespace:SkiaSharp.Extended.UI.Controls;assembly=SkiaSharp.Extended.UI"
+    x:Name="this"
+    Title="Dashboard"
+    x:DataType="local:ServiceUserDashboardVm"
+    x:TypeArguments="local:ServiceUserDashboardVm"
+    BackgroundColor="{StaticResource MainBackgroudColor}"
+    IconImageSource="dashboard"
+    Shell.NavBarHasShadow="False"
+    Shell.NavBarIsVisible="False">
+    <ContentPage.Behaviors>
+        <mct:EventToCommandBehavior Command="{Binding InitCommand}" EventName="Appearing" />
+    </ContentPage.Behaviors>
+
+    <Grid Margin="0,10">
+        <ScrollView
+            HorizontalOptions="Fill"
+            IsVisible="{Binding IsNotBusy}"
+            VerticalOptions="Fill">
+            <VerticalStackLayout Style="{StaticResource CardsMarginStyle}">
+                <Label Style="{StaticResource PageTitleStyle}" Text="Dashboard" />
+
+                <HorizontalStackLayout Spacing="8">
+                    <local:CallOfficeButtonControl />
+                    <local:LogRequestButtonControl />
+                    <local:SubmitFormsButtonControl />
+                </HorizontalStackLayout>
+
+                <StackLayout HeightRequest="{Binding DashboardDto.UpcomingBookingsHeight}">
+                    <Label
+                        Style="{StaticResource Heading1Style}"
+                        Text="Upcoming Booking"
+                        VerticalOptions="Start" />
+
+                    <local:CardViewControl
+                        HasCardTitle="false"
+                        HorizontalOptions="Fill"
+                        IsVisible="{Binding DashboardDto.IsVisibleNoData}">
+                        <Label
+                            HorizontalOptions="Center"
+                            Style="{StaticResource MutedTextStyles}"
+                            Text="Not Available!" />
+
+                    </local:CardViewControl>
+                    <CollectionView ItemsSource="{Binding DashboardDto.Bookings}" VerticalScrollBarVisibility="Never">
+                        <CollectionView.ItemsLayout>
+                            <LinearItemsLayout ItemSpacing="5" Orientation="Vertical" />
+                        </CollectionView.ItemsLayout>
+
+                        <CollectionView.ItemTemplate>
+                            <DataTemplate x:DataType="{x:Type local:BookingCardDto}">
+                                <local:BookingCardControl
+                                    Booking="{Binding Booking}"
+                                    PrimaryCareWorker="{Binding PrimaryCareWorker}"
+                                    PrimaryCareWorkerEta="{Binding PrimaryCareWorkerEta}"
+                                    SecondaryCareWorker="{Binding SecondaryCareWorker}"
+                                    SecondaryCareWorkerEta="{Binding SecondaryCareWorkerEta}"
+                                    ServiceUser="{Binding ServiceUser}"
+                                    Visits="{Binding Visits}" />
+                            </DataTemplate>
+                        </CollectionView.ItemTemplate>
+                    </CollectionView>
+                </StackLayout>
+
+                <StackLayout>
+                    <Label Style="{StaticResource Heading1Style}">
+                        <Label.FormattedText>
+                            <FormattedString>
+                                <Span
+                                    FontAttributes="Bold"
+                                    Text="New Notifications ("
+                                    TextColor="{StaticResource DarkTextColor}" />
+                                <Span
+                                    FontAttributes="Bold"
+                                    Text="{Binding DashboardDto.PendingNotificationCount}"
+                                    TextColor="{StaticResource PrimaryColor}">
+                                    <Span.GestureRecognizers>
+                                        <TapGestureRecognizer Command="{Binding BindingContext.NotificationCountTapCommand, Source={x:Reference this}}" />
+                                    </Span.GestureRecognizers>
+                                </Span>
+                                <Span
+                                    FontAttributes="Bold"
+                                    Text=")"
+                                    TextColor="{StaticResource DarkTextColor}" />
+                            </FormattedString>
+                        </Label.FormattedText>
+                    </Label>
+                    <CollectionView
+                        HorizontalOptions="Fill"
+                        ItemsSource="{Binding Notifications}"
+                        VerticalOptions="Fill">
+                        <CollectionView.ItemTemplate>
+                            <DataTemplate x:DataType="{x:Type local:NotificationsDto}">
+                                <local:CardViewControl Margin="0,2" HasCardTitle="False">
+                                    <Grid
+                                        Padding="0"
+                                        ColumnDefinitions="*,Auto"
+                                        ColumnSpacing="2"
+                                        RowDefinitions="Auto,Auto,Auto"
+                                        RowSpacing="5"
+                                        VerticalOptions="Fill">
+                                        <Grid.Triggers>
+                                            <DataTrigger
+                                                Binding="{Binding IsAcknowledged}"
+                                                TargetType="Grid"
+                                                Value="True">
+                                                <Setter Property="Opacity" Value="0.65" />
+                                            </DataTrigger>
+                                        </Grid.Triggers>
+                                        <Grid.GestureRecognizers>
+                                            <TapGestureRecognizer Command="{Binding BindingContext.NotificationTapCommand, Source={x:Reference this}}" CommandParameter="{Binding .}" />
+                                        </Grid.GestureRecognizers>
+                                        <VerticalStackLayout
+                                            Grid.Row="0"
+                                            Grid.Column="0"
+                                            Spacing="5"
+                                            VerticalOptions="Center">
+                                            <HorizontalStackLayout Spacing="5">
+                                                <Label
+                                                    FontFamily="MaterialCommunityIcons"
+                                                    FontSize="18"
+                                                    HorizontalOptions="Start"
+                                                    HorizontalTextAlignment="Start"
+                                                    Text="{x:Static local:MaterialCommunityIconsFont.Bell}"
+                                                    TextColor="{Binding Color}"
+                                                    VerticalOptions="Center">
+                                                    <Label.Triggers>
+                                                        <DataTrigger
+                                                            Binding="{Binding IsAcknowledged}"
+                                                            TargetType="Label"
+                                                            Value="True">
+                                                            <Setter Property="Text" Value="{x:Static local:MaterialCommunityIconsFont.BellOutline}" />
+                                                            <Setter Property="TextColor" Value="{StaticResource TextColor}" />
+                                                        </DataTrigger>
+                                                    </Label.Triggers>
+                                                </Label>
+
+                                                <Label
+                                                    HorizontalOptions="Start"
+                                                    LineBreakMode="TailTruncation"
+                                                    MaxLines="1"
+                                                    Style="{StaticResource Heading1Style}"
+                                                    Text="{Binding Title}"
+                                                    VerticalOptions="Center"
+                                                    VerticalTextAlignment="Center">
+                                                    <Label.Triggers>
+                                                        <DataTrigger
+                                                            Binding="{Binding IsAcknowledged, Converter={StaticResource NotConverter}}"
+                                                            TargetType="Label"
+                                                            Value="True">
+                                                            <Setter Property="FontAttributes" Value="Bold" />
+                                                        </DataTrigger>
+                                                    </Label.Triggers>
+                                                </Label>
+                                            </HorizontalStackLayout>
+
+                                            <Label
+                                                FontSize="14"
+                                                HorizontalOptions="Start"
+                                                LineBreakMode="TailTruncation"
+                                                MaxLines="2"
+                                                Text="{Binding Description}"
+                                                TextColor="{StaticResource SecondaryTextColor}"
+                                                VerticalOptions="Center">
+                                                <Label.Triggers>
+                                                    <DataTrigger
+                                                        Binding="{Binding IsAcknowledged}"
+                                                        TargetType="Label"
+                                                        Value="False" />
+                                                </Label.Triggers>
+                                            </Label>
+                                        </VerticalStackLayout>
+
+                                        <VerticalStackLayout
+                                            Grid.Row="0"
+                                            Grid.RowSpan="3"
+                                            Grid.Column="1"
+                                            HorizontalOptions="End"
+                                            Spacing="5"
+                                            VerticalOptions="Center">
+                                            <Label
+                                                FontFamily="MaterialCommunityIcons"
+                                                FontSize="24"
+                                                HorizontalOptions="End"
+                                                HorizontalTextAlignment="Start"
+                                                Text="{x:Static local:MaterialCommunityIconsFont.ChevronRight}"
+                                                TextColor="{StaticResource TextColor}"
+                                                VerticalTextAlignment="Center"
+                                                WidthRequest="20" />
+                                        </VerticalStackLayout>
+
+                                        <HorizontalStackLayout
+                                            Grid.Row="2"
+                                            HorizontalOptions="End"
+                                            VerticalOptions="End">
+                                            <Label
+                                                FontFamily="AppBoldFontFamily"
+                                                FontSize="14"
+                                                HorizontalOptions="End"
+                                                Text="{Binding CreatedTime, StringFormat='{}{0:dd MMM yyyy}'}"
+                                                VerticalOptions="Start" />
+                                            <Label
+                                                Margin="10,0,0,0"
+                                                FontFamily="AppBoldFontFamily"
+                                                FontSize="14"
+                                                HorizontalOptions="End"
+                                                Text="{Binding CreatedTime, StringFormat='{0:HH:mm} hrs'}"
+                                                VerticalOptions="Start" />
+                                        </HorizontalStackLayout>
+                                    </Grid>
+                                </local:CardViewControl>
+                            </DataTemplate>
+                        </CollectionView.ItemTemplate>
+                    </CollectionView>
+                </StackLayout>
+
+                <local:CardViewControl CardTitle="{Binding DashboardDto.TotalBookingTitle}">
+                    <VerticalStackLayout>
+                        <Grid RowDefinitions="Auto,Auto,Auto,Auto,Auto">
+                            <Grid
+                                Grid.Row="0"
+                                ColumnDefinitions="25,*,*,*,*,*,*,*"
+                                RowSpacing="10">
+                                <Label
+                                    Grid.Row="0"
+                                    Grid.Column="1"
+                                    Style="{StaticResource DashboardCalendarHeaderStyle}"
+                                    Text="MON"
+                                    TextColor="{Binding DashboardDto.CompletedBookings.MonColor}" />
+                                <Label
+                                    Grid.Row="0"
+                                    Grid.Column="2"
+                                    Style="{StaticResource DashboardCalendarHeaderStyle}"
+                                    Text="TUE"
+                                    TextColor="{Binding DashboardDto.CompletedBookings.TueColor}" />
+                                <Label
+                                    Grid.Row="0"
+                                    Grid.Column="3"
+                                    Style="{StaticResource DashboardCalendarHeaderStyle}"
+                                    Text="WED"
+                                    TextColor="{Binding DashboardDto.CompletedBookings.WedColor}" />
+                                <Label
+                                    Grid.Row="0"
+                                    Grid.Column="4"
+                                    Style="{StaticResource DashboardCalendarHeaderStyle}"
+                                    Text="THU"
+                                    TextColor="{Binding DashboardDto.CompletedBookings.ThuColor}" />
+                                <Label
+                                    Grid.Row="0"
+                                    Grid.Column="5"
+                                    Style="{StaticResource DashboardCalendarHeaderStyle}"
+                                    Text="FRI"
+                                    TextColor="{Binding DashboardDto.CompletedBookings.FriColor}" />
+                                <Label
+                                    Grid.Row="0"
+                                    Grid.Column="6"
+                                    Style="{StaticResource DashboardCalendarHeaderStyle}"
+                                    Text="SAT"
+                                    TextColor="{Binding DashboardDto.CompletedBookings.SatColor}" />
+                                <Label
+                                    Grid.Row="0"
+                                    Grid.Column="7"
+                                    Style="{StaticResource DashboardCalendarHeaderStyle}"
+                                    Text="SUN"
+                                    TextColor="{Binding DashboardDto.CompletedBookings.SunColor}" />
+                            </Grid>
+
+                            <Grid
+                                Grid.Row="1"
+                                Padding="2,5"
+                                BackgroundColor="{StaticResource InfoLightColor}"
+                                ColumnDefinitions="25,*,*,*,*,*,*,*">
+                                <Label
+                                    Grid.Column="0"
+                                    Margin="0,0,5,0"
+                                    FontAttributes="Bold"
+                                    FontFamily="LineAwesome"
+                                    FontSize="24"
+                                    Style="{StaticResource DashboardContentStyle}"
+                                    Text="{x:Static local:LineAwesomeFont.Tasks}"
+                                    TextColor="{StaticResource TextColor}" />
+                                <Label
+                                    Grid.Column="1"
+                                    Style="{StaticResource DashboardContentStyle}"
+                                    Text="{Binding DashboardDto.TotalBookings.Mon}"
+                                    TextColor="{Binding DashboardDto.TotalBookings.MonColor}" />
+                                <Label
+                                    Grid.Column="2"
+                                    Style="{StaticResource DashboardContentStyle}"
+                                    Text="{Binding DashboardDto.TotalBookings.Tue}"
+                                    TextColor="{Binding DashboardDto.TotalBookings.TueColor}" />
+                                <Label
+                                    Grid.Column="3"
+                                    Style="{StaticResource DashboardContentStyle}"
+                                    Text="{Binding DashboardDto.TotalBookings.Wed}"
+                                    TextColor="{Binding DashboardDto.TotalBookings.WedColor}" />
+                                <Label
+                                    Grid.Column="4"
+                                    Style="{StaticResource DashboardContentStyle}"
+                                    Text="{Binding DashboardDto.TotalBookings.Thu}"
+                                    TextColor="{Binding DashboardDto.TotalBookings.ThuColor}" />
+                                <Label
+                                    Grid.Column="5"
+                                    Style="{StaticResource DashboardContentStyle}"
+                                    Text="{Binding DashboardDto.TotalBookings.Fri}"
+                                    TextColor="{Binding DashboardDto.TotalBookings.FriColor}" />
+                                <Label
+                                    Grid.Column="6"
+                                    Style="{StaticResource DashboardContentStyle}"
+                                    Text="{Binding DashboardDto.TotalBookings.Sat}"
+                                    TextColor="{Binding DashboardDto.TotalBookings.SatColor}" />
+                                <Label
+                                    Grid.Column="7"
+                                    Style="{StaticResource DashboardContentStyle}"
+                                    Text="{Binding DashboardDto.TotalBookings.Sun}"
+                                    TextColor="{Binding DashboardDto.TotalBookings.SunColor}" />
+                            </Grid>
+                            <Grid
+                                Grid.Row="3"
+                                Padding="2,5"
+                                BackgroundColor="{StaticResource SuccessLightColor}"
+                                ColumnDefinitions="25,*,*,*,*,*,*,*">
+                                <Label
+                                    Grid.Column="0"
+                                    Margin="0,0,5,0"
+                                    FontAttributes="Bold"
+                                    FontFamily="FontawesomeSolid"
+                                    FontSize="18"
+                                    Style="{StaticResource DashboardContentStyle}"
+                                    Text="{x:Static local:FontawesomeSolidFont.CheckCircle}"
+                                    TextColor="{StaticResource TextColor}" />
+                                <Label
+                                    Grid.Column="1"
+                                    Style="{StaticResource DashboardContentStyle}"
+                                    Text="{Binding DashboardDto.CompletedBookings.Mon}"
+                                    TextColor="{Binding DashboardDto.CompletedBookings.MonColor}" />
+                                <Label
+                                    Grid.Column="2"
+                                    Style="{StaticResource DashboardContentStyle}"
+                                    Text="{Binding DashboardDto.CompletedBookings.Tue}"
+                                    TextColor="{Binding DashboardDto.CompletedBookings.TueColor}" />
+                                <Label
+                                    Grid.Column="3"
+                                    Style="{StaticResource DashboardContentStyle}"
+                                    Text="{Binding DashboardDto.CompletedBookings.Wed}"
+                                    TextColor="{Binding DashboardDto.CompletedBookings.WedColor}" />
+                                <Label
+                                    Grid.Column="4"
+                                    Style="{StaticResource DashboardContentStyle}"
+                                    Text="{Binding DashboardDto.CompletedBookings.Thu}"
+                                    TextColor="{Binding DashboardDto.CompletedBookings.ThuColor}" />
+                                <Label
+                                    Grid.Column="5"
+                                    Style="{StaticResource DashboardContentStyle}"
+                                    Text="{Binding DashboardDto.CompletedBookings.Fri}"
+                                    TextColor="{Binding DashboardDto.CompletedBookings.FriColor}" />
+                                <Label
+                                    Grid.Column="6"
+                                    Style="{StaticResource DashboardContentStyle}"
+                                    Text="{Binding DashboardDto.CompletedBookings.Sat}"
+                                    TextColor="{Binding DashboardDto.CompletedBookings.SatColor}" />
+                                <Label
+                                    Grid.Column="7"
+                                    Style="{StaticResource DashboardContentStyle}"
+                                    Text="{Binding DashboardDto.CompletedBookings.Sun}"
+                                    TextColor="{Binding DashboardDto.CompletedBookings.SunColor}" />
+                            </Grid>
+                            <HorizontalStackLayout
+                                Grid.Row="4"
+                                Margin="0,10,0,2"
+                                HorizontalOptions="Center">
+                                <Label
+                                    Margin="0,0,5,0"
+                                    FontAttributes="Bold"
+                                    FontFamily="LineAwesome"
+                                    FontSize="17"
+                                    Style="{StaticResource DashboardContentStyle}"
+                                    Text="{x:Static local:LineAwesomeFont.Tasks}"
+                                    TextColor="{StaticResource TextColor}" />
+                                <Label
+                                    FontSize="14"
+                                    Text="- Allocated"
+                                    TextColor="{StaticResource TextColor}" />
+                                <Label
+                                    Grid.Column="0"
+                                    Margin="15,0,5,0"
+                                    FontAttributes="Bold"
+                                    FontFamily="FontawesomeSolid"
+                                    FontSize="15"
+                                    Style="{StaticResource DashboardContentStyle}"
+                                    Text="{x:Static local:FontawesomeSolidFont.CheckCircle}"
+                                    TextColor="{StaticResource TextColor}" />
+                                <Label
+                                    FontSize="14"
+                                    Text="- Completed"
+                                    TextColor="{StaticResource TextColor}" />
+                            </HorizontalStackLayout>
+                        </Grid>
+                    </VerticalStackLayout>
+                </local:CardViewControl>
+            </VerticalStackLayout>
+        </ScrollView>
+
+        <local:CustomActivityIndicator IsBusy="{Binding IsBusy}" />
+    </Grid>
+</local:BaseContentPage>

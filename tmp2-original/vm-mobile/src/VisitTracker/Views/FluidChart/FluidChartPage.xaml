@@ -1,0 +1,341 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<local:BaseContentPage
+    x:Class="VisitTracker.FluidChartPage"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:local="clr-namespace:VisitTracker"
+    xmlns:mct="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
+    xmlns:skia="clr-namespace:SkiaSharp.Extended.UI.Controls;assembly=SkiaSharp.Extended.UI"
+    Title="Fluid Chart"
+    x:DataType="local:FluidChartVm"
+    x:TypeArguments="local:FluidChartVm"
+    BackgroundColor="{StaticResource MainBackgroudColor}"
+    Shell.NavBarIsVisible="True"
+    Shell.TabBarIsVisible="False">
+
+    <Grid Margin="15,0" RowDefinitions="*">
+        <ScrollView>
+            <ScrollView.IsVisible>
+                <MultiBinding Converter="{StaticResource AllValueTrueConverter}">
+                    <Binding Path="IsNotBusy" />
+                    <Binding Converter="{StaticResource IsNotNullConverter}" Path="FluidChartDto" />
+                </MultiBinding>
+            </ScrollView.IsVisible>
+            <VerticalStackLayout Spacing="15">
+
+                <Grid RowDefinitions="Auto,Auto,Auto" RowSpacing="5">
+                    <local:CardViewControl Grid.Row="0" CardTitle="Balance">
+                        <Grid ColumnDefinitions="Auto,*" RowDefinitions="Auto,Auto">
+                            <HorizontalStackLayout Grid.Row="0" Grid.Column="0">
+                                <Label Style="{StaticResource Heading2Style}" Text="Today's Balance @ " />
+                                <Label
+                                    FontAttributes="Bold"
+                                    FontSize="16"
+                                    HorizontalOptions="Start"
+                                    HorizontalTextAlignment="Start"
+                                    Text="{Binding FluidChartDto.TodayBalanceTime}"
+                                    TextColor="{StaticResource TextColor}"
+                                    VerticalOptions="Center" />
+                            </HorizontalStackLayout>
+                            <Label
+                                Grid.Row="0"
+                                Grid.Column="1"
+                                FontAttributes="Bold"
+                                FontSize="16"
+                                HorizontalOptions="End"
+                                HorizontalTextAlignment="End"
+                                Text="{Binding FluidChartDto.TodayBalance}"
+                                TextColor="{Binding FluidChartDto.TodayBalanceColor}"
+                                VerticalOptions="Center" />
+                            <HorizontalStackLayout Grid.Row="1" Grid.Column="0">
+                                <Label
+                                    Style="{StaticResource Heading2Style}"
+                                    Text="Yesterday's Balance @ "
+                                    VerticalOptions="Center" />
+                                <Label
+                                    HorizontalOptions="Start"
+                                    HorizontalTextAlignment="Start"
+                                    Style="{StaticResource Heading1Style}"
+                                    Text="23:59 hrs"
+                                    VerticalOptions="Center" />
+                            </HorizontalStackLayout>
+                            <Label
+                                Grid.Row="1"
+                                Grid.Column="1"
+                                FontAttributes="Bold"
+                                FontSize="16"
+                                HorizontalOptions="End"
+                                HorizontalTextAlignment="End"
+                                Text="{Binding FluidChartDto.YesterdayBalance}"
+                                TextColor="{Binding FluidChartDto.YesterdayBalanceColor}"
+                                VerticalOptions="Center" />
+                        </Grid>
+                    </local:CardViewControl>
+                    <local:CardViewControl Grid.Row="1" HasCardTitle="False">
+                        <Grid>
+                            <VerticalStackLayout BackgroundColor="{StaticResource InfoLighterColor}">
+                                <Grid
+                                    Margin="0,0,0,0"
+                                    ColumnDefinitions="70,1,*,*,*"
+                                    RowDefinitions="Auto,Auto">
+                                    <VerticalStackLayout
+                                        Grid.Row="0"
+                                        Grid.Column="2"
+                                        Grid.ColumnSpan="3">
+                                        <Label
+                                            FontSize="18"
+                                            Style="{StaticResource FluidChartMainHeaderLabel}"
+                                            Text="Intake (mL)" />
+                                        <BoxView
+                                            Margin="10,0"
+                                            HeightRequest="1"
+                                            Style="{StaticResource FluidChartBorder}" />
+                                    </VerticalStackLayout>
+                                    <Label
+                                        Grid.RowSpan="2"
+                                        Grid.Column="0"
+                                        Style="{StaticResource FluidChartHeaderLabel}"
+                                        Text="Hour" />
+                                    <BoxView
+                                        Grid.RowSpan="2"
+                                        Grid.Column="1"
+                                        Style="{StaticResource FluidChartBorder}" />
+                                    <Label
+                                        Grid.Row="1"
+                                        Grid.Column="2"
+                                        Style="{StaticResource FluidChartHeaderLabel}"
+                                        Text="Oral" />
+                                    <Label
+                                        Grid.Row="1"
+                                        Grid.Column="3"
+                                        Style="{StaticResource FluidChartHeaderLabel}"
+                                        Text="IVS/SC" />
+                                    <Label
+                                        Grid.Row="1"
+                                        Grid.Column="4"
+                                        Style="{StaticResource FluidChartHeaderLabel}"
+                                        Text="Other" />
+                                </Grid>
+                                <Grid>
+                                    <ListView
+                                        BackgroundColor="{StaticResource InfoLighterColor}"
+                                        HorizontalOptions="Fill"
+                                        ItemsSource="{Binding FluidChartDto.FluidsList}"
+                                        SelectedItem="{Binding SelectedFluid}"
+                                        SelectionMode="None">
+                                        <ListView.ItemTemplate>
+                                            <DataTemplate x:DataType="{x:Type local:FluidHistoryDto}">
+                                                <ViewCell>
+                                                    <Grid ColumnDefinitions="70,1,*,*,*">
+                                                        <Label
+                                                            Grid.Column="0"
+                                                            Style="{StaticResource FluidChartDetailLabel}"
+                                                            Text="{Binding Hour}" />
+                                                        <BoxView Grid.Column="1" Style="{StaticResource FluidChartBorder}" />
+                                                        <Label
+                                                            Grid.Column="2"
+                                                            Style="{StaticResource FluidChartDetailLabel}"
+                                                            Text="{Binding OralIntake, Converter={StaticResource NullToEmptySymbolConverter}}" />
+                                                        <Label
+                                                            Grid.Column="3"
+                                                            Style="{StaticResource FluidChartDetailLabel}"
+                                                            Text="{Binding IvScIntake, Converter={StaticResource NullToEmptySymbolConverter}}" />
+                                                        <Label
+                                                            Grid.Column="4"
+                                                            Style="{StaticResource FluidChartDetailLabel}"
+                                                            Text="{Binding OtherIntake, Converter={StaticResource NullToEmptySymbolConverter}}" />
+                                                    </Grid>
+                                                </ViewCell>
+                                            </DataTemplate>
+                                        </ListView.ItemTemplate>
+                                    </ListView>
+                                </Grid>
+                                <Grid>
+                                    <VerticalStackLayout BackgroundColor="{StaticResource InfoLightColor}">
+                                        <Grid
+                                            Margin="0,10,0,10"
+                                            ColumnDefinitions="70,1,*,*,*"
+                                            RowDefinitions="Auto">
+                                            <Label
+                                                Grid.Row="1"
+                                                Grid.Column="0"
+                                                Style="{StaticResource FluidChartHeaderLabel}"
+                                                Text="Total" />
+                                            <BoxView
+                                                Grid.RowSpan="2"
+                                                Grid.Column="1"
+                                                Style="{StaticResource FluidChartBorder}" />
+                                            <VerticalStackLayout Grid.Row="0" Grid.Column="2">
+                                                <Label
+                                                    FontAttributes="Bold"
+                                                    Style="{StaticResource FluidChartDetailLabel}"
+                                                    Text="{Binding FluidChartDto.OralIntakeTotal}" />
+                                            </VerticalStackLayout>
+                                            <VerticalStackLayout Grid.Row="0" Grid.Column="3">
+                                                <Label
+                                                    FontAttributes="Bold"
+                                                    Style="{StaticResource FluidChartDetailLabel}"
+                                                    Text="{Binding FluidChartDto.IvScIntakeTotal}" />
+                                            </VerticalStackLayout>
+                                            <VerticalStackLayout Grid.Row="0" Grid.Column="4">
+                                                <Label
+                                                    FontAttributes="Bold"
+                                                    Style="{StaticResource FluidChartDetailLabel}"
+                                                    Text="{Binding FluidChartDto.OtherIntakeTotal}" />
+                                            </VerticalStackLayout>
+                                        </Grid>
+                                    </VerticalStackLayout>
+                                </Grid>
+                            </VerticalStackLayout>
+                        </Grid>
+                    </local:CardViewControl>
+                    <local:CardViewControl Grid.Row="2" HasCardTitle="False">
+                        <Grid>
+                            <VerticalStackLayout BackgroundColor="{StaticResource SuccessLighterColor}">
+                                <Grid
+                                    Margin="0,0,0,0"
+                                    ColumnDefinitions="70,1,*,*,*,*"
+                                    RowDefinitions="Auto,Auto">
+                                    <VerticalStackLayout
+                                        Grid.Row="0"
+                                        Grid.Column="2"
+                                        Grid.ColumnSpan="4">
+                                        <Label Style="{StaticResource FluidChartMainHeaderLabel}" Text="Output (mL)" />
+                                        <BoxView
+                                            Margin="10,0"
+                                            HeightRequest="1"
+                                            Style="{StaticResource FluidChartBorder}" />
+                                    </VerticalStackLayout>
+                                    <Label
+                                        Grid.RowSpan="2"
+                                        Grid.Column="0"
+                                        Style="{StaticResource FluidChartHeaderLabel}"
+                                        Text="Hour" />
+                                    <BoxView
+                                        Grid.RowSpan="2"
+                                        Grid.Column="1"
+                                        Style="{StaticResource FluidChartBorder}" />
+                                    <Label
+                                        Grid.Row="1"
+                                        Grid.Column="2"
+                                        Style="{StaticResource FluidChartHeaderLabel}"
+                                        Text="Urine" />
+                                    <Label
+                                        Grid.Row="1"
+                                        Grid.Column="3"
+                                        Style="{StaticResource FluidChartHeaderLabel}"
+                                        Text="Vomit" />
+                                    <Label
+                                        Grid.Row="1"
+                                        Grid.Column="4"
+                                        Style="{StaticResource FluidChartHeaderLabel}"
+                                        Text="Tube" />
+                                    <Label
+                                        Grid.Row="1"
+                                        Grid.Column="5"
+                                        Style="{StaticResource FluidChartHeaderLabel}"
+                                        Text="Other" />
+                                </Grid>
+                                <Grid>
+                                    <ListView
+                                        BackgroundColor="{StaticResource SuccessLighterColor}"
+                                        HorizontalOptions="Fill"
+                                        ItemsSource="{Binding FluidChartDto.FluidsList}"
+                                        SelectedItem="{Binding SelectedFluid}"
+                                        SelectionMode="None">
+                                        <ListView.ItemTemplate>
+                                            <DataTemplate x:DataType="{x:Type local:FluidHistoryDto}">
+                                                <ViewCell>
+                                                    <Grid ColumnDefinitions="70,1,*,*,*,*">
+                                                        <Label
+                                                            Grid.Column="0"
+                                                            Style="{StaticResource FluidChartDetailLabel}"
+                                                            Text="{Binding Hour}" />
+                                                        <BoxView Grid.Column="1" Style="{StaticResource FluidChartBorder}" />
+                                                        <Label
+                                                            Grid.Column="2"
+                                                            Style="{StaticResource FluidChartDetailLabel}"
+                                                            Text="{Binding UrineOutput, Converter={StaticResource NullToEmptySymbolConverter}}" />
+                                                        <Label
+                                                            Grid.Column="3"
+                                                            Style="{StaticResource FluidChartDetailLabel}"
+                                                            Text="{Binding VomitOutput, Converter={StaticResource NullToEmptySymbolConverter}}" />
+                                                        <Label
+                                                            Grid.Column="4"
+                                                            Style="{StaticResource FluidChartDetailLabel}"
+                                                            Text="{Binding TubeOutput, Converter={StaticResource NullToEmptySymbolConverter}}" />
+                                                        <Label
+                                                            Grid.Column="5"
+                                                            Style="{StaticResource FluidChartDetailLabel}"
+                                                            Text="{Binding OtherOutput, Converter={StaticResource NullToEmptySymbolConverter}}" />
+                                                    </Grid>
+                                                </ViewCell>
+                                            </DataTemplate>
+                                        </ListView.ItemTemplate>
+                                    </ListView>
+                                </Grid>
+                                <Grid>
+                                    <VerticalStackLayout BackgroundColor="{StaticResource SuccessLightColor}">
+                                        <Grid
+                                            Margin="0,10,0,10"
+                                            ColumnDefinitions="70,1,*,*,*,*"
+                                            RowDefinitions="Auto">
+                                            <Label
+                                                Grid.Row="1"
+                                                Grid.Column="0"
+                                                Style="{StaticResource FluidChartHeaderLabel}"
+                                                Text="Total" />
+                                            <BoxView
+                                                Grid.RowSpan="2"
+                                                Grid.Column="1"
+                                                Style="{StaticResource FluidChartBorder}" />
+                                            <VerticalStackLayout Grid.Row="0" Grid.Column="2">
+                                                <Label
+                                                    FontAttributes="Bold"
+                                                    Style="{StaticResource FluidChartDetailLabel}"
+                                                    Text="{Binding FluidChartDto.UrineOutputTotal}" />
+                                            </VerticalStackLayout>
+                                            <VerticalStackLayout Grid.Row="0" Grid.Column="3">
+                                                <Label
+                                                    FontAttributes="Bold"
+                                                    Style="{StaticResource FluidChartDetailLabel}"
+                                                    Text="{Binding FluidChartDto.VomitOutputTotal}" />
+                                            </VerticalStackLayout>
+                                            <VerticalStackLayout Grid.Row="0" Grid.Column="4">
+                                                <Label
+                                                    FontAttributes="Bold"
+                                                    Style="{StaticResource FluidChartDetailLabel}"
+                                                    Text="{Binding FluidChartDto.TubeOutputTotal}" />
+                                            </VerticalStackLayout>
+                                            <VerticalStackLayout Grid.Row="0" Grid.Column="5">
+                                                <Label
+                                                    FontAttributes="Bold"
+                                                    Style="{StaticResource FluidChartDetailLabel}"
+                                                    Text="{Binding FluidChartDto.OtherOutputTotal}" />
+                                            </VerticalStackLayout>
+                                        </Grid>
+                                    </VerticalStackLayout>
+                                </Grid>
+                            </VerticalStackLayout>
+                        </Grid>
+                    </local:CardViewControl>
+                </Grid>
+            </VerticalStackLayout>
+        </ScrollView>
+
+        <VerticalStackLayout
+            Grid.Row="1"
+            HorizontalOptions="Center"
+            VerticalOptions="Center">
+            <VerticalStackLayout.IsVisible>
+                <MultiBinding Converter="{StaticResource AllValueTrueConverter}">
+                    <Binding Path="IsNotBusy" />
+                    <Binding Converter="{StaticResource IsNullConverter}" Path="FluidChartDto" />
+                </MultiBinding>
+            </VerticalStackLayout.IsVisible>
+            <local:NoDataControl />
+        </VerticalStackLayout>
+
+        <local:CustomActivityIndicator IsBusy="{Binding IsBusy}" />
+    </Grid>
+</local:BaseContentPage>

@@ -1,0 +1,450 @@
+<?xml version="1.0" encoding="utf-8" ?>
+
+<local:BaseContentPage
+    x:Class="VisitTracker.SupervisorDashboardPage"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:domain="clr-namespace:VisitTracker.Domain;assembly=VisitTracker.Domain"
+    xmlns:local="clr-namespace:VisitTracker"
+    xmlns:material="http://schemas.enisn-projects.io/dotnet/maui/uraniumui/material"
+    xmlns:mct="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
+    xmlns:skia="clr-namespace:SkiaSharp.Extended.UI.Controls;assembly=SkiaSharp.Extended.UI"
+    x:Name="this"
+    Title="Dashboard"
+    x:DataType="local:SupervisorDashboardVm"
+    x:TypeArguments="local:SupervisorDashboardVm"
+    BackgroundColor="{StaticResource MainBackgroudColor}"
+    IconImageSource="dashboard"
+    Shell.NavBarHasShadow="False"
+    Shell.NavBarIsVisible="False">
+    <ContentPage.Behaviors>
+        <mct:EventToCommandBehavior Command="{Binding InitCommand}" EventName="Appearing" />
+    </ContentPage.Behaviors>
+
+    <Grid Margin="0,0,0,10">
+        <ScrollView
+            HorizontalOptions="Fill"
+            IsVisible="{Binding IsNotBusy}"
+            VerticalOptions="Fill">
+            <VerticalStackLayout Style="{StaticResource CardsMarginStyle}">
+                <Label Style="{StaticResource PageTitleStyle}" Text="Dashboard" />
+
+                <HorizontalStackLayout Spacing="8">
+                    <local:CallOfficeButtonControl />
+                    <local:LogRequestButtonControl />
+                    <local:SubmitFormsButtonControl />
+                </HorizontalStackLayout>
+
+                <Grid RowDefinitions="*,Auto">
+                    <local:CardViewControl Grid.Row="0" CardTitle="Missing Fingerprints / Ground Truths">
+                        <material:TabView SelectedTabChangedCommand="{Binding TabChangeCommand}">
+                            <material:TabItem Title="Fingerprint">
+                                <material:TabItem.HeaderTemplate>
+                                    <DataTemplate>
+                                        <material:ButtonView TappedCommand="{Binding Command}">
+                                            <Label
+                                                FontFamily="13"
+                                                HorizontalOptions="Center"
+                                                Text="Fingerprint"
+                                                TextColor="{StaticResource TextColor}" />
+                                            <material:ButtonView.Triggers>
+                                                <DataTrigger
+                                                    Binding="{Binding IsSelected}"
+                                                    TargetType="material:ButtonView"
+                                                    Value="True">
+                                                    <Setter Property="Style" Value="{StaticResource TabSelectedButtonStyle}" />
+                                                </DataTrigger>
+                                                <DataTrigger
+                                                    Binding="{Binding IsSelected}"
+                                                    TargetType="material:ButtonView"
+                                                    Value="False">
+                                                    <Setter Property="Style" Value="{StaticResource TabUnselectedButtonStyle}" />
+                                                </DataTrigger>
+                                            </material:ButtonView.Triggers>
+                                        </material:ButtonView>
+                                    </DataTemplate>
+                                </material:TabItem.HeaderTemplate>
+                                <material:TabItem.Content>
+                                    <VerticalStackLayout>
+                                        <HorizontalStackLayout
+                                            HeightRequest="100"
+                                            HorizontalOptions="Center"
+                                            IsVisible="{Binding IsAllServiceUsersFingerprinted}"
+                                            Spacing="5">
+                                            <Label
+                                                FontFamily="MaterialCommunityIcons"
+                                                FontSize="20"
+                                                Text="{x:Static local:MaterialCommunityIconsFont.CheckboxMarkedCircle}"
+                                                TextColor="{StaticResource SuccessColor}"
+                                                VerticalOptions="Fill"
+                                                VerticalTextAlignment="Center" />
+                                            <Label
+                                                FontSize="14"
+                                                HorizontalTextAlignment="Center"
+                                                Text="All service user(s) fingerprinted"
+                                                TextColor="{StaticResource TextMuted}"
+                                                VerticalTextAlignment="Center" />
+                                        </HorizontalStackLayout>
+                                        <CollectionView
+                                            Margin="5"
+                                            HeightRequest="{Binding DashboardDto.CardViewHeight}"
+                                            ItemsSource="{Binding DashboardDto.MissingFingerprints}"
+                                            VerticalScrollBarVisibility="Always">
+                                            <CollectionView.ItemsLayout>
+                                                <LinearItemsLayout ItemSpacing="3" Orientation="Vertical" />
+                                            </CollectionView.ItemsLayout>
+                                            <CollectionView.ItemTemplate>
+                                                <DataTemplate x:DataType="{x:Type local:MissingFingerprintDto}">
+                                                    <Border Stroke="#EAEEEF" StrokeThickness="1">
+                                                        <Grid
+                                                            Margin="5"
+                                                            ColumnDefinitions="Auto,*,Auto"
+                                                            ColumnSpacing="10"
+                                                            RowDefinitions="*,Auto">
+                                                            <Grid.GestureRecognizers>
+                                                                <TapGestureRecognizer Command="{Binding BindingContext.ServiceUserTapCommand, Source={x:Reference this}}" CommandParameter="{Binding ServiceUser.Id}" />
+                                                            </Grid.GestureRecognizers>
+                                                            <local:PlaceholderImageControl
+                                                                Grid.Row="0"
+                                                                Grid.RowSpan="2"
+                                                                Grid.Column="0"
+                                                                InputTransparent="True"
+                                                                SizeOption="Large"
+                                                                Source="{Binding ServiceUser.ImageUrl, Converter={StaticResource DefaultImageSourceConverter}}" />
+
+                                                            <Label
+                                                                Grid.Row="0"
+                                                                Grid.Column="1"
+                                                                Style="{StaticResource Heading2Wrapped3LinesStyle}"
+                                                                Text="{Binding ServiceUser.Name}"
+                                                                VerticalTextAlignment="Center" />
+
+                                                            <Label
+                                                                Grid.Row="0"
+                                                                Grid.RowSpan="2"
+                                                                Grid.Column="2"
+                                                                FontFamily="MaterialCommunityIcons"
+                                                                FontSize="18"
+                                                                HorizontalOptions="Fill"
+                                                                HorizontalTextAlignment="End"
+                                                                Text="{x:Static local:MaterialCommunityIconsFont.ArrowRight}"
+                                                                VerticalOptions="Fill"
+                                                                VerticalTextAlignment="Center" />
+
+                                                            <HorizontalStackLayout
+                                                                Grid.Row="1"
+                                                                Grid.Column="1"
+                                                                Spacing="5">
+                                                                <Border
+                                                                    Padding="5"
+                                                                    Stroke="SlateGray"
+                                                                    StrokeShape="{RoundRectangle CornerRadius=5}">
+                                                                    <Border.Triggers>
+                                                                        <DataTrigger
+                                                                            Binding="{Binding IsAndroidMissing}"
+                                                                            TargetType="Border"
+                                                                            Value="True">
+                                                                            <Setter Property="Stroke" Value="{StaticResource AlertWarningTextColor}" />
+                                                                        </DataTrigger>
+                                                                        <DataTrigger
+                                                                            Binding="{Binding IsAndroidMissing}"
+                                                                            TargetType="Border"
+                                                                            Value="False">
+                                                                            <Setter Property="Stroke" Value="{StaticResource SuccessColor}" />
+                                                                        </DataTrigger>
+                                                                        <DataTrigger
+                                                                            Binding="{Binding IsAndroidMissing}"
+                                                                            TargetType="Border"
+                                                                            Value="Null">
+                                                                            <Setter Property="Stroke" Value="{StaticResource DangerColor}" />
+                                                                        </DataTrigger>
+                                                                    </Border.Triggers>
+                                                                    <HorizontalStackLayout Spacing="2">
+                                                                        <Label
+                                                                            FontFamily="MaterialCommunityIcons"
+                                                                            FontSize="20"
+                                                                            IsVisible="{Binding IsAndroidMissing, Converter={StaticResource IsFalseConverter}}"
+                                                                            Text="{x:Static local:MaterialCommunityIconsFont.CheckboxMarkedCircle}"
+                                                                            TextColor="{StaticResource SuccessColor}"
+                                                                            VerticalTextAlignment="Center" />
+                                                                        <Label
+                                                                            FontFamily="MaterialCommunityIcons"
+                                                                            FontSize="20"
+                                                                            IsVisible="{Binding IsAndroidMissing, Converter={StaticResource ShowAlertIconConverter}}"
+                                                                            Text="{x:Static local:MaterialCommunityIconsFont.AlertCircle}"
+                                                                            TextColor="{Binding IsAndroidMissing, Converter={StaticResource FpAlertColorConverter}}"
+                                                                            VerticalTextAlignment="Center" />
+                                                                        <Label
+                                                                            Margin="5,0"
+                                                                            FontSize="14"
+                                                                            Text="Android"
+                                                                            TextColor="{StaticResource TextColor}"
+                                                                            VerticalTextAlignment="Center" />
+                                                                    </HorizontalStackLayout>
+                                                                </Border>
+
+                                                                <Border
+                                                                    Padding="5"
+                                                                    Stroke="SlateGray"
+                                                                    StrokeShape="{RoundRectangle CornerRadius=5}">
+                                                                    <Border.Triggers>
+                                                                        <DataTrigger
+                                                                            Binding="{Binding IsiOSMissing}"
+                                                                            TargetType="Border"
+                                                                            Value="True">
+                                                                            <Setter Property="Stroke" Value="{StaticResource AlertWarningTextColor}" />
+                                                                        </DataTrigger>
+                                                                        <DataTrigger
+                                                                            Binding="{Binding IsiOSMissing}"
+                                                                            TargetType="Border"
+                                                                            Value="False">
+                                                                            <Setter Property="Stroke" Value="{StaticResource SuccessColor}" />
+                                                                        </DataTrigger>
+                                                                        <DataTrigger
+                                                                            Binding="{Binding IsiOSMissing}"
+                                                                            TargetType="Border"
+                                                                            Value="Null">
+                                                                            <Setter Property="Stroke" Value="{StaticResource DangerColor}" />
+                                                                        </DataTrigger>
+                                                                    </Border.Triggers>
+                                                                    <HorizontalStackLayout Spacing="2">
+                                                                        <Label
+                                                                            FontFamily="MaterialCommunityIcons"
+                                                                            FontSize="20"
+                                                                            IsVisible="{Binding IsiOSMissing, Converter={StaticResource IsFalseConverter}}"
+                                                                            Text="{x:Static local:MaterialCommunityIconsFont.CheckboxMarkedCircle}"
+                                                                            TextColor="{StaticResource SuccessColor}"
+                                                                            VerticalTextAlignment="Center" />
+                                                                        <Label
+                                                                            FontFamily="MaterialCommunityIcons"
+                                                                            FontSize="20"
+                                                                            IsVisible="{Binding IsiOSMissing, Converter={StaticResource ShowAlertIconConverter}}"
+                                                                            Text="{x:Static local:MaterialCommunityIconsFont.AlertCircle}"
+                                                                            TextColor="{Binding IsiOSMissing, Converter={StaticResource FpAlertColorConverter}}"
+                                                                            VerticalTextAlignment="Center" />
+                                                                        <Label
+                                                                            Margin="5,0"
+                                                                            FontSize="14"
+                                                                            Text="iOS"
+                                                                            TextColor="{StaticResource TextColor}"
+                                                                            VerticalTextAlignment="Center" />
+                                                                    </HorizontalStackLayout>
+                                                                </Border>
+                                                            </HorizontalStackLayout>
+                                                        </Grid>
+                                                    </Border>
+                                                </DataTemplate>
+                                            </CollectionView.ItemTemplate>
+                                            <!--  TODO: Review and fix the EmptyView implementation for CollectionView  -->
+                                            <!--<CollectionView.EmptyView>
+                                                <HorizontalStackLayout
+                                                    HeightRequest="100"
+                                                    HorizontalOptions="Center"
+                                                    Spacing="5">
+                                                    <Label
+                                                        FontFamily="MaterialCommunityIcons"
+                                                        FontSize="20"
+                                                        Text="{x:Static local:MaterialCommunityIconsFont.CheckboxMarkedCircle}"
+                                                        TextColor="{StaticResource SuccessColor}"
+                                                        VerticalOptions="Fill"
+                                                        VerticalTextAlignment="Center" />
+                                                    <Label
+                                                        FontSize="14"
+                                                        HorizontalTextAlignment="Center"
+                                                        Text="All Service User(s) are fingerprinted."
+                                                        TextColor="{StaticResource TextMuted}"
+                                                        VerticalTextAlignment="Center" />
+                                                </HorizontalStackLayout>
+                                            </CollectionView.EmptyView>-->
+                                        </CollectionView>
+                                    </VerticalStackLayout>
+                                </material:TabItem.Content>
+                            </material:TabItem>
+
+                            <material:TabItem Title="Ground Truth">
+                                <material:TabItem.HeaderTemplate>
+                                    <DataTemplate>
+                                        <material:ButtonView TappedCommand="{Binding Command}">
+                                            <Label
+                                                FontFamily="13"
+                                                HorizontalOptions="Center"
+                                                Text="Ground Truth"
+                                                TextColor="{StaticResource TextColor}" />
+                                            <material:ButtonView.Triggers>
+                                                <DataTrigger
+                                                    Binding="{Binding IsSelected}"
+                                                    TargetType="material:ButtonView"
+                                                    Value="True">
+                                                    <Setter Property="Style" Value="{StaticResource TabSelectedButtonStyle}" />
+                                                </DataTrigger>
+                                                <DataTrigger
+                                                    Binding="{Binding IsSelected}"
+                                                    TargetType="material:ButtonView"
+                                                    Value="False">
+                                                    <Setter Property="Style" Value="{StaticResource TabUnselectedButtonStyle}" />
+                                                </DataTrigger>
+                                            </material:ButtonView.Triggers>
+                                        </material:ButtonView>
+                                    </DataTemplate>
+                                </material:TabItem.HeaderTemplate>
+                                <material:TabItem.Content>
+                                    <VerticalStackLayout>
+                                        <HorizontalStackLayout
+                                            HeightRequest="100"
+                                            HorizontalOptions="Center"
+                                            IsVisible="{Binding IsAllServiceUsersHasGroundTruths}"
+                                            Spacing="5">
+                                            <Label
+                                                FontFamily="MaterialCommunityIcons"
+                                                FontSize="20"
+                                                Text="{x:Static local:MaterialCommunityIconsFont.CheckboxMarkedCircle}"
+                                                TextColor="{StaticResource SuccessColor}"
+                                                VerticalOptions="Fill"
+                                                VerticalTextAlignment="Center" />
+                                            <Label
+                                                FontSize="14"
+                                                HorizontalTextAlignment="Center"
+                                                Text="All Service User(s) have ground truth."
+                                                TextColor="{StaticResource TextMuted}"
+                                                VerticalTextAlignment="Center" />
+                                        </HorizontalStackLayout>
+                                        <CollectionView
+                                            Margin="5"
+                                            HeightRequest="{Binding DashboardDto.CardViewHeight}"
+                                            ItemsSource="{Binding DashboardDto.MissingGroundTruths}"
+                                            VerticalScrollBarVisibility="Always">
+                                            <CollectionView.ItemsLayout>
+                                                <LinearItemsLayout ItemSpacing="3" Orientation="Vertical" />
+                                            </CollectionView.ItemsLayout>
+                                            <CollectionView.ItemTemplate>
+                                                <DataTemplate x:DataType="{x:Type domain:ServiceUser}">
+                                                    <Border Stroke="#EAEEEF" StrokeThickness="1">
+                                                        <Grid
+                                                            Margin="2"
+                                                            ColumnDefinitions="Auto,*,Auto"
+                                                            ColumnSpacing="10">
+                                                            <Grid.GestureRecognizers>
+                                                                <TapGestureRecognizer Command="{Binding BindingContext.ServiceUserTapCommand, Source={x:Reference this}}" CommandParameter="{Binding Id}" />
+                                                            </Grid.GestureRecognizers>
+
+                                                            <local:PlaceholderImageControl
+                                                                Grid.Column="0"
+                                                                InputTransparent="True"
+                                                                SizeOption="large"
+                                                                Source="{Binding ImageUrl, Converter={StaticResource DefaultImageSourceConverter}}" />
+
+                                                            <Label
+                                                                Grid.Column="1"
+                                                                HorizontalTextAlignment="Start"
+                                                                Style="{StaticResource Heading2Wrapped3LinesStyle}"
+                                                                Text="{Binding Name}"
+                                                                VerticalTextAlignment="Center" />
+
+                                                            <Label
+                                                                Grid.Column="2"
+                                                                FontFamily="MaterialCommunityIcons"
+                                                                FontSize="18"
+                                                                HorizontalOptions="Fill"
+                                                                HorizontalTextAlignment="End"
+                                                                Text="{x:Static local:MaterialCommunityIconsFont.ArrowRight}"
+                                                                VerticalOptions="Fill"
+                                                                VerticalTextAlignment="Center" />
+                                                        </Grid>
+                                                    </Border>
+                                                </DataTemplate>
+                                            </CollectionView.ItemTemplate>
+                                            <!--  TODO: Review and fix the EmptyView implementation for CollectionView  -->
+                                            <!--<CollectionView.EmptyView>
+                                                <HorizontalStackLayout
+                                                    HeightRequest="100"
+                                                    HorizontalOptions="Center"
+                                                    Spacing="5">
+                                                    <Label
+                                                        FontFamily="MaterialCommunityIcons"
+                                                        FontSize="20"
+                                                        Text="{x:Static local:MaterialCommunityIconsFont.CheckboxMarkedCircle}"
+                                                        TextColor="{StaticResource SuccessColor}"
+                                                        VerticalOptions="Fill"
+                                                        VerticalTextAlignment="Center" />
+                                                    <Label
+                                                        FontSize="14"
+                                                        HorizontalTextAlignment="Center"
+                                                        Text="All Service User(s) have ground truth."
+                                                        TextColor="{StaticResource TextMuted}"
+                                                        VerticalTextAlignment="Center" />
+                                                </HorizontalStackLayout>
+                                            </CollectionView.EmptyView>-->
+                                        </CollectionView>
+                                    </VerticalStackLayout>
+                                </material:TabItem.Content>
+                            </material:TabItem>
+                        </material:TabView>
+                    </local:CardViewControl>
+                    <VerticalStackLayout Grid.Row="1" Margin="0,15">
+                        <Grid ColumnDefinitions="*,Auto">
+                            <Label
+                                Grid.Column="0"
+                                Style="{StaticResource Heading1Style}"
+                                Text="Forms Status" />
+                            <Label
+                                Grid.ColumnSpan="1"
+                                Margin="0,0,5,0"
+                                FontFamily="MaterialCommunityIcons"
+                                FontSize="26"
+                                HorizontalOptions="End"
+                                Opacity="1"
+                                Text="{x:Static local:MaterialCommunityIconsFont.Refresh}"
+                                TextColor="{StaticResource PrimaryColor}"
+                                VerticalTextAlignment="Center">
+                                <Label.GestureRecognizers>
+                                    <TapGestureRecognizer Command="{Binding FormsRefreshCommand}" />
+                                </Label.GestureRecognizers>
+                            </Label>
+                        </Grid>
+                        <local:CardViewControl CardTitle="Forms Status" HasCardTitle="False">
+                            <Grid
+                                ColumnDefinitions="*,Auto"
+                                ColumnSpacing="10"
+                                RowDefinitions="Auto,Auto,Auto,Auto"
+                                RowSpacing="5">
+                                <Label
+                                    Grid.Row="0"
+                                    Grid.Column="0"
+                                    Style="{StaticResource Heading2Style}"
+                                    Text="Pending" />
+                                <Label
+                                    Grid.Row="1"
+                                    Grid.Column="0"
+                                    Style="{StaticResource Heading2Style}"
+                                    Text="Scheduled" />
+                                <Label
+                                    Grid.Row="2"
+                                    Grid.Column="0"
+                                    Style="{StaticResource Heading2Style}"
+                                    Text="Overdue" />
+
+                                <Label
+                                    Grid.Row="0"
+                                    Grid.Column="1"
+                                    HorizontalTextAlignment="End"
+                                    Text="{Binding DashboardDto.PendingFormsCount}" />
+                                <Label
+                                    Grid.Row="1"
+                                    Grid.Column="1"
+                                    HorizontalTextAlignment="End"
+                                    Text="{Binding DashboardDto.ScheduledFormsCount}" />
+                                <Label
+                                    Grid.Row="2"
+                                    Grid.Column="1"
+                                    HorizontalTextAlignment="End"
+                                    Text="{Binding DashboardDto.OverdueFormsCount}" />
+                            </Grid>
+                        </local:CardViewControl>
+                    </VerticalStackLayout>
+                </Grid>
+            </VerticalStackLayout>
+        </ScrollView>
+
+        <local:CustomActivityIndicator IsBusy="{Binding IsBusy}" />
+    </Grid>
+</local:BaseContentPage>

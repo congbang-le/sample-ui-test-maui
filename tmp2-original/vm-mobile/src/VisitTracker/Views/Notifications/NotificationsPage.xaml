@@ -1,0 +1,208 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<local:BaseContentPage
+    x:Class="VisitTracker.NotificationsPage"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:local="clr-namespace:VisitTracker"
+    xmlns:material="http://schemas.enisn-projects.io/dotnet/maui/uraniumui/material"
+    xmlns:mct="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
+    xmlns:skia="clr-namespace:SkiaSharp.Extended.UI.Controls;assembly=SkiaSharp.Extended.UI"
+    x:Name="this"
+    Title="Notifications"
+    x:DataType="local:NotificationsVm"
+    x:TypeArguments="local:NotificationsVm"
+    AutomationId="NotificationsPage"
+    BackgroundColor="{StaticResource MainBackgroudColor}"
+    IconImageSource="notification"
+    Shell.NavBarHasShadow="False"
+    Shell.NavBarIsVisible="False">
+    <ContentPage.Behaviors>
+        <mct:EventToCommandBehavior Command="{Binding InitCommand}" EventName="Appearing" />
+    </ContentPage.Behaviors>
+
+    <Grid Margin="15,0" RowDefinitions="Auto,Auto,*,10">
+        <Label Style="{StaticResource PageTitleStyle}" Text="Notifications" />
+        <Grid Grid.Row="1" ColumnDefinitions="*,*">
+            <HorizontalStackLayout
+                Grid.Column="0"
+                Spacing="5"
+                VerticalOptions="Center">
+                <Label
+                    FontAttributes="Bold"
+                    FontSize="15"
+                    Text="Archives"
+                    TextColor="{StaticResource DarkTextColor}"
+                    VerticalOptions="Center" />
+                <Switch
+                    HorizontalOptions="Start"
+                    IsToggled="{Binding IsToggled, Mode=TwoWay}"
+                    Style="{StaticResource SwitchStyle}" />
+            </HorizontalStackLayout>
+
+            <Label
+                Grid.Column="1"
+                Margin="0,10,0,0"
+                HorizontalTextAlignment="End"
+                IsVisible="{Binding IsToggled, Converter={StaticResource BoolToVisibilityConverter}}">
+                <Label.FormattedText>
+                    <FormattedString>
+                        <Span
+                            FontAttributes="Bold"
+                            FontSize="15"
+                            Text="Unread ("
+                            TextColor="{StaticResource DarkTextColor}" />
+                        <Span
+                            FontFamily="AppBoldFontFamily"
+                            FontSize="18"
+                            Text="{Binding UnreadNotificationsCount}"
+                            TextColor="{StaticResource DangerColor}" />
+                        <Span
+                            FontAttributes="Bold"
+                            FontSize="15"
+                            Text=")"
+                            TextColor="{StaticResource DarkTextColor}" />
+                    </FormattedString>
+                </Label.FormattedText>
+            </Label>
+        </Grid>
+
+        <RefreshView
+            Grid.Row="2"
+            Command="{Binding RefreshCommand}"
+            IsRefreshing="{Binding IsRefreshing}">
+            <Grid IsVisible="{Binding IsNotBusy}">
+                <CollectionView
+                    HorizontalOptions="Fill"
+                    ItemsSource="{Binding Notifications}"
+                    VerticalOptions="Fill">
+                    <CollectionView.ItemTemplate>
+                        <DataTemplate x:DataType="{x:Type local:NotificationsDto}">
+                            <material:ButtonView
+                                Margin="0,5"
+                                Padding="5"
+                                CommandParameter="{Binding .}"
+                                Style="{StaticResource ActionsButtonStyle}"
+                                TappedCommand="{Binding BindingContext.NotificationTapCommand, Source={x:Reference this}}">
+                                <Grid
+                                    AutomationId="NotificationItem"
+                                    ColumnDefinitions="*,Auto"
+                                    ColumnSpacing="5"
+                                    RowDefinitions="Auto,Auto,Auto"
+                                    RowSpacing="5"
+                                    VerticalOptions="Fill">
+                                    <Grid.Triggers>
+                                        <DataTrigger
+                                            Binding="{Binding IsAcknowledged}"
+                                            TargetType="Grid"
+                                            Value="True">
+                                            <Setter Property="Opacity" Value="0.65" />
+                                        </DataTrigger>
+                                    </Grid.Triggers>
+                                    <VerticalStackLayout
+                                        Grid.Row="0"
+                                        Grid.Column="0"
+                                        Spacing="5"
+                                        VerticalOptions="Center">
+                                        <HorizontalStackLayout Spacing="5">
+                                            <Label
+                                                FontFamily="MaterialCommunityIcons"
+                                                FontSize="18"
+                                                HorizontalOptions="Start"
+                                                HorizontalTextAlignment="Start"
+                                                Text="{x:Static local:MaterialCommunityIconsFont.Bell}"
+                                                TextColor="{Binding Color}"
+                                                VerticalOptions="Center">
+                                                <Label.Triggers>
+                                                    <DataTrigger
+                                                        Binding="{Binding IsAcknowledged}"
+                                                        TargetType="Label"
+                                                        Value="True">
+                                                        <Setter Property="Text" Value="{x:Static local:MaterialCommunityIconsFont.BellOutline}" />
+                                                        <Setter Property="TextColor" Value="{StaticResource TextColor}" />
+                                                    </DataTrigger>
+                                                </Label.Triggers>
+                                            </Label>
+                                            <Label
+                                                Margin="0"
+                                                HorizontalOptions="Start"
+                                                Style="{StaticResource Heading1Wrapped3LinesStyle}"
+                                                Text="{Binding Title}"
+                                                VerticalOptions="Center"
+                                                VerticalTextAlignment="Center"
+                                                WidthRequest="{Binding ., Converter={StaticResource AdjustedDeviceWidthConverterFullWidth}}">
+                                                <Label.Triggers>
+                                                    <DataTrigger
+                                                        Binding="{Binding IsAcknowledged, Converter={StaticResource NotConverter}}"
+                                                        TargetType="Label"
+                                                        Value="True">
+                                                        <Setter Property="FontAttributes" Value="Bold" />
+                                                    </DataTrigger>
+                                                </Label.Triggers>
+                                            </Label>
+                                        </HorizontalStackLayout>
+
+                                        <Label
+                                            HorizontalOptions="Start"
+                                            Style="{StaticResource LabelWrapped3LinesDefaultColorStyle}"
+                                            Text="{Binding Description}">
+                                            <Label.Triggers>
+                                                <DataTrigger
+                                                    Binding="{Binding IsAcknowledged}"
+                                                    TargetType="Label"
+                                                    Value="False" />
+                                            </Label.Triggers>
+                                        </Label>
+                                    </VerticalStackLayout>
+
+                                    <VerticalStackLayout
+                                        Grid.Row="0"
+                                        Grid.RowSpan="3"
+                                        Grid.Column="1"
+                                        HorizontalOptions="End"
+                                        Spacing="5"
+                                        VerticalOptions="Center">
+                                        <Label
+                                            FontFamily="MaterialCommunityIcons"
+                                            FontSize="24"
+                                            HorizontalOptions="End"
+                                            HorizontalTextAlignment="Start"
+                                            Text="{x:Static local:MaterialCommunityIconsFont.ChevronRight}"
+                                            TextColor="{StaticResource TextColor}"
+                                            VerticalTextAlignment="Center"
+                                            WidthRequest="20" />
+                                    </VerticalStackLayout>
+
+                                    <HorizontalStackLayout
+                                        Grid.Row="2"
+                                        Grid.ColumnSpan="2"
+                                        Padding="0,0,5,0"
+                                        HorizontalOptions="End"
+                                        VerticalOptions="End">
+                                        <Label
+                                            FontSize="12"
+                                            HorizontalOptions="End"
+                                            Text="{Binding CreatedTime, StringFormat='{}{0:dd MMM yyyy}'}"
+                                            TextColor="{StaticResource TextColor}"
+                                            VerticalOptions="Start" />
+                                        <Label
+                                            Margin="10,0,0,0"
+                                            FontSize="12"
+                                            HorizontalOptions="End"
+                                            Text="{Binding CreatedTime, StringFormat='{0:HH:mm} hrs'}"
+                                            TextColor="{StaticResource TextColor}"
+                                            VerticalOptions="Start" />
+                                    </HorizontalStackLayout>
+                                </Grid>
+                            </material:ButtonView>
+                        </DataTemplate>
+                    </CollectionView.ItemTemplate>
+                    <CollectionView.EmptyView>
+                        <local:NoDataControl />
+                    </CollectionView.EmptyView>
+                </CollectionView>
+            </Grid>
+        </RefreshView>
+
+        <local:CustomActivityIndicator Grid.RowSpan="4" IsBusy="{Binding IsBusy}" />
+    </Grid>
+</local:BaseContentPage>

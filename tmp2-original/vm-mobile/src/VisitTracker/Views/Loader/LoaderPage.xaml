@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8" ?>
+
+<local:BaseContentPage
+    x:Class="VisitTracker.LoaderPage"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:local="clr-namespace:VisitTracker"
+    xmlns:skia="clr-namespace:SkiaSharp.Extended.UI.Controls;assembly=SkiaSharp.Extended.UI"
+    x:DataType="local:LoaderVm"
+    x:TypeArguments="local:LoaderVm"
+    BackgroundColor="{StaticResource BasePageBackgroundColor}"
+    NavigationPage.HasNavigationBar="False"
+    Shell.NavBarIsVisible="False"
+    Shell.TabBarIsVisible="False">
+    <Grid IgnoreSafeArea="{OnPlatform Android=False, iOS=True}">
+        <local:CustomActivityIndicator IsBusy="True" />
+    </Grid>
+</local:BaseContentPage>

@@ -25,4 +25,3 @@ dotnet test UITests.Android/UITests.Android.csproj \
 
 echo "UI tests completed."
 
-

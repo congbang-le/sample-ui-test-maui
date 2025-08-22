@@ -1,0 +1,193 @@
+<?xml version="1.0" encoding="utf-8" ?>
+
+<local:BaseContentPage
+    x:Class="VisitTracker.LoginPage"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:input="clr-namespace:InputKit.Shared.Controls;assembly=InputKit.Maui"
+    xmlns:local="clr-namespace:VisitTracker"
+    xmlns:m="clr-namespace:UraniumUI.Icons.MaterialIcons;assembly=UraniumUI.Icons.MaterialIcons"
+    xmlns:material="http://schemas.enisn-projects.io/dotnet/maui/uraniumui/material"
+    xmlns:mct="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
+    xmlns:skia="clr-namespace:SkiaSharp.Extended.UI.Controls;assembly=SkiaSharp.Extended.UI"
+    xmlns:uranium="http://schemas.enisn-projects.io/dotnet/maui/uraniumui"
+    xmlns:validation="clr-namespace:InputKit.Shared.Validations;assembly=InputKit.Maui"
+    x:DataType="local:LoginVm"
+    x:TypeArguments="local:LoginVm"
+    AutomationId="LoginPage"
+    BackgroundColor="{StaticResource SecondaryBackgroudColor}"
+    NavigationPage.HasNavigationBar="False"
+    Shell.NavBarIsVisible="False"
+    Shell.TabBarIsVisible="False">
+    <ContentPage.Behaviors>
+        <mct:EventToCommandBehavior Command="{Binding InitCommand}" EventName="Appearing" />
+    </ContentPage.Behaviors>
+
+    <ScrollView Orientation="Vertical">
+        <Grid IgnoreSafeArea="{OnPlatform Android=False, iOS=True}" RowDefinitions="150, *,Auto">
+            <Grid.Background>
+                <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
+                    <GradientStop Offset="0.0" Color="#0065E4" />
+                    <GradientStop Offset="1.0" Color="#004DAE" />
+                </LinearGradientBrush>
+            </Grid.Background>
+
+            <Border
+                Grid.Row="0"
+                Margin="{OnPlatform Android='20,-50,0,0',
+                                    iOS=20}"
+                Padding="0"
+                BackgroundColor="Transparent"
+                HeightRequest="54"
+                HorizontalOptions="Start"
+                Stroke="{StaticResource SecondaryColor}"
+                StrokeShape="RoundRectangle 27"
+                StrokeThickness="1"
+                VerticalOptions="{OnPlatform Android=Center,
+                                             iOS=End}"
+                WidthRequest="54">
+
+                <Label
+                    FontFamily="MaterialCommunityIcons"
+                    FontSize="24"
+                    HorizontalOptions="Center"
+                    Text="{x:Static local:MaterialCommunityIconsFont.ArrowLeft}"
+                    TextColor="{StaticResource SecondaryColor}"
+                    VerticalOptions="Center" />
+
+                <Border.GestureRecognizers>
+                    <TapGestureRecognizer Command="{Binding OnBackCommand}" />
+                </Border.GestureRecognizers>
+            </Border>
+
+
+            <VerticalStackLayout
+                Grid.Row="1"
+                HorizontalOptions="Fill"
+                Spacing="5"
+                VerticalOptions="Center">
+
+                <VerticalStackLayout
+                    HorizontalOptions="FillAndExpand"
+                    Spacing="5"
+                    VerticalOptions="Start">
+
+                    <local:PlaceholderImageControl
+                        HorizontalOptions="Center"
+                        InputTransparent="True"
+                        SizeOption="LargePlus"
+                        Source="{Binding Provider.ImageUrl, Converter={StaticResource DefaultImageSourceConverter}}" />
+
+                    <Label
+                        FontAttributes="Bold"
+                        FontSize="20"
+                        HorizontalTextAlignment="Center"
+                        Text="{Binding Provider.Name}"
+                        TextColor="{StaticResource WhiteOnDarkBackgroundColor}"
+                        VerticalOptions="Center" />
+
+                    <Label
+                        Margin="20,5"
+                        FontSize="16"
+                        HorizontalTextAlignment="Center"
+                        Text="{Binding Provider.Address}"
+                        TextColor="{StaticResource WhiteOnDarkBackgroundColor}"
+                        VerticalOptions="Center" />
+                </VerticalStackLayout>
+
+                <VerticalStackLayout
+                    x:Name="layout"
+                    Margin="0,0,0,40"
+                    Padding="10"
+                    VerticalOptions="End">
+
+                    <input:FormView
+                        Padding="10"
+                        HorizontalOptions="Fill"
+                        Orientation="Vertical"
+                        Spacing="15"
+                        SubmitCommand="{Binding LoginCommand}">
+
+                        <material:TextField
+                            Title="Email"
+                            AllowClear="True"
+                            AutomationId="Email"
+                            ClearButtonVisibility="WhileEditing"
+                            Icon="{FontImageSource FontFamily=MaterialRegular,
+                                                   Glyph={x:Static m:MaterialRegular.Email},
+                                                   Color={StaticResource TextFieldIconColor}}"
+                            IsEnabled="{Binding IsInputEnabled}"
+                            IsTextPredictionEnabled="True"
+                            Keyboard="Email"
+                            MaxLength="320"
+                            Style="{StaticResource MaterialTextFieldInvert}"
+                            Text="{Binding Email}">
+                            <validation:RequiredValidation Message="* required" />
+                            <validation:RegexValidation Message="Please type a valid e-mail address." Pattern="{x:Static input:AdvancedEntry.REGEX_EMAIL}" />
+                        </material:TextField>
+
+                        <material:TextField
+                            Title="Password"
+                            AllowClear="True"
+                            AutomationId="Password"
+                            ClearButtonVisibility="WhileEditing"
+                            Icon="{FontImageSource FontFamily=MaterialRegular,
+                                                   Glyph={x:Static m:MaterialRegular.Lock},
+                                                   Color={StaticResource TextFieldIconColor}}"
+                            IsEnabled="{Binding IsInputEnabled}"
+                            IsPassword="True"
+                            IsTextPredictionEnabled="True"
+                            MaxLength="128"
+                            ReturnCommand="{Binding LoginCommand}"
+                            ReturnType="Done"
+                            Style="{StaticResource MaterialTextFieldInvert}"
+                            Text="{Binding Password}">
+                            <validation:RequiredValidation Message="* required" />
+                            <material:TextField.Attachments>
+                                <material:TextFieldPasswordShowHideAttachment />
+                            </material:TextField.Attachments>
+                        </material:TextField>
+
+                        <material:ButtonView
+                            input:FormView.IsSubmitButton="True"
+                            AutomationId="LoginButton"
+                            IsEnabled="{Binding IsNotBusy}"
+                            Style="{DynamicResource CentralizedButtonViewStyleInvert}">
+
+                            <Grid>
+                                <HorizontalStackLayout
+                                    HorizontalOptions="Center"
+                                    IsVisible="{Binding IsNotBusy}"
+                                    Spacing="5">
+                                    <Label Style="{DynamicResource CentralizedPrimaryInvertBtnLabelStyle}" Text="LOGIN" />
+                                </HorizontalStackLayout>
+
+                                <local:CustomActivityIndicator
+                                    BusyText="Logging In..."
+                                    BusyTextColor="{StaticResource Primary}"
+                                    IsBusy="{Binding IsBusy}"
+                                    SourceFile="LoaderPrimary.json"
+                                    Style="{StaticResource CentralizedActivityIndicatorStyle}" />
+                            </Grid>
+                        </material:ButtonView>
+
+                        <Label
+                            Grid.Row="1"
+                            HorizontalOptions="Center"
+                            Style="{StaticResource MutedTextStylesInvert}"
+                            Text="Forgot your password?"
+                            TextDecorations="Underline"
+                            VerticalOptions="Center">
+                            <Label.GestureRecognizers>
+                                <TapGestureRecognizer Command="{Binding ForgotPasswordCommand}" />
+                            </Label.GestureRecognizers>
+                            <Label.IsEnabled>
+                                <Binding Path="IsNotBusy" />
+                            </Label.IsEnabled>
+                        </Label>
+                    </input:FormView>
+                </VerticalStackLayout>
+            </VerticalStackLayout>
+        </Grid>
+    </ScrollView>
+</local:BaseContentPage>

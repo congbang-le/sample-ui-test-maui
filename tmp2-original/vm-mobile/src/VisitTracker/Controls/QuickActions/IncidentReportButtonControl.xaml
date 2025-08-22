@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<local:BaseContentView
+    x:Class="VisitTracker.IncidentReportButtonControl"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:local="clr-namespace:VisitTracker"
+    xmlns:material="http://schemas.enisn-projects.io/dotnet/maui/uraniumui/material"
+    x:Name="IncidentReportButton">
+    <ContentView.ControlTemplate>
+        <ControlTemplate>
+            <material:ButtonView
+                AutomationId="IncidentReportButton"
+                Style="{StaticResource QuickActionsButtonStyle}"
+                TappedCommand="{Binding Source={x:Reference IncidentReportButton}, Path=OpenIncidentReportCommand}">
+                <HorizontalStackLayout Spacing="2">
+                    <Label Style="{StaticResource QuickActionsIconStyle}" Text="{x:Static local:MaterialCommunityIconsFont.Archive}" />
+
+                    <Label Style="{StaticResource QuickActionsTextStyle}" Text="Incident" />
+                </HorizontalStackLayout>
+            </material:ButtonView>
+        </ControlTemplate>
+    </ContentView.ControlTemplate>
+</local:BaseContentView>

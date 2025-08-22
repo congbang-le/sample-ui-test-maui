@@ -1,0 +1,34 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<local:BaseContentPage
+    x:Class="VisitTracker.MiscellaneousDetailPage"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:android="clr-namespace:Microsoft.Maui.Controls.PlatformConfiguration.AndroidSpecific;assembly=Microsoft.Maui.Controls"
+    xmlns:local="clr-namespace:VisitTracker"
+    xmlns:mct="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
+    xmlns:skia="clr-namespace:SkiaSharp.Extended.UI.Controls;assembly=SkiaSharp.Extended.UI"
+    Title="{Binding Title}"
+    x:DataType="local:MiscellaneousDetailVm"
+    x:TypeArguments="local:MiscellaneousDetailVm"
+    BackgroundColor="{StaticResource BasePageBackgroundColor}"
+    Shell.NavBarIsVisible="True"
+    Shell.TabBarIsVisible="False">
+    <ContentPage.Behaviors>
+        <mct:EventToCommandBehavior Command="{Binding ExitCommand}" EventName="Disappearing" />
+    </ContentPage.Behaviors>
+
+    <Grid>
+        <Grid IsVisible="{Binding IsNotBusy}" RowDefinitions="*">
+            <WebView Cookies="{Binding Cookies}" Source="{Binding Source}" />
+
+            <ActivityIndicator
+                HorizontalOptions="Center"
+                IsRunning="{Binding IsBusy}"
+                IsVisible="{Binding IsBusy}"
+                VerticalOptions="Center"
+                WidthRequest="100" />
+        </Grid>
+
+        <local:CustomActivityIndicator IsBusy="{Binding IsBusy}" />
+    </Grid>
+</local:BaseContentPage>

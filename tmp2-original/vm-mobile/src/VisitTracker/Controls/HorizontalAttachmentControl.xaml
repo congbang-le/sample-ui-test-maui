@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<local:BaseContentView
+    x:Class="VisitTracker.HorizontalAttachmentControl"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:local="clr-namespace:VisitTracker"
+    xmlns:m="clr-namespace:UraniumUI.Icons.MaterialIcons;assembly=UraniumUI.Icons.MaterialIcons"
+    xmlns:material="http://schemas.enisn-projects.io/dotnet/maui/uraniumui/material"
+    xmlns:mct="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
+    x:Name="this">
+    <ContentView.ControlTemplate>
+        <ControlTemplate>
+            <Grid Margin="0,10,0,0">
+                <VerticalStackLayout IsVisible="{Binding IsBusy, Converter={StaticResource NotConverter}, Source={x:Reference this}}" Spacing="10">
+
+                    <StackLayout Orientation="Vertical">
+                        <HorizontalStackLayout
+                            BindableLayout.ItemsSource="{Binding AttachmentList, Mode=TwoWay, Source={x:Reference this}}"
+                            IsVisible="{Binding AttachmentList, Converter={StaticResource IsListNotNullOrEmptyConverter}, Source={x:Reference this}}"
+                            Spacing="10">
+                            <BindableLayout.ItemTemplate>
+                                <DataTemplate x:DataType="local:AttachmentDto">
+                                    <material:ButtonView
+                                        Padding="5"
+                                        CommandParameter="{Binding .}"
+                                        Style="{StaticResource BtnDefault}"
+                                        TappedCommand="{Binding OpenAttachmentCommand, Source={x:Reference this}}">
+                                        <Label
+                                            FontFamily="MaterialCommunityIcons"
+                                            FontSize="20"
+                                            Opacity="0.75"
+                                            Text="{Binding DisplayIcon}"
+                                            TextColor="{StaticResource TextColor}"
+                                            VerticalTextAlignment="Center" />
+                                    </material:ButtonView>
+                                </DataTemplate>
+                            </BindableLayout.ItemTemplate>
+                        </HorizontalStackLayout>
+
+                        <Label
+                            HorizontalTextAlignment="Start"
+                            IsVisible="{Binding AttachmentList, Source={x:Reference this}, Converter={StaticResource IsListNullOrEmptyConverter}}"
+                            Style="{StaticResource MutedTextStyles}"
+                            Text="No attachment(s) found!" />
+                    </StackLayout>
+                </VerticalStackLayout>
+
+                <local:CustomActivityIndicator IsBusy="{Binding IsBusy, Source={x:Reference this}}" IsVisible="{Binding IsBusy, Source={x:Reference this}}" />
+            </Grid>
+        </ControlTemplate>
+    </ContentView.ControlTemplate>
+</local:BaseContentView>

@@ -1,0 +1,850 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<local:BaseContentPage
+    x:Class="VisitTracker.ServiceUserDetailPage"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:domain="clr-namespace:VisitTracker.Domain;assembly=VisitTracker.Domain"
+    xmlns:input="clr-namespace:InputKit.Shared.Controls;assembly=InputKit.Maui"
+    xmlns:local="clr-namespace:VisitTracker"
+    xmlns:m="clr-namespace:UraniumUI.Icons.MaterialIcons;assembly=UraniumUI.Icons.MaterialIcons"
+    xmlns:material="http://schemas.enisn-projects.io/dotnet/maui/uraniumui/material"
+    xmlns:mct="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
+    xmlns:service="clr-namespace:VisitTracker.Services;assembly=VisitTracker.Services"
+    xmlns:skia="clr-namespace:SkiaSharp.Extended.UI.Controls;assembly=SkiaSharp.Extended.UI"
+    xmlns:uranium="http://schemas.enisn-projects.io/dotnet/maui/uraniumui"
+    xmlns:validation="clr-namespace:InputKit.Shared.Validations;assembly=InputKit.Maui"
+    x:Name="this"
+    Title="{Binding Title}"
+    x:DataType="local:ServiceUserDetailVm"
+    x:TypeArguments="local:ServiceUserDetailVm"
+    BackgroundColor="{StaticResource MainBackgroudColor}"
+    Shell.NavBarIsVisible="True"
+    Shell.TabBarIsVisible="False">
+
+    <Grid>
+        <ScrollView Margin="10,5">
+            <VerticalStackLayout IsVisible="{Binding IsNotBusy}" Spacing="10">
+                <local:CardViewControl HasCardTitle="False">
+                    <local:UserCardControl
+                        Padding="5"
+                        IsAccessInstructionsVisible="True"
+                        IsCallVisible="True"
+                        IsDirectionVisible="True"
+                        IsUserNavigationVisible="False"
+                        User="{Binding ServiceUserCard}" />
+                </local:CardViewControl>
+
+                <ScrollView Orientation="Horizontal">
+                    <HorizontalStackLayout Spacing="8">
+                        <local:MarChartButtonControl ServiceUserId="{Binding ServiceUser.Id}" />
+                        <local:FluidChartButtonControl ServiceUserId="{Binding ServiceUser.Id}" />
+                    </HorizontalStackLayout>
+                </ScrollView>
+                <Grid
+                    ColumnDefinitions="*,90,60"
+                    ColumnSpacing="5"
+                    IsVisible="{Binding IsSupervisor}">
+                    <Grid.Triggers>
+                        <DataTrigger
+                            Binding="{Binding IsFpInProgress, Converter={StaticResource NotConverter}}"
+                            TargetType="Grid"
+                            Value="False">
+                            <Setter Property="IsVisible" Value="False" />
+                        </DataTrigger>
+                    </Grid.Triggers>
+                    <material:ButtonView
+                        Grid.Column="0"
+                        HeightRequest="40"
+                        IsVisible="{Binding IsFpInProgress, Converter={StaticResource NotConverter}}"
+                        Style="{StaticResource QuickActionsButtonStyle}"
+                        TappedCommand="{Binding StartFingerprintCommand}"
+                        VerticalOptions="Start">
+                        <HorizontalStackLayout HorizontalOptions="Center" Spacing="5">
+                            <Label
+                                FontSize="18"
+                                Style="{StaticResource ButtonActionsIconStyle}"
+                                Text="{x:Static local:MaterialCommunityIconsFont.Fingerprint}"
+                                VerticalOptions="Center" />
+
+                            <Label
+                                FontSize="14"
+                                Style="{StaticResource ButtonActionsTextStyle}"
+                                Text="Start Fingerprint" />
+                        </HorizontalStackLayout>
+                    </material:ButtonView>
+
+                    <Border
+                        Grid.Column="1"
+                        Padding="5"
+                        HeightRequest="35"
+                        Stroke="Transparent"
+                        StrokeShape="{RoundRectangle CornerRadius=0}">
+                        <Border.Triggers>
+                            <DataTrigger
+                                Binding="{Binding ServiceUser.AndroidFpAvailable, Converter={StaticResource NullabeBooleanConverter}}"
+                                TargetType="Border"
+                                Value="True">
+                                <Setter Property="BackgroundColor" Value="{StaticResource SuccessColor}" />
+                            </DataTrigger>
+                            <DataTrigger
+                                Binding="{Binding ServiceUser.AndroidFpAvailable, Converter={StaticResource NullabeBooleanConverter}}"
+                                TargetType="Border"
+                                Value="False">
+                                <Setter Property="BackgroundColor" Value="{StaticResource WarningColor}" />
+                            </DataTrigger>
+                            <DataTrigger
+                                Binding="{Binding ServiceUser.AndroidFpAvailable, Converter={StaticResource NullabeBooleanConverter}}"
+                                TargetType="Border"
+                                Value="Null">
+                                <Setter Property="BackgroundColor" Value="{StaticResource DangerColor}" />
+                            </DataTrigger>
+                        </Border.Triggers>
+                        <Border.Opacity>
+                            <OnPlatform x:TypeArguments="x:Double">
+                                <OnPlatform.Platforms>
+                                    <On Platform="Android" Value="1" />
+                                    <On Platform="iOS" Value="0.5" />
+                                </OnPlatform.Platforms>
+                            </OnPlatform>
+                        </Border.Opacity>
+                        <HorizontalStackLayout Spacing="5" VerticalOptions="Center">
+                            <Label
+                                FontFamily="MaterialCommunityIcons"
+                                FontSize="18"
+                                TextColor="{StaticResource White}">
+                                <Label.Triggers>
+                                    <DataTrigger
+                                        Binding="{Binding ServiceUser.AndroidFpAvailable, Converter={StaticResource NullabeBooleanConverter}}"
+                                        TargetType="Label"
+                                        Value="True">
+                                        <Setter Property="Text" Value="{x:Static local:MaterialCommunityIconsFont.CheckboxMarkedCircleOutline}" />
+                                    </DataTrigger>
+                                    <DataTrigger
+                                        Binding="{Binding ServiceUser.AndroidFpAvailable, Converter={StaticResource NullabeBooleanConverter}}"
+                                        TargetType="Label"
+                                        Value="False">
+                                        <Setter Property="Text" Value="{x:Static local:MaterialCommunityIconsFont.AlertOutline}" />
+                                    </DataTrigger>
+                                    <DataTrigger
+                                        Binding="{Binding ServiceUser.AndroidFpAvailable, Converter={StaticResource NullabeBooleanConverter}}"
+                                        TargetType="Label"
+                                        Value="Null">
+                                        <Setter Property="Text" Value="{x:Static local:MaterialCommunityIconsFont.AlertOutline}" />
+                                    </DataTrigger>
+                                </Label.Triggers>
+                            </Label>
+
+                            <Label
+                                FontSize="14"
+                                Text="Android"
+                                TextColor="{StaticResource White}" />
+                        </HorizontalStackLayout>
+                    </Border>
+
+                    <Border
+                        Grid.Column="2"
+                        Padding="5"
+                        BackgroundColor="Transparent"
+                        HeightRequest="35"
+                        Stroke="Transparent"
+                        StrokeShape="{RoundRectangle CornerRadius=0}">
+                        <Border.Triggers>
+                            <DataTrigger
+                                Binding="{Binding ServiceUser.iOSFpAvailable, Converter={StaticResource NullabeBooleanConverter}}"
+                                TargetType="Border"
+                                Value="True">
+                                <Setter Property="BackgroundColor" Value="{StaticResource SuccessColor}" />
+                            </DataTrigger>
+                            <DataTrigger
+                                Binding="{Binding ServiceUser.iOSFpAvailable, Converter={StaticResource NullabeBooleanConverter}}"
+                                TargetType="Border"
+                                Value="False">
+                                <Setter Property="BackgroundColor" Value="{StaticResource WarningColor}" />
+                            </DataTrigger>
+                            <DataTrigger
+                                Binding="{Binding ServiceUser.iOSFpAvailable, Converter={StaticResource NullabeBooleanConverter}}"
+                                TargetType="Border"
+                                Value="Null">
+                                <Setter Property="BackgroundColor" Value="{StaticResource DangerColor}" />
+                            </DataTrigger>
+                        </Border.Triggers>
+                        <Border.Opacity>
+                            <OnPlatform x:TypeArguments="x:Double">
+                                <OnPlatform.Platforms>
+                                    <On Platform="iOS" Value="1" />
+                                    <On Platform="Android" Value="0.60" />
+                                </OnPlatform.Platforms>
+                            </OnPlatform>
+                        </Border.Opacity>
+
+                        <HorizontalStackLayout Spacing="5" VerticalOptions="Center">
+                            <Label
+                                FontFamily="MaterialCommunityIcons"
+                                FontSize="18"
+                                TextColor="{StaticResource White}">
+                                <Label.Triggers>
+                                    <DataTrigger
+                                        Binding="{Binding ServiceUser.iOSFpAvailable, Converter={StaticResource NullabeBooleanConverter}}"
+                                        TargetType="Label"
+                                        Value="True">
+                                        <Setter Property="Text" Value="{x:Static local:MaterialCommunityIconsFont.CheckboxMarkedCircle}" />
+                                    </DataTrigger>
+                                    <DataTrigger
+                                        Binding="{Binding ServiceUser.iOSFpAvailable, Converter={StaticResource NullabeBooleanConverter}}"
+                                        TargetType="Label"
+                                        Value="False">
+                                        <Setter Property="Text" Value="{x:Static local:MaterialCommunityIconsFont.AlertOutline}" />
+                                    </DataTrigger>
+                                    <DataTrigger
+                                        Binding="{Binding ServiceUser.iOSFpAvailable, Converter={StaticResource NullabeBooleanConverter}}"
+                                        TargetType="Label"
+                                        Value="Null">
+                                        <Setter Property="Text" Value="{x:Static local:MaterialCommunityIconsFont.AlertOutline}" />
+                                    </DataTrigger>
+                                </Label.Triggers>
+                            </Label>
+
+                            <Label
+                                FontSize="14"
+                                Text="iOS"
+                                TextColor="{StaticResource White}" />
+                        </HorizontalStackLayout>
+                    </Border>
+                </Grid>
+
+                <Border
+                    Padding="8"
+                    BackgroundColor="{StaticResource PanelColor}"
+                    IsVisible="{Binding IsFpInProgress}"
+                    Stroke="{StaticResource PanelBorderColor}"
+                    StrokeShape="{RoundRectangle CornerRadius=5}">
+                    <VerticalStackLayout>
+                        <Grid
+                            ColumnDefinitions="Auto,*,Auto"
+                            ColumnSpacing="10"
+                            IsVisible="{Binding IsFpInProgress}">
+                            <Label Grid.Column="0" Text="0%" />
+                            <ProgressBar Grid.Column="1" Margin="0,0,5,0">
+                                <ProgressBar.Behaviors>
+                                    <mct:ProgressBarAnimationBehavior Length="1500" Progress="{Binding FpProgress}" />
+                                </ProgressBar.Behaviors>
+                            </ProgressBar>
+                            <Label Grid.Column="2" Text="100%" />
+                        </Grid>
+                        <Label
+                            Margin="0,0,0,10"
+                            FontSize="14"
+                            HorizontalTextAlignment="Center"
+                            IsVisible="{Binding IsFpInProgress}"
+                            Style="{StaticResource MutedTextStyles}"
+                            Text="Fingerprint in progress..." />
+
+                        <material:ButtonView
+                            HeightRequest="40"
+                            IsVisible="{Binding IsFpInProgress}"
+                            Style="{StaticResource QuickActionsButtonStyle}"
+                            TappedCommand="{Binding StopFingerprintCommand}">
+                            <HorizontalStackLayout HorizontalOptions="Center" Spacing="10">
+                                <Label
+                                    Style="{StaticResource ButtonActionsIconStyle}"
+                                    Text="{x:Static local:MaterialCommunityIconsFont.StopCircle}"
+                                    VerticalOptions="Center" />
+
+                                <Label Style="{StaticResource ButtonActionsTextStyle}" Text="Stop Fingerprint" />
+                            </HorizontalStackLayout>
+                        </material:ButtonView>
+                    </VerticalStackLayout>
+                </Border>
+
+                <Grid
+                    ColumnDefinitions="*,125"
+                    ColumnSpacing="5"
+                    IsVisible="{Binding IsSupervisor}">
+                    <material:ButtonView
+                        Grid.Column="0"
+                        Padding="0"
+                        HeightRequest="40"
+                        Style="{StaticResource QuickActionsButtonStyle}"
+                        TappedCommand="{Binding UpdateGroundTruthCommand}">
+                        <HorizontalStackLayout HorizontalOptions="Center">
+                            <Label
+                                FontSize="18"
+                                Style="{StaticResource ButtonActionsIconStyle}"
+                                Text="{x:Static local:MaterialCommunityIconsFont.MapMarker}"
+                                VerticalOptions="Center" />
+
+                            <Label
+                                Margin="3,0,0,0"
+                                FontSize="14"
+                                LineBreakMode="NoWrap"
+                                Style="{StaticResource ButtonActionsTextStyle}"
+                                Text="Update Ground Truth" />
+                        </HorizontalStackLayout>
+                    </material:ButtonView>
+
+                    <Border
+                        Grid.Column="1"
+                        Padding="5"
+                        HeightRequest="35"
+                        Stroke="Transparent"
+                        StrokeShape="{RoundRectangle CornerRadius=0}">
+                        <Border.Triggers>
+                            <DataTrigger
+                                Binding="{Binding IsGroundTruthUpdated}"
+                                TargetType="Border"
+                                Value="True">
+                                <Setter Property="BackgroundColor" Value="{StaticResource SuccessColor}" />
+                            </DataTrigger>
+                            <DataTrigger
+                                Binding="{Binding IsGroundTruthUpdated}"
+                                TargetType="Border"
+                                Value="False">
+                                <Setter Property="BackgroundColor" Value="{StaticResource DangerColor}" />
+                            </DataTrigger>
+                        </Border.Triggers>
+                        <Border.Opacity>
+                            <OnPlatform x:TypeArguments="x:Double">
+                                <OnPlatform.Platforms>
+                                    <On Platform="Android" Value="1" />
+                                    <On Platform="iOS" Value="0.5" />
+                                </OnPlatform.Platforms>
+                            </OnPlatform>
+                        </Border.Opacity>
+                        <HorizontalStackLayout
+                            HorizontalOptions="Center"
+                            Spacing="5"
+                            VerticalOptions="Center">
+                            <Label
+                                FontFamily="MaterialCommunityIcons"
+                                FontSize="18"
+                                TextColor="{StaticResource White}">
+                                <Label.Triggers>
+                                    <DataTrigger
+                                        Binding="{Binding IsGroundTruthUpdated}"
+                                        TargetType="Label"
+                                        Value="True">
+                                        <Setter Property="Text" Value="{x:Static local:MaterialCommunityIconsFont.CheckboxMarkedCircleOutline}" />
+                                    </DataTrigger>
+                                    <DataTrigger
+                                        Binding="{Binding IsGroundTruthUpdated}"
+                                        TargetType="Label"
+                                        Value="False">
+                                        <Setter Property="Text" Value="{x:Static local:MaterialCommunityIconsFont.AlertOutline}" />
+                                    </DataTrigger>
+                                </Label.Triggers>
+                            </Label>
+
+                            <Label
+                                FontSize="14"
+                                Text="Updated"
+                                TextColor="{StaticResource White}">
+                                <Label.Triggers>
+                                    <DataTrigger
+                                        Binding="{Binding IsGroundTruthUpdated}"
+                                        TargetType="Label"
+                                        Value="True">
+                                        <Setter Property="Text" Value="Updated" />
+                                    </DataTrigger>
+                                    <DataTrigger
+                                        Binding="{Binding IsGroundTruthUpdated}"
+                                        TargetType="Label"
+                                        Value="False">
+                                        <Setter Property="Text" Value="Not Updated" />
+                                    </DataTrigger>
+                                </Label.Triggers>
+                            </Label>
+                        </HorizontalStackLayout>
+                    </Border>
+                </Grid>
+
+                <Border
+                    x:Name="BorderParent"
+                    Padding="8"
+                    HorizontalOptions="Fill"
+                    IsVisible="{Binding IsSupervisor}"
+                    SizeChanged="BorderParent_SizeChanged"
+                    Stroke="SlateGray"
+                    StrokeShape="{RoundRectangle CornerRadius=10}">
+                    <material:TabView x:Name="TabView" HorizontalOptions="Fill">
+                        <material:TabItem Title="Away Actions">
+                            <material:TabItem.HeaderTemplate>
+                                <DataTemplate>
+                                    <material:ButtonView TappedCommand="{Binding Command}">
+                                        <Label
+                                            FontFamily="13"
+                                            HorizontalOptions="Center"
+                                            Text="Away Actions"
+                                            TextColor="{StaticResource TextColor}" />
+                                        <material:ButtonView.Triggers>
+                                            <DataTrigger
+                                                Binding="{Binding IsSelected}"
+                                                TargetType="material:ButtonView"
+                                                Value="True">
+                                                <Setter Property="Style" Value="{StaticResource TabSelectedButtonStyle}" />
+                                            </DataTrigger>
+                                            <DataTrigger
+                                                Binding="{Binding IsSelected}"
+                                                TargetType="material:ButtonView"
+                                                Value="False">
+                                                <Setter Property="Style" Value="{StaticResource TabUnselectedButtonStyle}" />
+                                            </DataTrigger>
+                                        </material:ButtonView.Triggers>
+                                    </material:ButtonView>
+                                </DataTemplate>
+                            </material:TabItem.HeaderTemplate>
+                            <material:TabItem.Content>
+                                <VerticalStackLayout Margin="0,10" Spacing="10">
+                                    <material:ButtonView
+                                        HeightRequest="40"
+                                        Style="{StaticResource QuickActionsButtonStyle}"
+                                        TappedCommand="{Binding SubmitFormsCommand}">
+                                        <Grid
+                                            ColumnDefinitions="Auto,*"
+                                            ColumnSpacing="5"
+                                            HorizontalOptions="Center"
+                                            VerticalOptions="Fill">
+                                            <Label
+                                                Grid.Column="0"
+                                                FontSize="18"
+                                                Style="{StaticResource ButtonActionsIconStyle}"
+                                                Text="{x:Static local:MaterialCommunityIconsFont.Pen}"
+                                                VerticalOptions="Center" />
+
+                                            <Label
+                                                Grid.Column="1"
+                                                LineBreakMode="WordWrap"
+                                                Style="{StaticResource ButtonActionsTextStyle}"
+                                                Text="Submit Forms" />
+                                        </Grid>
+                                    </material:ButtonView>
+                                    <material:ButtonView
+                                        Grid.Row="1"
+                                        HeightRequest="40"
+                                        Style="{StaticResource QuickActionsButtonStyle}"
+                                        TappedCommand="{Binding OpenIncidentReportCommand}">
+                                        <Grid
+                                            ColumnDefinitions="Auto,*"
+                                            ColumnSpacing="5"
+                                            HorizontalOptions="Center"
+                                            VerticalOptions="Fill">
+                                            <Label
+                                                Grid.Column="0"
+                                                FontSize="18"
+                                                Style="{StaticResource ButtonActionsIconStyle}"
+                                                Text="{x:Static local:MaterialCommunityIconsFont.Archive}"
+                                                VerticalOptions="Center" />
+
+                                            <Label
+                                                Grid.Column="1"
+                                                LineBreakMode="WordWrap"
+                                                Style="{StaticResource ButtonActionsTextStyle}"
+                                                Text="Report Incident" />
+                                        </Grid>
+                                    </material:ButtonView>
+                                </VerticalStackLayout>
+                            </material:TabItem.Content>
+                        </material:TabItem>
+
+                        <material:TabItem Title="Onsite Actions">
+                            <material:TabItem.HeaderTemplate>
+                                <DataTemplate>
+                                    <material:ButtonView TappedCommand="{Binding Command}">
+                                        <Label
+                                            FontFamily="13"
+                                            HorizontalOptions="Center"
+                                            Text="Onsite Actions"
+                                            TextColor="{StaticResource TextColor}" />
+                                        <material:ButtonView.Triggers>
+                                            <DataTrigger
+                                                Binding="{Binding IsSelected}"
+                                                TargetType="material:ButtonView"
+                                                Value="True">
+                                                <Setter Property="Style" Value="{StaticResource TabSelectedButtonStyle}" />
+                                            </DataTrigger>
+                                            <DataTrigger
+                                                Binding="{Binding IsSelected}"
+                                                TargetType="material:ButtonView"
+                                                Value="False">
+                                                <Setter Property="Style" Value="{StaticResource TabUnselectedButtonStyle}" />
+                                            </DataTrigger>
+                                        </material:ButtonView.Triggers>
+                                    </material:ButtonView>
+                                </DataTemplate>
+                            </material:TabItem.HeaderTemplate>
+                            <material:TabItem.Content>
+                                <VerticalStackLayout Margin="0,10" Spacing="10">
+                                    <BoxView
+                                        HeightRequest="2"
+                                        HorizontalOptions="Fill"
+                                        Color="LightGray" />
+
+                                    <Grid
+                                        IsEnabled="{Binding IsFpInProgress, Converter={StaticResource NotConverter}}"
+                                        RowDefinitions="Auto,Auto,Auto,Auto"
+                                        RowSpacing="10"
+                                        VerticalOptions="Fill">
+                                        <material:ButtonView
+                                            Grid.Row="0"
+                                            HeightRequest="40"
+                                            IsEnabled="{Binding AllowStartVisit}"
+                                            Opacity="1"
+                                            Style="{StaticResource QuickActionsButtonStyle}"
+                                            TappedCommand="{Binding StartVisitCommand}">
+
+                                            <Grid
+                                                ColumnDefinitions="Auto,*"
+                                                ColumnSpacing="5"
+                                                HorizontalOptions="Center">
+                                                <Label
+                                                    Grid.Column="0"
+                                                    FontSize="18"
+                                                    Style="{StaticResource ButtonActionsIconStyle}"
+                                                    Text="{x:Static local:MaterialCommunityIconsFont.CheckboxMarkedCircle}"
+                                                    VerticalOptions="Center" />
+
+                                                <Label
+                                                    Grid.Column="1"
+                                                    Style="{StaticResource ButtonBoldLabelActionsStyle}"
+                                                    Text="Start Visit" />
+                                            </Grid>
+                                        </material:ButtonView>
+
+                                        <material:ButtonView
+                                            Grid.Row="1"
+                                            HeightRequest="40"
+                                            IsEnabled="{Binding AllowEndVisit}"
+                                            Style="{StaticResource QuickActionsButtonStyle}"
+                                            TappedCommand="{Binding OpenIncidentReportCommand}">
+                                            <Grid
+                                                ColumnDefinitions="Auto,*"
+                                                ColumnSpacing="5"
+                                                HorizontalOptions="Center"
+                                                VerticalOptions="Fill">
+                                                <Label
+                                                    Grid.Column="0"
+                                                    FontSize="18"
+                                                    Style="{StaticResource ButtonActionsIconStyle}"
+                                                    Text="{x:Static local:MaterialCommunityIconsFont.Archive}"
+                                                    VerticalOptions="Center" />
+
+                                                <Label
+                                                    Grid.Column="1"
+                                                    Style="{StaticResource ButtonActionsTextStyle}"
+                                                    Text="Report Incident" />
+                                            </Grid>
+                                        </material:ButtonView>
+
+                                        <material:ButtonView
+                                            Grid.Row="2"
+                                            HeightRequest="40"
+                                            IsEnabled="{Binding AllowEndVisit}"
+                                            Style="{StaticResource QuickActionsButtonStyle}"
+                                            TappedCommand="{Binding SubmitFormsCommand}">
+                                            <Grid
+                                                ColumnDefinitions="Auto,*"
+                                                ColumnSpacing="5"
+                                                HorizontalOptions="Center"
+                                                VerticalOptions="Fill">
+                                                <Label
+                                                    Grid.Column="0"
+                                                    FontSize="18"
+                                                    Style="{StaticResource ButtonActionsIconStyle}"
+                                                    Text="{x:Static local:MaterialCommunityIconsFont.Pen}"
+                                                    VerticalOptions="Center" />
+
+                                                <Label
+                                                    Grid.Column="1"
+                                                    Style="{StaticResource ButtonActionsTextStyle}"
+                                                    Text="Submit Forms" />
+                                            </Grid>
+                                        </material:ButtonView>
+
+                                        <material:ButtonView
+                                            Grid.Row="3"
+                                            HeightRequest="40"
+                                            IsEnabled="{Binding AllowEndVisit}"
+                                            Opacity="1"
+                                            Style="{StaticResource QuickActionsButtonStyle}"
+                                            TappedCommand="{Binding EndVisitCommand}">
+
+                                            <Grid
+                                                ColumnDefinitions="Auto,*"
+                                                ColumnSpacing="5"
+                                                HorizontalOptions="Center">
+                                                <Label
+                                                    Grid.Column="0"
+                                                    FontFamily="MaterialCommunityIcons"
+                                                    FontSize="18"
+                                                    Style="{StaticResource ButtonActionsIconStyle}"
+                                                    Text="{x:Static local:MaterialCommunityIconsFont.MinusCircle}"
+                                                    VerticalOptions="Center" />
+                                                <Label
+                                                    Grid.Column="1"
+                                                    Style="{StaticResource ButtonBoldLabelActionsStyle}"
+                                                    Text="End Visit" />
+                                            </Grid>
+                                        </material:ButtonView>
+                                    </Grid>
+                                </VerticalStackLayout>
+                            </material:TabItem.Content>
+                        </material:TabItem>
+                    </material:TabView>
+                </Border>
+
+                <Border
+                    Grid.Row="3"
+                    Padding="8"
+                    IsVisible="{Binding IsNotBusy}"
+                    Stroke="SlateGray"
+                    StrokeShape="{RoundRectangle CornerRadius=10}"
+                    VerticalOptions="Fill">
+                    <material:TabView x:Name="TabView2" SelectedTabChangedCommand="{Binding TabChangeCommand}">
+                        <material:TabItem Title="{Binding BindingContext.BookingTabText, Source={x:Reference this}}">
+                            <material:TabItem.HeaderTemplate>
+                                <DataTemplate>
+                                    <material:ButtonView TappedCommand="{Binding Command}">
+                                        <Label
+                                            FontFamily="13"
+                                            HorizontalOptions="Center"
+                                            Text="Bookings"
+                                            TextColor="{StaticResource TextColor}" />
+                                        <material:ButtonView.Triggers>
+                                            <DataTrigger
+                                                Binding="{Binding IsSelected}"
+                                                TargetType="material:ButtonView"
+                                                Value="True">
+                                                <Setter Property="Style" Value="{StaticResource TabSelectedButtonStyle}" />
+                                            </DataTrigger>
+                                            <DataTrigger
+                                                Binding="{Binding IsSelected}"
+                                                TargetType="material:ButtonView"
+                                                Value="False">
+                                                <Setter Property="Style" Value="{StaticResource TabUnselectedButtonStyle}" />
+                                            </DataTrigger>
+                                        </material:ButtonView.Triggers>
+                                    </material:ButtonView>
+                                </DataTemplate>
+                            </material:TabItem.HeaderTemplate>
+                            <material:TabItem.Content>
+                                <StackLayout
+                                    Margin="0,10,0,0"
+                                    MinimumHeightRequest="150"
+                                    Orientation="Vertical"
+                                    Spacing="10">
+                                    <HorizontalStackLayout HorizontalOptions="Center" Spacing="10">
+                                        <material:DatePickerField
+                                            Title="Choose Date"
+                                            AutomationId="DatePicker"
+                                            Date="{Binding BookingsDate, Mode=TwoWay}"
+                                            Format="dd/MM/yyyy"
+                                            HorizontalOptions="Center"
+                                            MaximumDate="{Binding BookingMaxDate}"
+                                            MinimumDate="{Binding BookingsMinDate}"
+                                            Style="{StaticResource DatePickerFieldStyle}"
+                                            VerticalOptions="Center" />
+                                    </HorizontalStackLayout>
+                                    <local:NoDataControl IsVisible="{Binding IsBookingNotAvailable}" />
+                                    <CollectionView
+                                        ItemsSource="{Binding Bookings}"
+                                        VerticalOptions="Center"
+                                        VerticalScrollBarVisibility="Always">
+                                        <CollectionView.IsVisible>
+                                            <MultiBinding Converter="{StaticResource AllValueTrueConverter}">
+                                                <Binding Path="IsNotBusy" />
+                                                <Binding Converter="{StaticResource IsNotNullConverter}" Path="BookingsDate" />
+                                            </MultiBinding>
+                                        </CollectionView.IsVisible>
+                                        <CollectionView.ItemsLayout>
+                                            <LinearItemsLayout ItemSpacing="5" Orientation="Vertical" />
+                                        </CollectionView.ItemsLayout>
+                                        <CollectionView.ItemTemplate>
+                                            <DataTemplate x:DataType="{x:Type local:BookingCardDto}">
+                                                <VerticalStackLayout>
+                                                    <local:BookingCardControl
+                                                        Booking="{Binding Booking}"
+                                                        PrimaryCareWorker="{Binding PrimaryCareWorker}"
+                                                        SecondaryCareWorker="{Binding SecondaryCareWorker}"
+                                                        ServiceUser="{Binding ServiceUser}"
+                                                        Visits="{Binding Visits}" />
+                                                </VerticalStackLayout>
+                                            </DataTemplate>
+                                        </CollectionView.ItemTemplate>
+                                        <!--  TODO: Review and fix the EmptyView implementation for CollectionView  -->
+                                        <!--<CollectionView.EmptyView>
+                                            <local:NoDataControl />
+                                        </CollectionView.EmptyView>-->
+                                    </CollectionView>
+                                </StackLayout>
+                            </material:TabItem.Content>
+                        </material:TabItem>
+
+                        <material:TabItem Title="{Binding BindingContext.IncidentTabText, Source={x:Reference this}}">
+                            <material:TabItem.HeaderTemplate>
+                                <DataTemplate>
+                                    <material:ButtonView TappedCommand="{Binding Command}">
+                                        <Label
+                                            FontFamily="13"
+                                            HorizontalOptions="Center"
+                                            Text="Incidents"
+                                            TextColor="{StaticResource TextColor}" />
+                                        <material:ButtonView.Triggers>
+                                            <DataTrigger
+                                                Binding="{Binding IsSelected}"
+                                                TargetType="material:ButtonView"
+                                                Value="True">
+                                                <Setter Property="Style" Value="{StaticResource TabSelectedButtonStyle}" />
+                                            </DataTrigger>
+                                            <DataTrigger
+                                                Binding="{Binding IsSelected}"
+                                                TargetType="material:ButtonView"
+                                                Value="False">
+                                                <Setter Property="Style" Value="{StaticResource TabUnselectedButtonStyle}" />
+                                            </DataTrigger>
+                                        </material:ButtonView.Triggers>
+                                    </material:ButtonView>
+                                </DataTemplate>
+                            </material:TabItem.HeaderTemplate>
+                            <material:TabItem.Content>
+                                <VerticalStackLayout
+                                    Margin="0,10,0,0"
+                                    MinimumHeightRequest="150"
+                                    Spacing="10">
+                                    <local:NoDataControl IsVisible="{Binding IsIncidentNotAvailable}" />
+                                    <CollectionView
+                                        IsVisible="{Binding Incidents, Converter={StaticResource IsNotNullConverter}}"
+                                        ItemsSource="{Binding Incidents, Mode=TwoWay}"
+                                        VerticalOptions="Fill"
+                                        VerticalScrollBarVisibility="Always">
+                                        <CollectionView.ItemsLayout>
+                                            <LinearItemsLayout ItemSpacing="5" Orientation="Vertical" />
+                                        </CollectionView.ItemsLayout>
+                                        <CollectionView.ItemTemplate>
+                                            <DataTemplate x:DataType="{x:Type service:IncidentResponseDto}">
+                                                <VerticalStackLayout>
+                                                    <VerticalStackLayout.GestureRecognizers>
+                                                        <TapGestureRecognizer Command="{Binding BindingContext.ViewIncidentReportCommand, Source={x:Reference this}}" CommandParameter="{Binding .}" />
+                                                    </VerticalStackLayout.GestureRecognizers>
+
+                                                    <local:CardViewControl HasCardTitle="False">
+                                                        <Grid
+                                                            ColumnDefinitions="Auto,*"
+                                                            ColumnSpacing="10"
+                                                            RowDefinitions="Auto,Auto,Auto"
+                                                            RowSpacing="5">
+                                                            <Grid
+                                                                Grid.Row="0"
+                                                                Grid.ColumnSpan="2"
+                                                                ColumnDefinitions="Auto, *">
+                                                                <Label
+                                                                    Grid.Row="0"
+                                                                    Grid.Column="0"
+                                                                    HorizontalOptions="Start"
+                                                                    HorizontalTextAlignment="Start"
+                                                                    Style="{StaticResource LabelWrapped3LinesStyle}"
+                                                                    VerticalTextAlignment="Center"
+                                                                    WidthRequest="{Binding ., Converter={StaticResource AdjustedDeviceWidthConverterFullWidth}}">
+                                                                    <Label.FormattedText>
+                                                                        <FormattedString>
+                                                                            <Span
+                                                                                FontAttributes="Bold"
+                                                                                Text="Incident Time:"
+                                                                                TextColor="{StaticResource TextColor}" />
+                                                                            <Span Text=" " TextColor="{StaticResource TextColor}" />
+                                                                            <Span Text="{Binding IncidentTime}" TextColor="{StaticResource TextColor}" />
+                                                                        </FormattedString>
+                                                                    </Label.FormattedText>
+                                                                </Label>
+
+                                                                <Label
+                                                                    Grid.Column="1"
+                                                                    FontFamily="MaterialCommunityIcons"
+                                                                    FontSize="18"
+                                                                    HorizontalOptions="End"
+                                                                    Opacity="0.6"
+                                                                    Text="{x:Static local:MaterialCommunityIconsFont.ArrowRightThick}"
+                                                                    TextColor="{StaticResource PrimaryTitleMainColor}"
+                                                                    VerticalOptions="Center"
+                                                                    VerticalTextAlignment="Center" />
+                                                            </Grid>
+
+                                                            <local:PlaceholderImageControl
+                                                                Grid.Row="1"
+                                                                Grid.Column="0"
+                                                                InputTransparent="True"
+                                                                SizeOption="Large"
+                                                                Source="{Binding ServiceUserImageUrl, Converter={StaticResource DefaultImageSourceConverter}}" />
+
+                                                            <VerticalStackLayout
+                                                                Grid.Row="1"
+                                                                Grid.Column="1"
+                                                                HorizontalOptions="Fill"
+                                                                Spacing="3"
+                                                                VerticalOptions="Center">
+                                                                <Label
+                                                                    HorizontalOptions="Fill"
+                                                                    HorizontalTextAlignment="Start"
+                                                                    Style="{StaticResource LabelWrapped3LinesStyle}"
+                                                                    Text="{Binding ServiceUserName}"
+                                                                    TextColor="{StaticResource TextColor}"
+                                                                    VerticalTextAlignment="Center" />
+
+                                                                <Label
+                                                                    HorizontalOptions="Fill"
+                                                                    HorizontalTextAlignment="Start"
+                                                                    Style="{StaticResource LabelWrapped3LinesStyle}"
+                                                                    Text="(SERVICE USER)"
+                                                                    TextColor="{StaticResource TextColor}"
+                                                                    VerticalTextAlignment="Center" />
+                                                            </VerticalStackLayout>
+
+                                                            <VerticalStackLayout
+                                                                Grid.Row="2"
+                                                                Grid.ColumnSpan="2"
+                                                                HorizontalOptions="Fill"
+                                                                VerticalOptions="Center">
+                                                                <Label
+                                                                    FontSize="14"
+                                                                    HorizontalOptions="Start"
+                                                                    HorizontalTextAlignment="Start"
+                                                                    Style="{StaticResource Heading1Style}"
+                                                                    Text="Submitted By:" />
+
+                                                                <Label
+                                                                    HorizontalOptions="Fill"
+                                                                    HorizontalTextAlignment="Start"
+                                                                    Style="{StaticResource LabelWrapped3LinesStyle}"
+                                                                    VerticalTextAlignment="Center">
+                                                                    <Label.FormattedText>
+                                                                        <FormattedString>
+                                                                            <Span Text="{Binding SubmittedByName}" TextColor="{StaticResource TextColor}" />
+                                                                            <Span Text=" (" TextColor="{StaticResource TextColor}" />
+                                                                            <Span
+                                                                                Text="{Binding SubmittedByType}"
+                                                                                TextColor="{StaticResource TextColor}"
+                                                                                TextTransform="Uppercase" />
+                                                                            <Span Text=")" TextColor="{StaticResource TextColor}" />
+                                                                        </FormattedString>
+                                                                    </Label.FormattedText>
+                                                                </Label>
+                                                            </VerticalStackLayout>
+                                                        </Grid>
+                                                    </local:CardViewControl>
+                                                </VerticalStackLayout>
+                                            </DataTemplate>
+                                        </CollectionView.ItemTemplate>
+                                        <!--  TODO: Review and fix the EmptyView implementation for CollectionView  -->
+                                        <!--<CollectionView.EmptyView>
+                                            <local:NoDataControl />
+                                        </CollectionView.EmptyView>-->
+                                    </CollectionView>
+                                </VerticalStackLayout>
+                            </material:TabItem.Content>
+                        </material:TabItem>
+                    </material:TabView>
+                </Border>
+            </VerticalStackLayout>
+        </ScrollView>
+
+        <local:CustomActivityIndicator IsBusy="{Binding IsBusy}" />
+    </Grid>
+</local:BaseContentPage>

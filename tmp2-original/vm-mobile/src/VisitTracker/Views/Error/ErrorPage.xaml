@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="utf-8" ?>
+
+<local:BaseContentPage
+    x:Class="VisitTracker.ErrorPage"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:local="clr-namespace:VisitTracker"
+    xmlns:material="http://schemas.enisn-projects.io/dotnet/maui/uraniumui/material"
+    xmlns:mct="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
+    xmlns:skia="clr-namespace:SkiaSharp.Extended.UI.Controls;assembly=SkiaSharp.Extended.UI"
+    x:DataType="local:ErrorVm"
+    x:TypeArguments="local:ErrorVm"
+    AutomationId="PermissionErrorPage"
+    BackgroundColor="{StaticResource MainBackgroudColor}"
+    NavigationPage.HasNavigationBar="False"
+    Shell.NavBarIsVisible="False"
+    Shell.TabBarIsVisible="False">
+    <ContentPage.Behaviors>
+        <mct:EventToCommandBehavior Command="{Binding InitCommand}" EventName="Appearing" />
+    </ContentPage.Behaviors>
+
+    <Grid Margin="10" RowDefinitions="40,*,Auto">
+        <Label
+            Style="{StaticResource PageTitleStyle}"
+            Text="{Binding Errors, Converter={StaticResource PluralizeConverter}, ConverterParameter='Missing Permission'}"
+            TextColor="{StaticResource DangerColor}">
+            <Label.IsVisible>
+                <MultiBinding Converter="{StaticResource AllValueTrueConverter}">
+                    <Binding Converter="{StaticResource IsListNotNullOrEmptyConverter}" Path="Errors" />
+                    <Binding Path="IsNotBusy" />
+                </MultiBinding>
+            </Label.IsVisible>
+        </Label>
+
+        <VerticalStackLayout
+            Grid.Row="1"
+            Padding="10"
+            BindableLayout.ItemsSource="{Binding Errors}"
+            Spacing="10">
+            <VerticalStackLayout.IsVisible>
+                <MultiBinding Converter="{StaticResource AllValueTrueConverter}">
+                    <Binding Converter="{StaticResource IsListNotNullOrEmptyConverter}" Path="Errors" />
+                    <Binding Path="IsNotBusy" />
+                </MultiBinding>
+            </VerticalStackLayout.IsVisible>
+            <BindableLayout.ItemTemplate>
+                <DataTemplate x:DataType="{x:Type local:ErrorDto}">
+                    <material:ButtonView
+                        CommandParameter="{Binding Type}"
+                        Style="{StaticResource PermissionBtnStyles}"
+                        TappedCommand="{Binding ExecuteCommand}">
+                        <Grid
+                            Margin="5"
+                            AutomationId="PermissionError"
+                            ColumnDefinitions="*,Auto"
+                            ColumnSpacing="5"
+                            VerticalOptions="Center">
+                            <Label
+                                Grid.Column="0"
+                                FontSize="18"
+                                LineBreakMode="WordWrap"
+                                MinimumHeightRequest="50"
+                                Text="{Binding Error}"
+                                TextColor="{StaticResource TextColor}"
+                                VerticalTextAlignment="Center" />
+                            <Label
+                                Grid.Column="1"
+                                FontFamily="MaterialCommunityIcons"
+                                FontSize="26"
+                                Text="{Binding TypeAsString, Converter={StaticResource TypeConverter}}"
+                                TextColor="{StaticResource DefaultColor}"
+                                VerticalOptions="Center"
+                                VerticalTextAlignment="Center" />
+                        </Grid>
+                    </material:ButtonView>
+                </DataTemplate>
+            </BindableLayout.ItemTemplate>
+        </VerticalStackLayout>
+
+        <VerticalStackLayout
+            Grid.Row="2"
+            Padding="10"
+            IsVisible="{Binding IsNotBusy}"
+            Spacing="10">
+            <Button
+                AutomationId="AppSettings"
+                Command="{Binding OpenSettingsCommand}"
+                Style="{StaticResource DefaultButtonStyle}"
+                Text="APP SETTINGS" />
+            <Button
+                AutomationId="DoneSettings"
+                Command="{Binding RetryCommand}"
+                Style="{StaticResource PrimaryButtonStyle}"
+                Text="DONE" />
+        </VerticalStackLayout>
+
+        <local:CustomActivityIndicator
+            Grid.RowSpan="3"
+            BusyText="Checking for permissions..."
+            BusyTextColor="{StaticResource PrimaryColor}"
+            IsBusy="{Binding IsBusy}" />
+    </Grid>
+</local:BaseContentPage>

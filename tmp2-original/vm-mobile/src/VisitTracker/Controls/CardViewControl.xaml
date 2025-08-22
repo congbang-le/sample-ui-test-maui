@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<local:BaseContentView
+    x:Class="VisitTracker.CardViewControl"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:local="clr-namespace:VisitTracker"
+    x:Name="CardView">
+    <ContentView.ControlTemplate>
+        <ControlTemplate>
+            <VerticalStackLayout>
+                <Label
+                    Margin="0,5,0,5"
+                    IsVisible="{Binding Source={x:Reference CardView}, Path=HasCardTitle}"
+                    Style="{StaticResource Heading1Style}"
+                    Text="{Binding Source={x:Reference CardView}, Path=CardTitle}" />
+                <Border
+                    Padding="8"
+                    BackgroundColor="{StaticResource PanelColor}"
+                    Stroke="{StaticResource PanelBorderColor}"
+                    StrokeShape="{RoundRectangle CornerRadius=5}">
+                    <ContentPresenter />
+                </Border>
+            </VerticalStackLayout>
+        </ControlTemplate>
+    </ContentView.ControlTemplate>
+</local:BaseContentView>

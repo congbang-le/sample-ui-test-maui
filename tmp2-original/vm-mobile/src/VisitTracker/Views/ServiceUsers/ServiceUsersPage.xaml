@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<local:BaseContentPage
+    x:Class="VisitTracker.ServiceUsersPage"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:domain="clr-namespace:VisitTracker.Domain;assembly=VisitTracker.Domain"
+    xmlns:local="clr-namespace:VisitTracker"
+    xmlns:m="clr-namespace:UraniumUI.Icons.MaterialIcons;assembly=UraniumUI.Icons.MaterialIcons"
+    xmlns:material="http://schemas.enisn-projects.io/dotnet/maui/uraniumui/material"
+    xmlns:mct="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
+    xmlns:skia="clr-namespace:SkiaSharp.Extended.UI.Controls;assembly=SkiaSharp.Extended.UI"
+    x:Name="this"
+    Title="Service Users"
+    x:DataType="local:ServiceUsersVm"
+    x:TypeArguments="local:ServiceUsersVm"
+    BackgroundColor="{StaticResource MainBackgroudColor}"
+    IconImageSource="users"
+    Shell.BackgroundColor="{StaticResource MainBackgroudColor}"
+    Shell.NavBarHasShadow="False"
+    Shell.NavBarIsVisible="False"
+    Shell.TitleColor="{StaticResource PrimaryColor}">
+    <ContentPage.Behaviors>
+        <mct:EventToCommandBehavior Command="{Binding InitCommand}" EventName="Appearing" />
+    </ContentPage.Behaviors>
+
+    <Grid Margin="10" RowDefinitions="Auto,Auto,Auto,*">
+        <Label Style="{StaticResource PageTitleStyle}" Text="Service Users" />
+
+        <material:TextField
+            Title="Search Service Users"
+            Grid.Row="1"
+            Margin="0,0,0,10"
+            AllowClear="True"
+            ClearButtonVisibility="WhileEditing"
+            Icon="{FontImageSource FontFamily=MaterialRegular,
+                                   Glyph={x:Static m:MaterialRegular.Search}}"
+            Style="{StaticResource PickerFieldStyle}"
+            Text="{Binding SearchText, Mode=TwoWay}" />
+
+        <VerticalStackLayout
+            Grid.Row="2"
+            Margin="10"
+            IsVisible="{Binding FpServiceUserCard, Converter={StaticResource IsNotNullConverter}}">
+
+            <Label
+                FontSize="16"
+                HorizontalTextAlignment="Center"
+                Style="{StaticResource Heading2Style}"
+                Text="Fingerprint (In progress)" />
+
+            <material:ButtonView
+                Padding="5"
+                BackgroundColor="{StaticResource PanelColor}"
+                CommandParameter="{Binding FpServiceUserCard.UserId}"
+                Stroke="{StaticResource PrimaryColor}"
+                StrokeShape="{RoundRectangle CornerRadius=10}"
+                TappedCommand="{Binding OpenServiceUserCommand}">
+                <VerticalStackLayout Spacing="5">
+                    <local:UserCardControl
+                        HasCardTitle="False"
+                        IsAccessInstructionsVisible="False"
+                        IsCallVisible="True"
+                        IsDirectionVisible="True"
+                        User="{Binding FpServiceUserCard}" />
+
+                    <ProgressBar Margin="5,0">
+                        <ProgressBar.Behaviors>
+                            <mct:ProgressBarAnimationBehavior Length="1500" Progress="{Binding FpProgress}" />
+                        </ProgressBar.Behaviors>
+                    </ProgressBar>
+
+                    <Label
+                        Margin="0,-10,0,10"
+                        FontSize="14"
+                        HorizontalTextAlignment="Center"
+                        Style="{StaticResource MutedTextStyles}"
+                        Text="Fingerprint in progress..." />
+                </VerticalStackLayout>
+            </material:ButtonView>
+        </VerticalStackLayout>
+
+        <VerticalStackLayout
+            Grid.Row="2"
+            Margin="10"
+            IsVisible="{Binding FormsServiceUserCard, Converter={StaticResource IsNotNullConverter}}">
+            <Label
+                FontSize="16"
+                HorizontalTextAlignment="Center"
+                Style="{StaticResource CardTitleLabel}"
+                Text="Forms Submission (In progress)" />
+
+            <material:ButtonView
+                Padding="5"
+                BackgroundColor="{StaticResource InfoLightColor}"
+                CommandParameter="{Binding FormsServiceUserCard.UserId}"
+                Stroke="{StaticResource InfoColor}"
+                StrokeShape="{RoundRectangle CornerRadius=10}"
+                TappedCommand="{Binding OpenServiceUserCommand}">
+                <local:UserCardControl User="{Binding FormsServiceUserCard}" />
+            </material:ButtonView>
+        </VerticalStackLayout>
+
+        <RefreshView
+            Grid.Row="3"
+            Command="{Binding RefreshCommand}"
+            IsRefreshing="{Binding IsRefreshing}"
+            IsVisible="{Binding IsNotBusy}">
+            <CollectionView ItemsSource="{Binding ServiceUserCards}" VerticalScrollBarVisibility="Always">
+                <CollectionView.ItemsLayout>
+                    <LinearItemsLayout ItemSpacing="10" Orientation="Vertical" />
+                </CollectionView.ItemsLayout>
+                <CollectionView.ItemTemplate>
+                    <DataTemplate x:DataType="{x:Type local:UserCardDto}">
+                        <material:ButtonView
+                            Padding="5"
+                            BackgroundColor="{StaticResource PanelColor}"
+                            CommandParameter="{Binding UserId}"
+                            Stroke="{StaticResource PanelBorderColor}"
+                            StrokeShape="{RoundRectangle CornerRadius=10}"
+                            Style="{StaticResource ListCommonVisualStateGroup}"
+                            TappedCommand="{Binding BindingContext.OpenServiceUserCommand, Source={x:Reference this}}">
+                            <local:UserCardControl
+                                HasCardTitle="False"
+                                IsCallVisible="True"
+                                IsDirectionVisible="True"
+                                User="{Binding .}" />
+                        </material:ButtonView>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+                <CollectionView.EmptyView>
+                    <local:NoDataControl IsVisible="{Binding IsVisibleNoDataControl}" />
+                </CollectionView.EmptyView>
+            </CollectionView>
+        </RefreshView>
+
+        <local:CustomActivityIndicator Grid.Row="4" IsBusy="{Binding IsBusy}" />
+    </Grid>
+</local:BaseContentPage>

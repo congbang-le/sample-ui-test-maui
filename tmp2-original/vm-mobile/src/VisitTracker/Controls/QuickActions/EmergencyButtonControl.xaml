@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<local:BaseContentView
+    x:Class="VisitTracker.EmergencyButtonControl"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:local="clr-namespace:VisitTracker"
+    xmlns:material="http://schemas.enisn-projects.io/dotnet/maui/uraniumui/material"
+    x:Name="EmergencyButton">
+    <ContentView.ControlTemplate>
+        <ControlTemplate>
+            <material:ButtonView
+                AutomationId="EmergencyButton"
+                Style="{StaticResource QuickActionsButtonStyle}"
+                TappedCommand="{Binding Source={x:Reference EmergencyButton}, Path=OpenEmergencyButtonCommand}">
+                <HorizontalStackLayout Spacing="2">
+                    <Label Style="{StaticResource QuickActionsIconStyle}" Text="{x:Static local:MaterialCommunityIconsFont.AlertOctagon}" />
+
+                    <Label Style="{StaticResource QuickActionsTextStyle}" Text="Emergency" />
+                </HorizontalStackLayout>
+            </material:ButtonView>
+        </ControlTemplate>
+    </ContentView.ControlTemplate>
+</local:BaseContentView>

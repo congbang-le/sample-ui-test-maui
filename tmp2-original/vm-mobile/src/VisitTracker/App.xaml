@@ -1,0 +1,1445 @@
+﻿<?xml version="1.0" encoding="UTF-8" ?>
+<Application
+    x:Class="VisitTracker.App"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:android="clr-namespace:Microsoft.Maui.Controls.PlatformConfiguration.AndroidSpecific;assembly=Microsoft.Maui.Controls"
+    xmlns:input="clr-namespace:InputKit.Shared.Controls;assembly=InputKit.Maui"
+    xmlns:local="clr-namespace:VisitTracker"
+    xmlns:material="http://schemas.enisn-projects.io/dotnet/maui/uraniumui/material"
+    xmlns:mct="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
+    android:Application.WindowSoftInputModeAdjust="Resize">
+    <Application.Resources>
+        <ResourceDictionary>
+
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary x:Name="appColors" Source="Resources/Styles/Colors.xaml" />
+                <ResourceDictionary x:Name="appStyles" Source="Resources/Styles/Styles.xaml" />
+                <ResourceDictionary Source="Resources/Themes/LightTheme.xaml" />
+                <material:StyleResource BasedOn="{x:Reference appStyles}" ColorsOverride="{x:Reference appColors}" />
+            </ResourceDictionary.MergedDictionaries>
+
+            <mct:MultiConverter x:Key="MultiConverter" />
+            <mct:IsNullConverter x:Key="IsNullConverter" />
+            <mct:IsNotNullConverter x:Key="IsNotNullConverter" />
+            <mct:InvertedBoolConverter x:Key="NotConverter" />
+            <mct:IsStringNotNullOrEmptyConverter x:Key="IsStringNotNullOrEmptyConverter" />
+            <mct:IsStringNullOrEmptyConverter x:Key="IsStringNullOrEmptyConverter" />
+            <mct:IsListNotNullOrEmptyConverter x:Key="IsListNotNullOrEmptyConverter" />
+            <mct:IsListNullOrEmptyConverter x:Key="IsListNullOrEmptyConverter" />
+            <mct:VariableMultiValueConverter x:Key="AllValueTrueConverter" ConditionType="All" />
+            <mct:VariableMultiValueConverter
+                x:Key="AnyValueTrueConverter"
+                ConditionType="Exact"
+                Count="2" />
+
+            <local:DefaultImageSourceConverter x:Key="DefaultImageSourceConverter" />
+            <local:EnumDescriptionConverter x:Key="EnumDescriptionConverter" />
+            <local:AdjustedDeviceWidthConverter x:Key="AdjustedDeviceWidthConverter" />
+            <local:AdjustedDeviceWidthConverterFullWidth x:Key="AdjustedDeviceWidthConverterFullWidth" />
+            <local:ColorWithTransparencyConverter x:Key="ColorWithTransparencyConverter" />
+            <local:TypeConverter x:Key="TypeConverter" />
+            <local:ReverseCollectionConverter x:Key="ReverseCollectionConverter" />
+            <local:PluralizeConverter x:Key="PluralizeConverter" />
+            <local:NullabeBooleanConverter x:Key="NullabeBooleanConverter" />
+            <local:ShowAlertIconConverter x:Key="ShowAlertIconConverter" />
+            <local:FpAlertColorConverter x:Key="FpAlertColorConverter" />
+            <local:IsFalseConverter x:Key="IsFalseConverter" />
+            <local:NullToEmptySymbolConverter x:Key="NullToEmptySymbolConverter" />
+            <local:SimplifyTitleConverter x:Key="SimplifyTitleConverter" />
+            <local:ToolbarIconConvertor x:Key="ToolbarIconConvertor" />
+            <local:BrushToColorConverter x:Key="BrushToColorConverter" />
+            <local:TitleCaseConverter x:Key="TitleCaseConverter" />
+            <local:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter" />
+
+            <Color x:Key="FrameBackgroundColor">#FFFFFF</Color>
+            <Color x:Key="FrameBorderColor">SlateGray</Color>
+            <Color x:Key="BorderColor">Transparent</Color>
+
+            <Color x:Key="BasePageBackgroundColor">#ffffff</Color>
+            <Color x:Key="PrimaryTitleColor">#0064F7</Color>
+            <Color x:Key="SecondaryColor">White</Color>
+            <Style TargetType="TabBar">
+                <Setter Property="Shell.TabBarBackgroundColor" Value="{StaticResource BasePageBackgroundColor}" />
+                <Setter Property="Shell.TabBarTitleColor" Value="{StaticResource PrimaryTitleColor}" />
+                <Setter Property="Shell.TabBarUnselectedColor" Value="#868686" />
+            </Style>
+
+            <!--  Font Size  -->
+            <x:Double x:Key="BaseFontSize">14</x:Double>
+            <x:Double x:Key="PrimaryFontSize">18</x:Double>
+            <x:Double x:Key="QuickButtonFontSize">24</x:Double>
+            <x:Double x:Key="PageLabelTitleFontSize">24</x:Double>
+            <x:Double x:Key="PageSubmitFontSize">16</x:Double>
+
+            <Style TargetType="Border">
+                <Setter Property="BackgroundColor" Value="{StaticResource FrameBackgroundColor}" />
+            </Style>
+
+            <Style TargetType="Span">
+                <Setter Property="TextColor" Value="{StaticResource PrimaryColor}" />
+                <Setter Property="FontFamily" Value="OpenSansRegular" />
+            </Style>
+            <Style TargetType="Label">
+                <Setter Property="FontAutoScalingEnabled" Value="True" />
+                <Setter Property="TextColor" Value="{StaticResource PrimaryColor}" />
+                <Setter Property="FontFamily" Value="OpenSansRegular" />
+                <Setter Property="FontSize" Value="{StaticResource PrimaryFontSize}" />
+            </Style>
+            <Style TargetType="RadioButton">
+                <Setter Property="TextColor" Value="{StaticResource PrimaryColor}" />
+                <Setter Property="FontFamily" Value="OpenSansRegular" />
+            </Style>
+            <Style TargetType="Entry">
+                <Setter Property="TextColor" Value="{StaticResource PrimaryColor}" />
+                <Setter Property="FontFamily" Value="OpenSansRegular" />
+                <Setter Property="FontAttributes" Value="Bold" />
+                <Setter Property="FontSize" Value="{StaticResource PrimaryFontSize}" />
+            </Style>
+            <Style TargetType="Editor">
+                <Setter Property="TextColor" Value="{StaticResource PrimaryColor}" />
+                <Setter Property="FontFamily" Value="OpenSansRegular" />
+                <Setter Property="FontAttributes" Value="Bold" />
+                <Setter Property="FontSize" Value="{StaticResource PrimaryFontSize}" />
+            </Style>
+            <Style TargetType="DatePicker">
+                <Setter Property="FontSize" Value="{StaticResource PrimaryFontSize}" />
+                <Setter Property="TextColor" Value="{StaticResource PrimaryColor}" />
+                <Setter Property="FontFamily" Value="OpenSansRegular" />
+                <Setter Property="FontAttributes" Value="Bold" />
+            </Style>
+            <Style TargetType="TimePicker">
+                <Setter Property="FontSize" Value="{StaticResource PrimaryFontSize}" />
+                <Setter Property="TextColor" Value="{StaticResource PrimaryColor}" />
+                <Setter Property="FontFamily" Value="OpenSansRegular" />
+                <Setter Property="FontAttributes" Value="Bold" />
+            </Style>
+            <Style TargetType="Picker">
+                <Setter Property="TextColor" Value="{StaticResource PrimaryColor}" />
+                <Setter Property="BackgroundColor" Value="Transparent" />
+                <Setter Property="HorizontalOptions" Value="Fill" />
+                <Setter Property="HorizontalTextAlignment" Value="Center" />
+                <Setter Property="FontSize" Value="{StaticResource PrimaryFontSize}" />
+                <Setter Property="FontFamily" Value="OpenSansRegular" />
+                <Setter Property="FontAttributes" Value="Bold" />
+                <Setter Property="Title" Value="Pick an option" />
+            </Style>
+            <Style TargetType="SearchBar">
+                <Setter Property="TextColor" Value="{StaticResource PrimaryColor}" />
+                <Setter Property="BackgroundColor" Value="Transparent" />
+                <Setter Property="HorizontalOptions" Value="Fill" />
+                <Setter Property="HorizontalTextAlignment" Value="Center" />
+                <Setter Property="FontSize" Value="{StaticResource PrimaryFontSize}" />
+                <Setter Property="FontFamily" Value="OpenSansRegular" />
+                <Setter Property="FontAttributes" Value="Bold" />
+            </Style>
+            <Style TargetType="Button">
+                <Setter Property="FontSize" Value="18" />
+                <Setter Property="TextColor" Value="{StaticResource SecondaryColor}" />
+                <Setter Property="FontFamily" Value="OpenSansRegular" />
+                <Setter Property="Padding" Value="14,10" />
+            </Style>
+
+            <Style x:Key="QuickActionsStyle" TargetType="Label">
+                <Setter Property="HorizontalTextAlignment" Value="Start" />
+                <Setter Property="VerticalTextAlignment" Value="Center" />
+                <Setter Property="TextColor" Value="{StaticResource TextColor}" />
+            </Style>
+            <Style
+                x:Key="QuickActionsIconStyle"
+                BasedOn="{StaticResource QuickActionsStyle}"
+                TargetType="Label">
+                <Setter Property="FontSize" Value="Medium" />
+                <Setter Property="FontFamily" Value="MaterialCommunityIcons" />
+                <Setter Property="Opacity" Value="0.8" />
+            </Style>
+            <Style
+                x:Key="QuickActionsTextStyle"
+                BasedOn="{StaticResource QuickActionsStyle}"
+                TargetType="Label">
+                <Setter Property="FontSize" Value="13" />
+            </Style>
+            <Style x:Key="TabUnselectedButtonStyle" TargetType="material:ButtonView">
+                <Setter Property="BackgroundColor" Value="#EEE" />
+                <Setter Property="StrokeThickness" Value="0.5" />
+                <Setter Property="StrokeShape">
+                    <Setter.Value>
+                        <RoundRectangle CornerRadius="0" />
+                    </Setter.Value>
+                </Setter>
+                <Setter Property="VisualStateManager.VisualStateGroups">
+                    <VisualStateGroupList>
+                        <VisualStateGroup>
+                            <VisualState x:Name="Normal">
+                                <VisualState.Setters>
+                                    <Setter Property="Opacity" Value="1" />
+                                </VisualState.Setters>
+                            </VisualState>
+                            <VisualState x:Name="Pressed">
+                                <VisualState.Setters>
+                                    <Setter Property="Opacity" Value="0.8" />
+                                    <Setter Property="Scale" Value="1.02" />
+                                </VisualState.Setters>
+                            </VisualState>
+                            <VisualState x:Name="Disabled">
+                                <VisualState.Setters>
+                                    <Setter Property="Opacity" Value="0.5" />
+                                </VisualState.Setters>
+                            </VisualState>
+                        </VisualStateGroup>
+                    </VisualStateGroupList>
+                </Setter>
+            </Style>
+            <Style x:Key="TabSelectedButtonStyle" TargetType="material:ButtonView">
+                <Setter Property="BackgroundColor" Value="{StaticResource InfoLightColor}" />
+                <Setter Property="Stroke" Value="{StaticResource MedicationBorderColor}" />
+                <Setter Property="StrokeThickness" Value="0.5" />
+                <Setter Property="StrokeShape">
+                    <Setter.Value>
+                        <RoundRectangle CornerRadius="0" />
+                    </Setter.Value>
+                </Setter>
+                <Setter Property="VisualStateManager.VisualStateGroups">
+                    <VisualStateGroupList>
+                        <VisualStateGroup>
+                            <VisualState x:Name="Normal">
+                                <VisualState.Setters>
+                                    <Setter Property="Opacity" Value="1" />
+                                </VisualState.Setters>
+                            </VisualState>
+                            <VisualState x:Name="Pressed">
+                                <VisualState.Setters>
+                                    <Setter Property="Opacity" Value="0.8" />
+                                    <Setter Property="Scale" Value="0.975" />
+                                </VisualState.Setters>
+                            </VisualState>
+                            <VisualState x:Name="Disabled">
+                                <VisualState.Setters>
+                                    <Setter Property="Opacity" Value="0.5" />
+                                </VisualState.Setters>
+                            </VisualState>
+                        </VisualStateGroup>
+                    </VisualStateGroupList>
+                </Setter>
+            </Style>
+            <Style x:Key="QuickActionsButtonStyle" TargetType="material:ButtonView">
+                <Setter Property="HeightRequest" Value="34" />
+                <Setter Property="Padding" Value="8,0" />
+                <Setter Property="BackgroundColor" Value="{StaticResource PanelColor}" />
+                <Setter Property="Stroke" Value="{StaticResource MainBorderColor}" />
+                <Setter Property="StrokeThickness" Value="0.5" />
+                <Setter Property="StrokeShape">
+                    <Setter.Value>
+                        <RoundRectangle CornerRadius="3" />
+                    </Setter.Value>
+                </Setter>
+                <Setter Property="VisualStateManager.VisualStateGroups">
+                    <VisualStateGroupList>
+                        <VisualStateGroup>
+                            <VisualState x:Name="Normal">
+                                <VisualState.Setters>
+                                    <Setter Property="Opacity" Value="1" />
+                                </VisualState.Setters>
+                            </VisualState>
+                            <VisualState x:Name="Pressed">
+                                <VisualState.Setters>
+                                    <Setter Property="Opacity" Value="0.9" />
+                                    <Setter Property="Scale" Value="0.975" />
+                                </VisualState.Setters>
+                            </VisualState>
+                            <VisualState x:Name="Disabled">
+                                <VisualState.Setters>
+                                    <Setter Property="Opacity" Value="0.5" />
+                                </VisualState.Setters>
+                            </VisualState>
+                        </VisualStateGroup>
+                    </VisualStateGroupList>
+                </Setter>
+            </Style>
+            <Style x:Key="ActionsButtonStyle" TargetType="material:ButtonView">
+                <Setter Property="Padding" Value="8,0" />
+                <Setter Property="BackgroundColor" Value="{StaticResource PanelColor}" />
+                <Setter Property="Stroke" Value="{StaticResource PanelBorderColor}" />
+                <Setter Property="StrokeThickness" Value="1" />
+                <Setter Property="StrokeShape">
+                    <Setter.Value>
+                        <RoundRectangle CornerRadius="5" />
+                    </Setter.Value>
+                </Setter>
+                <Setter Property="VisualStateManager.VisualStateGroups">
+                    <VisualStateGroupList>
+                        <VisualStateGroup>
+                            <VisualState x:Name="Normal">
+                                <VisualState.Setters>
+                                    <Setter Property="Opacity" Value="1" />
+                                </VisualState.Setters>
+                            </VisualState>
+                            <VisualState x:Name="Pressed">
+                                <VisualState.Setters>
+                                    <Setter Property="Opacity" Value="0.8" />
+                                    <Setter Property="Scale" Value="0.975" />
+                                </VisualState.Setters>
+                            </VisualState>
+                            <VisualState x:Name="Disabled">
+                                <VisualState.Setters>
+                                    <Setter Property="Opacity" Value="0.5" />
+                                </VisualState.Setters>
+                            </VisualState>
+                        </VisualStateGroup>
+                    </VisualStateGroupList>
+                </Setter>
+            </Style>
+            <Style x:Key="InfoButtonStyle" TargetType="material:ButtonView">
+                <Setter Property="HeightRequest" Value="34" />
+                <Setter Property="Padding" Value="8,4" />
+                <Setter Property="BackgroundColor" Value="{StaticResource InfoLightColor}" />
+                <Setter Property="VisualStateManager.VisualStateGroups">
+                    <VisualStateGroupList>
+                        <VisualStateGroup>
+                            <VisualState x:Name="Normal">
+                                <VisualState.Setters>
+                                    <Setter Property="Opacity" Value="1" />
+                                </VisualState.Setters>
+                            </VisualState>
+                            <VisualState x:Name="Pressed">
+                                <VisualState.Setters>
+                                    <Setter Property="Opacity" Value="0.8" />
+                                    <Setter Property="Scale" Value="0.975" />
+                                </VisualState.Setters>
+                            </VisualState>
+                            <VisualState x:Name="Disabled">
+                                <VisualState.Setters>
+                                    <Setter Property="Opacity" Value="0.5" />
+                                </VisualState.Setters>
+                            </VisualState>
+                        </VisualStateGroup>
+                    </VisualStateGroupList>
+                </Setter>
+            </Style>
+            <Style x:Key="InfoButtonIconStyle" TargetType="Label">
+                <Setter Property="FontSize" Value="16" />
+                <Setter Property="HorizontalOptions" Value="Center" />
+                <Setter Property="VerticalOptions" Value="Center" />
+                <Setter Property="TextColor" Value="{StaticResource TextColor}" />
+                <Setter Property="FontFamily" Value="MaterialCommunityIcons" />
+            </Style>
+            <Style x:Key="InfoButtonTextStyle" TargetType="Label">
+                <Setter Property="FontSize" Value="14" />
+                <Setter Property="HorizontalOptions" Value="Center" />
+                <Setter Property="VerticalOptions" Value="Center" />
+                <Setter Property="TextColor" Value="{StaticResource TextColor}" />
+            </Style>
+            <Style
+                x:Key="ButtonActionsIconStyle"
+                BasedOn="{StaticResource QuickActionsStyle}"
+                TargetType="Label">
+                <Setter Property="FontSize" Value="26" />
+                <Setter Property="FontAttributes" Value="Bold" />
+                <Setter Property="FontFamily" Value="MaterialCommunityIcons" />
+                <Setter Property="HorizontalTextAlignment" Value="Center" />
+                <Setter Property="VerticalTextAlignment" Value="Center" />
+            </Style>
+            <Style
+                x:Key="ButtonActionsTextStyle"
+                BasedOn="{StaticResource QuickActionsStyle}"
+                TargetType="Label">
+                <Setter Property="FontSize" Value="16" />
+                <Setter Property="LineBreakMode" Value="WordWrap" />
+            </Style>
+
+            <Style
+                x:Key="ButtonBoldLabelActionsStyle"
+                BasedOn="{StaticResource QuickActionsStyle}"
+                TargetType="Label">
+                <Setter Property="FontSize" Value="16" />
+                <Setter Property="FontAttributes" Value="Bold" />
+                <Setter Property="LineBreakMode" Value="WordWrap" />
+            </Style>
+
+            <Style x:Key="CardTitleLabel" TargetType="Label">
+                <Setter Property="FontAttributes" Value="Bold" />
+                <Setter Property="FontSize" Value="20" />
+                <Setter Property="Margin" Value="0,5,0,0" />
+                <Setter Property="TextColor" Value="{StaticResource PrimaryTitleColor}" />
+            </Style>
+
+            <Style x:Key="PostSubmitButtonStyle" TargetType="Button">
+                <Setter Property="CornerRadius" Value="25" />
+                <Setter Property="FontSize" Value="{StaticResource PageSubmitFontSize}" />
+                <Setter Property="HorizontalOptions" Value="Fill" />
+                <Setter Property="TextTransform" Value="Uppercase" />
+                <Setter Property="HeightRequest" Value="50" />
+                <Setter Property="FontSize" Value="16" />
+                <Setter Property="BackgroundColor" Value="{StaticResource PrimaryColor}" />
+                <Setter Property="VisualStateManager.VisualStateGroups">
+                    <VisualStateGroupList>
+                        <VisualStateGroup>
+                            <VisualState x:Name="Normal" />
+                            <VisualState x:Name="Pressed">
+                                <VisualState.Setters>
+                                    <Setter Property="Opacity" Value="0.8" />
+                                    <Setter Property="Scale" Value="0.975" />
+                                </VisualState.Setters>
+                            </VisualState>
+                        </VisualStateGroup>
+                    </VisualStateGroupList>
+                </Setter>
+            </Style>
+
+            <Style x:Key="PageTitleLabelStyle" TargetType="Label">
+                <Setter Property="FontAttributes" Value="Bold" />
+                <Setter Property="FontSize" Value="Title" />
+                <Setter Property="HorizontalOptions" Value="Center" />
+                <Setter Property="HorizontalTextAlignment" Value="Center" />
+                <Setter Property="VerticalOptions" Value="Center" />
+                <Setter Property="VerticalTextAlignment" Value="Center" />
+                <Setter Property="TextColor" Value="{StaticResource PrimaryTitleColor}" />
+            </Style>
+            <Style x:Key="PageTitleSpanStyle" TargetType="Span">
+                <Setter Property="FontAttributes" Value="Bold" />
+                <Setter Property="FontSize" Value="Title" />
+                <Setter Property="TextColor" Value="{StaticResource PrimaryTitleColor}" />
+            </Style>
+            <Style x:Key="CardsMarginStyle" TargetType="VerticalStackLayout">
+                <Setter Property="Margin" Value="10,0" />
+                <Setter Property="Spacing" Value="10" />
+                <Setter Property="VerticalOptions" Value="Fill" />
+            </Style>
+            <Style x:Key="DashboardContentStyle" TargetType="Label">
+                <Setter Property="LineBreakMode" Value="WordWrap" />
+                <Setter Property="VerticalOptions" Value="Fill" />
+                <Setter Property="VerticalTextAlignment" Value="Center" />
+                <Setter Property="HorizontalOptions" Value="Center" />
+                <Setter Property="HorizontalTextAlignment" Value="Center" />
+                <Setter Property="FontSize" Value="16" />
+                <Setter Property="TextColor" Value="{StaticResource TextColor}" />
+            </Style>
+            <Style x:Key="SchedulerHeaderStyle" TargetType="Label">
+                <Setter Property="LineBreakMode" Value="WordWrap" />
+                <Setter Property="VerticalOptions" Value="Fill" />
+                <Setter Property="VerticalTextAlignment" Value="Center" />
+                <Setter Property="HorizontalOptions" Value="Center" />
+                <Setter Property="HorizontalTextAlignment" Value="Center" />
+                <Setter Property="FontAttributes" Value="Bold" />
+                <Setter Property="FontSize" Value="14" />
+                <Setter Property="TextColor" Value="{StaticResource DarkTextColor}" />
+            </Style>
+            <!--  VALIDATIONS  -->
+            <Style x:Key="ValidationEntryBaseStyle" TargetType="Label">
+                <Setter Property="FontSize" Value="12" />
+                <Setter Property="HeightRequest" Value="18" />
+                <Setter Property="HorizontalTextAlignment" Value="Start" />
+                <Setter Property="HorizontalOptions" Value="Start" />
+            </Style>
+            <Style
+                x:Key="ValidationEntryErrorStyle"
+                BasedOn="{StaticResource ValidationEntryBaseStyle}"
+                TargetType="Label">
+                <Setter Property="TextColor" Value="{StaticResource PrimaryTitleColor}" />
+            </Style>
+            <!--  NEW  -->
+            <Style x:Key="MutedTextStyles" TargetType="Label">
+                <Setter Property="FontSize" Value="13" />
+                <Setter Property="TextColor" Value="{StaticResource TextMuted}" />
+            </Style>
+            <Style x:Key="MutedTextStylesInvert" TargetType="Label">
+                <Setter Property="FontSize" Value="14" />
+                <Setter Property="TextColor" Value="{StaticResource WhiteOnDarkBackgroundColor}" />
+            </Style>
+            <Style x:Key="PrimaryButtonStyle" TargetType="Button">
+                <Setter Property="CornerRadius" Value="25" />
+                <Setter Property="FontSize" Value="16" />
+                <Setter Property="HorizontalOptions" Value="Fill" />
+                <Setter Property="TextTransform" Value="None" />
+                <Setter Property="FontAttributes" Value="Bold" />
+                <Setter Property="FontFamily" Value="OpenSansRegular" />
+                <Setter Property="HeightRequest" Value="50" />
+                <Setter Property="BackgroundColor" Value="{StaticResource PrimaryColor}" />
+                <Setter Property="VisualStateManager.VisualStateGroups">
+                    <VisualStateGroupList>
+                        <VisualStateGroup>
+                            <VisualState x:Name="Normal" />
+                            <VisualState x:Name="Pressed">
+                                <VisualState.Setters>
+                                    <Setter Property="BackgroundColor" Value="{StaticResource PrimaryDarkColor}" />
+                                    <Setter Property="Opacity" Value="0.8" />
+                                    <Setter Property="Scale" Value="1.02" />
+                                </VisualState.Setters>
+                            </VisualState>
+                        </VisualStateGroup>
+                    </VisualStateGroupList>
+                </Setter>
+            </Style>
+            <Style x:Key="DefaultButtonInvertStyle" TargetType="Button">
+                <Setter Property="CornerRadius" Value="2" />
+                <Setter Property="FontSize" Value="16" />
+                <Setter Property="HorizontalOptions" Value="Fill" />
+                <Setter Property="TextTransform" Value="None" />
+                <Setter Property="FontAttributes" Value="Bold" />
+                <Setter Property="FontFamily" Value="OpenSansRegular" />
+                <Setter Property="HeightRequest" Value="40" />
+                <Setter Property="BorderColor" Value="#4697FF" />
+                <Setter Property="BackgroundColor" Value="Transparent" />
+                <Setter Property="VisualStateManager.VisualStateGroups">
+                    <VisualStateGroupList>
+                        <VisualStateGroup>
+                            <VisualState x:Name="Normal" />
+                            <VisualState x:Name="Pressed">
+                                <VisualState.Setters>
+                                    <Setter Property="BackgroundColor" Value="{StaticResource PrimaryDarkColor}" />
+                                    <Setter Property="Opacity" Value="0.8" />
+                                    <Setter Property="Scale" Value="0.975" />
+                                </VisualState.Setters>
+                            </VisualState>
+                        </VisualStateGroup>
+                    </VisualStateGroupList>
+                </Setter>
+            </Style>
+            <Style x:Key="DefaultButtonStyle" TargetType="Button">
+                <Setter Property="CornerRadius" Value="25" />
+                <Setter Property="FontAttributes" Value="Bold" />
+                <Setter Property="FontSize" Value="16" />
+                <Setter Property="FontFamily" Value="OpenSansRegular" />
+                <Setter Property="FontSize" Value="{StaticResource PageSubmitFontSize}" />
+                <Setter Property="HorizontalOptions" Value="Fill" />
+                <Setter Property="TextTransform" Value="None" />
+                <Setter Property="BackgroundColor" Value="#fff" />
+                <Setter Property="HeightRequest" Value="50" />
+                <Setter Property="TextColor" Value="{StaticResource DefaultColor}" />
+                <Setter Property="BorderColor" Value="{StaticResource DefaultColor}" />
+                <Setter Property="BorderWidth" Value="1" />
+            </Style>
+            <Style x:Key="DefaultButtonSmallStyle" TargetType="Button">
+                <Setter Property="CornerRadius" Value="15" />
+                <Setter Property="HeightRequest" Value="30" />
+                <Setter Property="WidthRequest" Value="100" />
+                <Setter Property="FontAttributes" Value="Bold" />
+                <Setter Property="Padding" Value="5" />
+                <Setter Property="FontSize" Value="13" />
+                <Setter Property="FontFamily" Value="OpenSansRegular" />
+                <Setter Property="TextTransform" Value="None" />
+                <Setter Property="BackgroundColor" Value="#fff" />
+                <Setter Property="TextColor" Value="{StaticResource DefaultColor}" />
+                <Setter Property="BorderColor" Value="{StaticResource DefaultColor}" />
+                <Setter Property="BorderWidth" Value="1" />
+                <Setter Property="VisualStateManager.VisualStateGroups">
+                    <VisualStateGroupList>
+                        <VisualStateGroup>
+                            <VisualState x:Name="Normal">
+                                <VisualState.Setters>
+                                    <Setter Property="Opacity" Value="1" />
+                                    <Setter Property="Scale" Value="1" />
+                                    <Setter Property="BackgroundColor" Value="{StaticResource PanelColor}" />
+                                </VisualState.Setters>
+                            </VisualState>
+                            <VisualState x:Name="Pressed">
+                                <VisualState.Setters>
+                                    <Setter Property="Opacity" Value="1" />
+                                    <Setter Property="Scale" Value="0.975" />
+                                </VisualState.Setters>
+                            </VisualState>
+                            <VisualState x:Name="Disabled">
+                                <VisualState.Setters>
+                                    <Setter Property="Opacity" Value="0.9" />
+                                </VisualState.Setters>
+                            </VisualState>
+                        </VisualStateGroup>
+                    </VisualStateGroupList>
+                </Setter>
+            </Style>
+            <Style x:Key="ButtonSmallStyle" TargetType="Button">
+                <Setter Property="Padding" Value="5" />
+                <Setter Property="CornerRadius" Value="15" />
+                <Setter Property="VisualStateManager.VisualStateGroups">
+                    <VisualStateGroupList>
+                        <VisualStateGroup>
+                            <VisualState x:Name="Normal">
+                                <VisualState.Setters>
+                                    <Setter Property="Opacity" Value="1" />
+                                    <Setter Property="Scale" Value="1" />
+                                    <Setter Property="BackgroundColor" Value="{StaticResource PanelColor}" />
+                                </VisualState.Setters>
+                            </VisualState>
+                            <VisualState x:Name="Pressed">
+                                <VisualState.Setters>
+                                    <Setter Property="Opacity" Value="0.8" />
+                                    <Setter Property="Scale" Value="0.975" />
+                                </VisualState.Setters>
+                            </VisualState>
+                            <VisualState x:Name="Disabled">
+                                <VisualState.Setters>
+                                    <Setter Property="Opacity" Value="0.9" />
+                                </VisualState.Setters>
+                            </VisualState>
+                        </VisualStateGroup>
+                    </VisualStateGroupList>
+                </Setter>
+            </Style>
+            <Style x:Key="PageTitleStyle" TargetType="Label">
+                <Setter Property="FontFamily" Value="AppBoldFontFamily" />
+                <Setter Property="FontAttributes" Value="Bold" />
+                <Setter Property="FontSize" Value="23" />
+                <Setter Property="HorizontalOptions" Value="Center" />
+                <Setter Property="HorizontalTextAlignment" Value="Center" />
+                <Setter Property="VerticalOptions" Value="Center" />
+                <Setter Property="VerticalTextAlignment" Value="Center" />
+                <Setter Property="LineBreakMode" Value="WordWrap" />
+                <Setter Property="HeightRequest">
+                    <Setter.Value>
+                        <OnPlatform x:TypeArguments="x:Double">
+                            <On Platform="Android" Value="56" />
+                            <On Platform="iOS" Value="44" />
+                        </OnPlatform>
+                    </Setter.Value>
+                </Setter>
+            </Style>
+            <Style x:Key="StatuStyle" TargetType="Label">
+                <Setter Property="FontFamily" Value="AppBoldFontFamily" />
+                <Setter Property="FontAttributes" Value="Bold" />
+                <Setter Property="FontSize" Value="18" />
+                <Setter Property="HorizontalOptions" Value="End" />
+                <Setter Property="HorizontalTextAlignment" Value="End" />
+                <Setter Property="VerticalOptions" Value="Center" />
+                <Setter Property="VerticalTextAlignment" Value="Center" />
+            </Style>
+            <Style x:Key="Heading1Style" TargetType="Label">
+                <Setter Property="FontAttributes" Value="Bold" />
+                <Setter Property="FontSize" Value="16" />
+                <Setter Property="Margin" Value="0,5" />
+                <Setter Property="TextColor" Value="{StaticResource DarkTextColor}" />
+            </Style>
+            <Style x:Key="Heading2Style" TargetType="Label">
+                <Setter Property="FontAttributes" Value="Bold" />
+                <Setter Property="FontSize" Value="15" />
+                <Setter Property="Margin" Value="0,3" />
+                <Setter Property="TextColor" Value="{StaticResource TextColor}" />
+                <Setter Property="LineBreakMode" Value="WordWrap" />
+            </Style>
+            <Style x:Key="Heading1Wrapped3LinesStyle" TargetType="Label">
+                <Setter Property="FontAttributes" Value="Bold" />
+                <Setter Property="FontSize" Value="16" />
+                <Setter Property="Margin" Value="0,5" />
+                <Setter Property="MaxLines" Value="3" />
+                <Setter Property="LineBreakMode" Value="TailTruncation" />
+                <Setter Property="TextColor" Value="{StaticResource DarkTextColor}" />
+            </Style>
+            <Style x:Key="Heading1Wrapped4LinesStyle" TargetType="Label">
+                <Setter Property="FontAttributes" Value="Bold" />
+                <Setter Property="FontSize" Value="16" />
+                <Setter Property="Margin" Value="0,5" />
+                <Setter Property="MaxLines" Value="4" />
+                <Setter Property="LineBreakMode" Value="TailTruncation" />
+                <Setter Property="TextColor" Value="{StaticResource DarkTextColor}" />
+            </Style>
+            <Style x:Key="Heading2Wrapped3LinesStyle" TargetType="Label">
+                <Setter Property="FontAttributes" Value="Bold" />
+                <Setter Property="FontSize" Value="15" />
+                <Setter Property="Margin" Value="0,3" />
+                <Setter Property="TextColor" Value="{StaticResource TextColor}" />
+                <Setter Property="MaxLines" Value="3" />
+                <Setter Property="LineBreakMode" Value="TailTruncation" />
+            </Style>
+            <Style x:Key="LabelWrapped3LinesStyle" TargetType="Label">
+                <Setter Property="FontSize" Value="14" />
+                <Setter Property="VerticalOptions" Value="Center" />
+                <Setter Property="TextColor" Value="{StaticResource DarkTextColor}" />
+                <Setter Property="MaxLines" Value="3" />
+                <Setter Property="LineBreakMode" Value="TailTruncation" />
+            </Style>
+            <Style x:Key="LabelWrapped3LinesDefaultColorStyle" TargetType="Label">
+                <Setter Property="FontSize" Value="14" />
+                <Setter Property="VerticalOptions" Value="Center" />
+                <Setter Property="TextColor" Value="{StaticResource TextColor}" />
+                <Setter Property="MaxLines" Value="3" />
+                <Setter Property="LineBreakMode" Value="TailTruncation" />
+            </Style>
+            <Style x:Key="LabelWrappedStyle" TargetType="Label">
+                <Setter Property="FontSize" Value="14" />
+                <Setter Property="TextColor" Value="{StaticResource DarkTextColor}" />
+                <Setter Property="LineBreakMode" Value="WordWrap" />
+            </Style>
+            <Style x:Key="LabelTailTruncation1LineStyle" TargetType="Label">
+                <Setter Property="FontSize" Value="14" />
+                <Setter Property="TextColor" Value="{StaticResource DarkTextColor}" />
+                <Setter Property="LineBreakMode" Value="TailTruncation" />
+                <Setter Property="MaxLines" Value="1" />
+            </Style>
+            <Style x:Key="LabelWrapped4LinesStyle" TargetType="Label">
+                <Setter Property="FontSize" Value="14" />
+                <Setter Property="VerticalOptions" Value="Center" />
+                <Setter Property="TextColor" Value="{StaticResource TextColor}" />
+                <Setter Property="MaxLines" Value="4" />
+                <Setter Property="LineBreakMode" Value="TailTruncation" />
+            </Style>
+            <Style x:Key="LabelWrapped1LinesStyle" TargetType="Label">
+                <Setter Property="FontSize" Value="14" />
+                <Setter Property="VerticalOptions" Value="Center" />
+                <Setter Property="TextColor" Value="{StaticResource TextColor}" />
+                <Setter Property="MaxLines" Value="1" />
+                <Setter Property="LineBreakMode" Value="TailTruncation" />
+            </Style>
+            <Style x:Key="DashboardCalendarHeaderStyle" TargetType="Label">
+                <Setter Property="LineBreakMode" Value="WordWrap" />
+                <Setter Property="VerticalOptions" Value="Fill" />
+                <Setter Property="VerticalTextAlignment" Value="Center" />
+                <Setter Property="HorizontalOptions" Value="Center" />
+                <Setter Property="HorizontalTextAlignment" Value="Center" />
+                <Setter Property="FontSize" Value="14" />
+                <Setter Property="FontAttributes" Value="Bold" />
+                <Setter Property="TextColor" Value="{StaticResource TextColor}" />
+            </Style>
+            <Style x:Key="SelectedTabButtonStyle" TargetType="Button">
+                <Setter Property="CornerRadius" Value="0" />
+                <Setter Property="TextColor" Value="{StaticResource TextColor}" />
+                <Setter Property="FontSize" Value="16" />
+                <Setter Property="FontAttributes" Value="Bold" />
+                <Setter Property="BorderColor" Value="{StaticResource MedicationBorderColor}" />
+                <Setter Property="BackgroundColor" Value="{StaticResource InfoLightColor}" />
+            </Style>
+            <Style x:Key="UnselectedTabButtonStyle" TargetType="Button">
+                <Setter Property="CornerRadius" Value="0" />
+                <Setter Property="TextColor" Value="{StaticResource TextMuted}" />
+                <Setter Property="FontSize" Value="14" />
+                <Setter Property="BackgroundColor" Value="#EEE" />
+            </Style>
+            <Style x:Key="DatePickerFieldStyle" TargetType="material:DatePickerField">
+                <Setter Property="AccentColor" Value="{StaticResource Primary}" />
+                <Setter Property="BorderColor" Value="{StaticResource MainBorderColor}" />
+                <Setter Property="TitleColor" Value="{StaticResource TextColor}" />
+                <Setter Property="FontSize" Value="16" />
+                <Setter Property="CornerRadius" Value="5" />
+                <Setter Property="TitleFontSize" Value="18" />
+                <Setter Property="InputBackgroundColor" Value="{StaticResource FrameBackgroundColor}" />
+                <Setter Property="VisualStateManager.VisualStateGroups">
+                    <VisualStateGroupList>
+                        <VisualStateGroup>
+                            <VisualState x:Name="Normal">
+                                <VisualState.Setters>
+                                    <Setter Property="BorderColor" Value="{StaticResource DefaultColor}" />
+                                    <Setter Property="TitleColor" Value="{StaticResource TextColor}" />
+                                    <Setter Property="InputBackgroundColor" Value="{StaticResource FrameBackgroundColor}" />
+                                </VisualState.Setters>
+                            </VisualState>
+
+                            <VisualState x:Name="Focused">
+                                <VisualState.Setters>
+                                    <Setter Property="BorderColor" Value="{StaticResource PrimaryColor}" />
+                                    <Setter Property="TitleColor" Value="{StaticResource PrimaryColor}" />
+                                    <Setter Property="InputBackgroundColor" Value="{StaticResource InfoLighterColor}" />
+                                </VisualState.Setters>
+                            </VisualState>
+
+                            <VisualState x:Name="Disabled">
+                                <VisualState.Setters>
+                                    <Setter Property="BorderColor" Value="{StaticResource DefaultColor}" />
+                                    <Setter Property="TitleColor" Value="{StaticResource TextColor}" />
+                                    <Setter Property="InputBackgroundColor" Value="{StaticResource DisabledColor}" />
+                                </VisualState.Setters>
+                            </VisualState>
+                        </VisualStateGroup>
+                    </VisualStateGroupList>
+                </Setter>
+            </Style>
+            <Style x:Key="PickerFieldStyle" TargetType="material:MultiplePickerField">
+                <Setter Property="TitleFontSize" Value="16" />
+                <Setter Property="TitleColor" Value="{StaticResource TextColor}" />
+                <Setter Property="AccentColor" Value="{StaticResource Primary}" />
+                <Setter Property="CornerRadius" Value="5" />
+                <Setter Property="BorderColor" Value="{StaticResource MainBorderColor}" />
+                <Setter Property="VisualStateManager.VisualStateGroups">
+                    <VisualStateGroupList>
+                        <VisualStateGroup>
+                            <VisualState x:Name="Normal">
+                                <VisualState.Setters>
+                                    <Setter Property="BorderColor" Value="{StaticResource DefaultColor}" />
+                                    <Setter Property="TitleColor" Value="{StaticResource TextColor}" />
+                                    <Setter Property="InputBackgroundColor" Value="{StaticResource FrameBackgroundColor}" />
+                                </VisualState.Setters>
+                            </VisualState>
+
+                            <VisualState x:Name="Focused">
+                                <VisualState.Setters>
+                                    <Setter Property="BorderColor" Value="{StaticResource PrimaryColor}" />
+                                    <Setter Property="TitleColor" Value="{StaticResource PrimaryColor}" />
+                                    <Setter Property="InputBackgroundColor" Value="{StaticResource InfoLighterColor}" />
+                                </VisualState.Setters>
+                            </VisualState>
+
+                            <VisualState x:Name="Disabled">
+                                <VisualState.Setters>
+                                    <Setter Property="BorderColor" Value="{StaticResource DefaultColor}" />
+                                    <Setter Property="TitleColor" Value="{StaticResource TextColor}" />
+                                    <Setter Property="InputBackgroundColor" Value="{StaticResource DisabledColor}" />
+                                </VisualState.Setters>
+                            </VisualState>
+                        </VisualStateGroup>
+                    </VisualStateGroupList>
+                </Setter>
+            </Style>
+            <FontImageSource
+                x:Key="SelectedFingerprintIcon"
+                FontFamily="MaterialCommunityIcons"
+                Glyph="{x:Static local:MaterialCommunityIconsFont.Fingerprint}"
+                Size="28"
+                Color="{StaticResource PrimaryColor}" />
+            <FontImageSource
+                x:Key="SelectedAttachmenttIcon"
+                FontFamily="MaterialCommunityIcons"
+                Glyph="{x:Static local:MaterialCommunityIconsFont.Attachment}"
+                Size="26"
+                Color="{StaticResource PrimaryColor}" />
+            <FontImageSource
+                x:Key="SelectedIncidentIcon"
+                FontFamily="MaterialCommunityIcons"
+                Glyph="{x:Static local:MaterialCommunityIconsFont.Clipboard}"
+                Size="24"
+                Color="{StaticResource PrimaryColor}" />
+            <FontImageSource
+                x:Key="UnselectedIncidentIcon"
+                FontFamily="MaterialCommunityIcons"
+                Glyph="{x:Static local:MaterialCommunityIconsFont.Clipboard}"
+                Size="18"
+                Color="{StaticResource TextMuted}" />
+            <FontImageSource
+                x:Key="SelectedBodyMapIcon"
+                FontFamily="MaterialCommunityIcons"
+                Glyph="{x:Static local:MaterialCommunityIconsFont.Human}"
+                Size="26"
+                Color="{StaticResource PrimaryColor}" />
+            <FontImageSource
+                x:Key="SelectedRosterIcon"
+                FontFamily="MaterialCommunityIcons"
+                Glyph="{x:Static local:MaterialCommunityIconsFont.Calendar}"
+                Size="24"
+                Color="{StaticResource PrimaryColor}" />
+            <FontImageSource
+                x:Key="UnselectedRosterIcon"
+                FontFamily="MaterialCommunityIcons"
+                Glyph="{x:Static local:MaterialCommunityIconsFont.Calendar}"
+                Size="18"
+                Color="{StaticResource TextMuted}" />
+            <FontImageSource
+                x:Key="UnselectedAttachmenttIcon"
+                FontFamily="MaterialCommunityIcons"
+                Glyph="{x:Static local:MaterialCommunityIconsFont.Attachment}"
+                Size="20"
+                Color="{StaticResource TextMuted}" />
+            <FontImageSource
+                x:Key="UnselectedBodyMapIcon"
+                FontFamily="MaterialCommunityIcons"
+                Glyph="{x:Static local:MaterialCommunityIconsFont.Human}"
+                Size="20"
+                Color="{StaticResource TextMuted}" />
+            <FontImageSource
+                x:Key="UnselectedFingerprintIcon"
+                FontFamily="MaterialCommunityIcons"
+                Glyph="{x:Static local:MaterialCommunityIconsFont.Fingerprint}"
+                Size="28"
+                Color="{StaticResource TextColor}" />
+            <FontImageSource
+                x:Key="SelectedTargetIcon"
+                FontFamily="MaterialCommunityIcons"
+                Glyph="{x:Static local:MaterialCommunityIconsFont.Target}"
+                Size="26"
+                Color="{StaticResource PrimaryColor}" />
+            <FontImageSource
+                x:Key="UnselectedTargetIcon"
+                FontFamily="MaterialCommunityIcons"
+                Glyph="{x:Static local:MaterialCommunityIconsFont.Target}"
+                Size="26"
+                Color="{StaticResource TextColor}" />
+            <Style x:Key="BtnDefault" TargetType="material:ButtonView">
+                <Setter Property="BackgroundColor" Value="#F6F7F9" />
+                <Setter Property="Stroke" Value="#595959" />
+            </Style>
+            <Style x:Key="BackIcon" TargetType="Label">
+                <Setter Property="FontFamily" Value="MaterialCommunityIcons" />
+                <Setter Property="FontSize" Value="28" />
+                <Setter Property="HorizontalOptions" Value="Start" />
+                <Setter Property="HorizontalTextAlignment" Value="Start" />
+                <Setter Property="TextColor" Value="{StaticResource PrimaryTitleColor}" />
+                <Setter Property="VerticalTextAlignment" Value="Center" />
+                <Setter Property="Text" Value="{x:Static local:MaterialCommunityIconsFont.ArrowLeft}" />
+            </Style>
+            <Style x:Key="MaterialEditorField" TargetType="material:EditorField">
+                <Setter Property="AccentColor" Value="{StaticResource PrimaryColor}" />
+                <Setter Property="BorderColor" Value="{StaticResource DefaultColor}" />
+                <Setter Property="InputBackgroundColor" Value="{StaticResource FrameBackgroundColor}" />
+                <Setter Property="TitleColor" Value="{StaticResource TextColor}" />
+                <Setter Property="CornerRadius" Value="5" />
+                <Setter Property="TitleFontSize" Value="16" />
+                <Setter Property="VisualStateManager.VisualStateGroups">
+                    <VisualStateGroupList>
+                        <VisualStateGroup>
+                            <VisualState x:Name="Normal">
+                                <VisualState.Setters>
+                                    <Setter Property="BorderColor" Value="{StaticResource DefaultColor}" />
+                                    <Setter Property="TitleColor" Value="{StaticResource TextColor}" />
+                                    <Setter Property="InputBackgroundColor" Value="{StaticResource FrameBackgroundColor}" />
+                                </VisualState.Setters>
+                            </VisualState>
+
+                            <VisualState x:Name="Focused">
+                                <VisualState.Setters>
+                                    <Setter Property="BorderColor" Value="{StaticResource PrimaryColor}" />
+                                    <Setter Property="TitleColor" Value="{StaticResource PrimaryColor}" />
+                                    <Setter Property="InputBackgroundColor" Value="{StaticResource InfoLighterColor}" />
+                                </VisualState.Setters>
+                            </VisualState>
+
+                            <VisualState x:Name="Disabled">
+                                <VisualState.Setters>
+                                    <Setter Property="BorderColor" Value="{StaticResource DisabledBorderColor}" />
+                                    <Setter Property="TextColor" Value="{StaticResource DisabledTextColor}" />
+                                    <Setter Property="TitleColor" Value="{StaticResource TextColor}" />
+                                    <Setter Property="InputBackgroundColor" Value="{StaticResource DisabledColor}" />
+                                </VisualState.Setters>
+                            </VisualState>
+                        </VisualStateGroup>
+                    </VisualStateGroupList>
+                </Setter>
+            </Style>
+            <Style x:Key="MaterialInputField" TargetType="material:InputField">
+                <Setter Property="AccentColor" Value="{StaticResource PrimaryColor}" />
+                <Setter Property="BorderColor" Value="{StaticResource DefaultColor}" />
+                <Setter Property="InputBackgroundColor" Value="{StaticResource FrameBackgroundColor}" />
+                <Setter Property="TitleColor" Value="{StaticResource TextColor}" />
+                <Setter Property="CornerRadius" Value="5" />
+                <Setter Property="TitleFontSize" Value="16" />
+                <Setter Property="VisualStateManager.VisualStateGroups">
+                    <VisualStateGroupList>
+                        <VisualStateGroup>
+                            <VisualState x:Name="Normal">
+                                <VisualState.Setters>
+                                    <Setter Property="BorderColor" Value="{StaticResource DefaultColor}" />
+                                    <Setter Property="TitleColor" Value="{StaticResource TextColor}" />
+                                    <Setter Property="InputBackgroundColor" Value="{StaticResource FrameBackgroundColor}" />
+                                </VisualState.Setters>
+                            </VisualState>
+
+                            <VisualState x:Name="Focused">
+                                <VisualState.Setters>
+                                    <Setter Property="BorderColor" Value="{StaticResource PrimaryColor}" />
+                                    <Setter Property="TitleColor" Value="{StaticResource PrimaryColor}" />
+                                    <Setter Property="InputBackgroundColor" Value="{StaticResource InfoLighterColor}" />
+                                </VisualState.Setters>
+                            </VisualState>
+
+                            <VisualState x:Name="Disabled">
+                                <VisualState.Setters>
+                                    <Setter Property="BorderColor" Value="{StaticResource DisabledBorderColor}" />
+                                    <Setter Property="TitleColor" Value="{StaticResource TextColor}" />
+                                    <Setter Property="InputBackgroundColor" Value="{StaticResource DisabledColor}" />
+                                </VisualState.Setters>
+                            </VisualState>
+                        </VisualStateGroup>
+                    </VisualStateGroupList>
+                </Setter>
+            </Style>
+            <Style x:Key="MaterialTextField" TargetType="material:TextField">
+                <Setter Property="AccentColor" Value="{StaticResource PrimaryColor}" />
+                <Setter Property="BorderColor" Value="{StaticResource DefaultColor}" />
+                <Setter Property="InputBackgroundColor" Value="{StaticResource FrameBackgroundColor}" />
+                <Setter Property="TitleColor" Value="{StaticResource TextColor}" />
+                <Setter Property="CornerRadius" Value="5" />
+                <Setter Property="FontSize" Value="16" />
+                <Setter Property="TitleFontSize" Value="16" />
+                <Setter Property="VisualStateManager.VisualStateGroups">
+                    <VisualStateGroupList>
+                        <VisualStateGroup>
+                            <VisualState x:Name="Normal">
+                                <VisualState.Setters>
+                                    <Setter Property="BorderColor" Value="{StaticResource DefaultColor}" />
+                                    <Setter Property="TitleColor" Value="{StaticResource TextColor}" />
+                                    <Setter Property="InputBackgroundColor" Value="{StaticResource FrameBackgroundColor}" />
+                                </VisualState.Setters>
+                            </VisualState>
+
+                            <VisualState x:Name="Focused">
+                                <VisualState.Setters>
+                                    <Setter Property="BorderColor" Value="{StaticResource PrimaryColor}" />
+                                    <Setter Property="TitleColor" Value="{StaticResource PrimaryColor}" />
+                                    <Setter Property="InputBackgroundColor" Value="{StaticResource InfoLighterColor}" />
+                                </VisualState.Setters>
+                            </VisualState>
+
+                            <VisualState x:Name="Disabled">
+                                <VisualState.Setters>
+                                    <Setter Property="BorderColor" Value="{StaticResource DisabledBorderColor}" />
+                                    <Setter Property="TextColor" Value="{StaticResource DisabledTextColor}" />
+                                    <Setter Property="TitleColor" Value="{StaticResource TextColor}" />
+                                    <Setter Property="InputBackgroundColor" Value="{StaticResource DisabledColor}" />
+                                </VisualState.Setters>
+                            </VisualState>
+                            <VisualState x:Name="ReadOnly">
+                                <VisualState.Setters>
+                                    <Setter Property="BorderColor" Value="{StaticResource DisabledBorderColor}" />
+                                    <Setter Property="TextColor" Value="{StaticResource DisabledTextColor}" />
+                                    <Setter Property="TitleColor" Value="{StaticResource TextColor}" />
+                                    <Setter Property="InputBackgroundColor" Value="{StaticResource DisabledColor}" />
+                                </VisualState.Setters>
+                            </VisualState>
+                        </VisualStateGroup>
+                    </VisualStateGroupList>
+                </Setter>
+            </Style>
+            <Style x:Key="MaterialTextFieldLogin" TargetType="material:TextField">
+                <Setter Property="AccentColor" Value="{StaticResource PrimaryColor}" />
+                <Setter Property="BorderColor" Value="{StaticResource DefaultColor}" />
+                <Setter Property="InputBackgroundColor" Value="{StaticResource WhiteOnDarkBackgroundColor}" />
+                <Setter Property="TitleColor" Value="{StaticResource TextColor}" />
+                <Setter Property="CornerRadius" Value="5" />
+                <Setter Property="FontSize" Value="16" />
+                <Setter Property="TitleFontSize" Value="18" />
+                <Setter Property="VisualStateManager.VisualStateGroups">
+                    <VisualStateGroupList>
+                        <VisualStateGroup>
+                            <VisualState x:Name="Normal">
+                                <VisualState.Setters>
+                                    <Setter Property="BorderColor" Value="{StaticResource DefaultColor}" />
+                                    <Setter Property="TitleColor" Value="{StaticResource TextColor}" />
+                                    <Setter Property="InputBackgroundColor" Value="{StaticResource WhiteOnDarkBackgroundColor}" />
+                                </VisualState.Setters>
+                            </VisualState>
+
+                            <VisualState x:Name="Focused">
+                                <VisualState.Setters>
+                                    <Setter Property="BorderColor" Value="{StaticResource PrimaryColor}" />
+                                    <Setter Property="TitleColor" Value="{StaticResource PrimaryColor}" />
+                                    <Setter Property="InputBackgroundColor" Value="{StaticResource InfoLighterColor}" />
+                                </VisualState.Setters>
+                            </VisualState>
+
+                            <VisualState x:Name="Disabled">
+                                <VisualState.Setters>
+                                    <Setter Property="BorderColor" Value="{StaticResource DefaultColor}" />
+                                    <Setter Property="TextColor" Value="{StaticResource DefaultColor}" />
+                                    <Setter Property="TitleColor" Value="{StaticResource TextColor}" />
+                                    <Setter Property="InputBackgroundColor" Value="{StaticResource DisabledColor}" />
+                                </VisualState.Setters>
+                            </VisualState>
+                        </VisualStateGroup>
+                    </VisualStateGroupList>
+                </Setter>
+            </Style>
+            <Style x:Key="MaterialTextFieldInvert" TargetType="material:TextField">
+                <Setter Property="AccentColor" Value="{StaticResource WhiteOnDarkBackgroundColor}" />
+                <Setter Property="TextColor" Value="{StaticResource WhiteOnDarkBackgroundColor}" />
+                <Setter Property="FontSize" Value="16" />
+                <Setter Property="TitleFontSize" Value="18" />
+                <Setter Property="CornerRadius" Value="5" />
+                <Setter Property="VisualStateManager.VisualStateGroups">
+                    <VisualStateGroupList>
+                        <VisualStateGroup>
+                            <VisualState x:Name="Normal">
+                                <VisualState.Setters>
+                                    <Setter Property="BorderColor" Value="#4697FF" />
+                                    <Setter Property="TitleColor" Value="#DFEDFF" />
+                                    <Setter Property="InputBackgroundColor" Value="#0152B9" />
+                                </VisualState.Setters>
+                            </VisualState>
+
+                            <VisualState x:Name="Focused">
+                                <VisualState.Setters>
+                                    <Setter Property="BorderColor" Value="{StaticResource WhiteOnDarkBackgroundColor}" />
+                                    <Setter Property="TitleColor" Value="{StaticResource WhiteOnDarkBackgroundColor}" />
+                                    <Setter Property="InputBackgroundColor" Value="#035ED2" />
+                                </VisualState.Setters>
+                            </VisualState>
+
+                            <VisualState x:Name="Disabled">
+                                <VisualState.Setters>
+                                    <Setter Property="BorderColor" Value="#2E5FC0" />
+                                    <Setter Property="TextColor" Value="#B0C6F1" />
+                                    <Setter Property="TitleColor" Value="#B0C6F1" />
+                                    <Setter Property="InputBackgroundColor" Value="#0054BF" />
+                                </VisualState.Setters>
+                            </VisualState>
+                        </VisualStateGroup>
+                    </VisualStateGroupList>
+                </Setter>
+            </Style>
+            <Style x:Key="MaterialPickerField" TargetType="material:PickerField">
+                <Setter Property="AccentColor" Value="{StaticResource PrimaryColor}" />
+                <Setter Property="BorderColor" Value="{StaticResource DefaultColor}" />
+                <Setter Property="InputBackgroundColor" Value="{StaticResource FrameBackgroundColor}" />
+                <Setter Property="TitleColor" Value="{StaticResource TextColor}" />
+                <Setter Property="FontSize" Value="16" />
+                <Setter Property="CornerRadius" Value="5" />
+                <Setter Property="TitleFontSize" Value="16" />
+                <Setter Property="VisualStateManager.VisualStateGroups">
+                    <VisualStateGroupList>
+                        <VisualStateGroup>
+                            <VisualState x:Name="Normal">
+                                <VisualState.Setters>
+                                    <Setter Property="BorderColor" Value="{StaticResource DefaultColor}" />
+                                    <Setter Property="TitleColor" Value="{StaticResource TextColor}" />
+                                    <Setter Property="InputBackgroundColor" Value="{StaticResource FrameBackgroundColor}" />
+                                </VisualState.Setters>
+                            </VisualState>
+                            <VisualState x:Name="Focused">
+                                <VisualState.Setters>
+                                    <Setter Property="BorderColor" Value="{StaticResource PrimaryColor}" />
+                                    <Setter Property="TitleColor" Value="{StaticResource PrimaryColor}" />
+                                    <Setter Property="InputBackgroundColor" Value="{StaticResource InfoLighterColor}" />
+                                </VisualState.Setters>
+                            </VisualState>
+                            <VisualState x:Name="Disabled">
+                                <VisualState.Setters>
+                                    <Setter Property="BorderColor" Value="{StaticResource DisabledBorderColor}" />
+                                    <Setter Property="TextColor" Value="{StaticResource DisabledTextColor}" />
+                                    <Setter Property="TitleColor" Value="{StaticResource TextColor}" />
+                                    <Setter Property="InputBackgroundColor" Value="{StaticResource DisabledColor}" />
+                                </VisualState.Setters>
+                            </VisualState>
+                        </VisualStateGroup>
+                    </VisualStateGroupList>
+                </Setter>
+            </Style>
+            <DataTemplate x:Key="TabHeaderTemplate">
+                <Button Command="{Binding TabSelectCommand}" Text="{Binding Title}">
+                    <Button.Triggers>
+                        <DataTrigger
+                            Binding="{Binding IsSelected}"
+                            TargetType="Button"
+                            Value="True">
+                            <Setter Property="Style" Value="{StaticResource SelectedTabButtonStyle}" />
+                        </DataTrigger>
+                        <DataTrigger
+                            Binding="{Binding IsSelected}"
+                            TargetType="Button"
+                            Value="False">
+                            <Setter Property="Style" Value="{StaticResource UnselectedTabButtonStyle}" />
+                        </DataTrigger>
+                    </Button.Triggers>
+                </Button>
+            </DataTemplate>
+            <Style x:Key="SelectedItemLabelStyle" TargetType="Label">
+                <Setter Property="FontSize" Value="12" />
+            </Style>
+            <Style x:Key="CentralizedButtonViewStyle" TargetType="material:ButtonView">
+                <Setter Property="HeightRequest" Value="50" />
+                <Setter Property="BackgroundColor" Value="{StaticResource PrimaryColor}" />
+                <Setter Property="StrokeShape">
+                    <Setter.Value>
+                        <RoundRectangle CornerRadius="25" />
+                    </Setter.Value>
+                </Setter>
+                <Setter Property="Margin" Value="0,10" />
+                <Setter Property="IsEnabled" Value="{Binding IsNotBusy}" />
+                <Setter Property="IsVisible" Value="{Binding IsNotReadOnly}" />
+                <Setter Property="VisualStateManager.VisualStateGroups">
+                    <VisualStateGroupList>
+                        <VisualStateGroup>
+                            <VisualState x:Name="Normal" />
+                            <VisualState x:Name="Pressed">
+                                <VisualState.Setters>
+                                    <Setter Property="Opacity" Value="0.8" />
+                                    <Setter Property="Scale" Value="0.975" />
+                                </VisualState.Setters>
+                            </VisualState>
+                        </VisualStateGroup>
+                    </VisualStateGroupList>
+                </Setter>
+            </Style>
+            <Style x:Key="CentralizedButtonViewStyleInvert" TargetType="material:ButtonView">
+                <Setter Property="HeightRequest" Value="50" />
+                <Setter Property="BackgroundColor" Value="{StaticResource WhiteOnDarkBackgroundColor}" />
+                <Setter Property="StrokeShape">
+                    <Setter.Value>
+                        <RoundRectangle CornerRadius="25" />
+                    </Setter.Value>
+                </Setter>
+                <Setter Property="Margin" Value="0,10" />
+                <Setter Property="IsEnabled" Value="{Binding IsNotBusy}" />
+                <Setter Property="IsVisible" Value="{Binding IsNotReadOnly}" />
+                <Setter Property="VisualStateManager.VisualStateGroups">
+                    <VisualStateGroupList>
+                        <VisualStateGroup>
+                            <VisualState x:Name="Normal" />
+                            <VisualState x:Name="Pressed">
+                                <VisualState.Setters>
+                                    <Setter Property="Opacity" Value="0.8" />
+                                    <Setter Property="Scale" Value="0.975" />
+                                </VisualState.Setters>
+                            </VisualState>
+                        </VisualStateGroup>
+                    </VisualStateGroupList>
+                </Setter>
+            </Style>
+            <Style x:Key="CentralizedPrimaryInvertBtnLabelStyle" TargetType="Label">
+                <Setter Property="FontSize" Value="16" />
+                <Setter Property="TextTransform" Value="Uppercase" />
+                <Setter Property="TextColor" Value="#333333" />
+                <Setter Property="VerticalTextAlignment" Value="Center" />
+            </Style>
+            <Style x:Key="CentralizedPrimaryBtnLabelStyle" TargetType="Label">
+                <Setter Property="FontSize" Value="16" />
+                <Setter Property="TextTransform" Value="Uppercase" />
+                <Setter Property="TextColor" Value="{StaticResource SecondaryColor}" />
+                <Setter Property="VerticalTextAlignment" Value="Center" />
+            </Style>
+            <Style x:Key="CentralizedPrimaryBtnIconStyle" TargetType="Label">
+                <Setter Property="FontFamily" Value="MaterialCommunityIcons" />
+                <Setter Property="FontSize" Value="20" />
+                <Setter Property="TextColor" Value="{StaticResource SecondaryColor}" />
+                <Setter Property="VerticalTextAlignment" Value="Center" />
+            </Style>
+            <Style x:Key="CentralizedActivityIndicatorStyle" TargetType="local:CustomActivityIndicator">
+                <Setter Property="BusyTextColor" Value="{StaticResource SecondaryColor}" />
+                <Setter Property="Margin" Value="6" />
+                <Setter Property="HeightWidth" Value="24" />
+            </Style>
+            <Style x:Key="FluidChartHeaderLabel" TargetType="Label">
+                <Setter Property="FontAttributes" Value="Bold" />
+                <Setter Property="TextColor" Value="{StaticResource TextColor}" />
+                <Setter Property="FontSize" Value="16" />
+                <Setter Property="HorizontalOptions" Value="Center" />
+                <Setter Property="HorizontalTextAlignment" Value="Center" />
+                <Setter Property="VerticalOptions" Value="Fill" />
+                <Setter Property="VerticalTextAlignment" Value="Center" />
+            </Style>
+            <Style x:Key="FluidChartMainHeaderLabel" TargetType="Label">
+                <Setter Property="FontAttributes" Value="Bold" />
+                <Setter Property="TextColor" Value="{StaticResource TextColor}" />
+                <Setter Property="FontSize" Value="18" />
+                <Setter Property="Padding" Value="5" />
+                <Setter Property="HorizontalOptions" Value="Center" />
+                <Setter Property="HorizontalTextAlignment" Value="Center" />
+                <Setter Property="VerticalOptions" Value="Fill" />
+                <Setter Property="VerticalTextAlignment" Value="Center" />
+            </Style>
+            <Style x:Key="FluidChartDetailLabel" TargetType="Label">
+                <Setter Property="FontSize" Value="16" />
+                <Setter Property="TextColor" Value="{StaticResource TextColor}" />
+                <Setter Property="HorizontalOptions" Value="Center" />
+                <Setter Property="HorizontalTextAlignment" Value="Center" />
+                <Setter Property="VerticalOptions" Value="Center" />
+                <Setter Property="VerticalTextAlignment" Value="Center" />
+            </Style>
+            <Style x:Key="FluidChartBorder" TargetType="BoxView">
+                <Setter Property="VerticalOptions" Value="Fill" />
+                <Setter Property="Color" Value="SlateGray" />
+            </Style>
+            <Style x:Key="BoardedPanel" TargetType="Border">
+                <Setter Property="Background" Value="{StaticResource PanelColor}" />
+                <Setter Property="Stroke" Value="{StaticResource PanelBorderColor}" />
+                <Setter Property="StrokeShape" Value="{RoundRectangle CornerRadius=5}" />
+            </Style>
+            <Style x:Key="PermissionBtnStyles" TargetType="material:ButtonView">
+                <Setter Property="StrokeThickness" Value="1" />
+                <Setter Property="Stroke" Value="{StaticResource DangerColor}" />
+                <Setter Property="BackgroundColor" Value="#EEFAFF" />
+                <Setter Property="StrokeShape">
+                    <Setter.Value>
+                        <RoundRectangle CornerRadius="30" />
+                    </Setter.Value>
+                </Setter>
+                <Setter Property="VisualStateManager.VisualStateGroups">
+                    <VisualStateGroupList>
+                        <VisualStateGroup>
+                            <VisualState x:Name="Normal">
+                                <VisualState.Setters>
+                                    <Setter Property="Opacity" Value="1" />
+                                </VisualState.Setters>
+                            </VisualState>
+                            <VisualState x:Name="Pressed">
+                                <VisualState.Setters>
+                                    <Setter Property="Opacity" Value="0.8" />
+                                    <Setter Property="Scale" Value="0.975" />
+                                </VisualState.Setters>
+                            </VisualState>
+                            <VisualState x:Name="Disabled">
+                                <VisualState.Setters>
+                                    <Setter Property="Opacity" Value="0.5" />
+                                </VisualState.Setters>
+                            </VisualState>
+                        </VisualStateGroup>
+                    </VisualStateGroupList>
+                </Setter>
+            </Style>
+            <Style x:Key="MiscellaneousBtnStyle" TargetType="Button">
+                <Setter Property="BackgroundColor" Value="{StaticResource PanelColor}" />
+                <Setter Property="BorderColor" Value="{StaticResource MainBorderColor}" />
+                <Setter Property="BorderWidth" Value="1" />
+                <Setter Property="FontFamily" Value="MaterialCommunityIcons" />
+                <Setter Property="FontSize" Value="20" />
+                <Setter Property="TextColor" Value="{StaticResource TextColor}" />
+                <Setter Property="Text" Value="20" />
+                <Setter Property="HeightRequest" Value="40" />
+                <Setter Property="WidthRequest" Value="40" />
+                <Setter Property="CornerRadius" Value="5" />
+                <Setter Property="Margin" Value="2" />
+                <Setter Property="Padding" Value="0" />
+                <Setter Property="VisualStateManager.VisualStateGroups">
+                    <VisualStateGroupList>
+                        <VisualStateGroup>
+                            <VisualState x:Name="Normal">
+                                <VisualState.Setters>
+                                    <Setter Property="Opacity" Value="1" />
+                                </VisualState.Setters>
+                            </VisualState>
+                            <VisualState x:Name="Pressed">
+                                <VisualState.Setters>
+                                    <Setter Property="BackgroundColor" Value="{StaticResource InfoLightestColor}" />
+                                    <Setter Property="Opacity" Value="1" />
+                                    <Setter Property="Scale" Value="0.975" />
+                                </VisualState.Setters>
+                            </VisualState>
+                            <VisualState x:Name="Disabled">
+                                <VisualState.Setters>
+                                    <Setter Property="Opacity" Value="0.5" />
+                                </VisualState.Setters>
+                            </VisualState>
+                        </VisualStateGroup>
+                    </VisualStateGroupList>
+                </Setter>
+            </Style>
+            <Style x:Key="ErrorLabelStyle" TargetType="Label">
+                <Setter Property="FontSize" Value="18" />
+                <Setter Property="LineBreakMode" Value="WordWrap" />
+                <Setter Property="MinimumHeightRequest" Value="50" />
+                <Setter Property="TextColor" Value="{StaticResource TextColor}" />
+                <Setter Property="VerticalTextAlignment" Value="Center" />
+            </Style>
+            <Style x:Key="IconLabelStyle" TargetType="Label">
+                <Setter Property="FontFamily" Value="MaterialCommunityIcons" />
+                <Setter Property="FontSize" Value="26" />
+                <Setter Property="TextColor" Value="{StaticResource DefaultColor}" />
+                <Setter Property="VerticalOptions" Value="Center" />
+                <Setter Property="VerticalTextAlignment" Value="Center" />
+            </Style>
+            <Style x:Key="ListCommonVisualStateGroup" TargetType="VisualElement">
+                <Setter Property="VisualStateManager.VisualStateGroups">
+                    <VisualStateGroupList>
+                        <VisualStateGroup>
+                            <VisualState x:Name="Normal">
+                                <VisualState.Setters>
+                                    <Setter Property="Opacity" Value="1" />
+                                </VisualState.Setters>
+                            </VisualState>
+                            <VisualState x:Name="Pressed">
+                                <VisualState.Setters>
+                                    <Setter Property="BackgroundColor" Value="{StaticResource InfoLightestColor}" />
+                                    <Setter Property="Opacity" Value="1" />
+                                    <Setter Property="Scale" Value="0.975" />
+                                </VisualState.Setters>
+                            </VisualState>
+                            <VisualState x:Name="Disabled">
+                                <VisualState.Setters>
+                                    <Setter Property="Opacity" Value="0.5" />
+                                </VisualState.Setters>
+                            </VisualState>
+                        </VisualStateGroup>
+                    </VisualStateGroupList>
+                </Setter>
+            </Style>
+            <Style x:Key="ButtonVisualStateGroup" TargetType="VisualElement">
+                <Setter Property="VisualStateManager.VisualStateGroups">
+                    <VisualStateGroupList>
+                        <VisualStateGroup>
+                            <VisualState x:Name="Normal">
+                                <VisualState.Setters>
+                                    <Setter Property="Opacity" Value="1" />
+                                </VisualState.Setters>
+                            </VisualState>
+                            <VisualState x:Name="Pressed">
+                                <VisualState.Setters>
+                                    <Setter Property="Opacity" Value="0.8" />
+                                    <Setter Property="Scale" Value="0.975" />
+                                </VisualState.Setters>
+                            </VisualState>
+                            <VisualState x:Name="Disabled">
+                                <VisualState.Setters>
+                                    <Setter Property="Opacity" Value="0.5" />
+                                </VisualState.Setters>
+                            </VisualState>
+                        </VisualStateGroup>
+                    </VisualStateGroupList>
+                </Setter>
+            </Style>
+            <Style x:Key="CardVisualStateGroup" TargetType="VisualElement">
+                <Setter Property="VisualStateManager.VisualStateGroups">
+                    <VisualStateGroupList>
+                        <VisualStateGroup>
+                            <VisualState x:Name="Normal">
+                                <VisualState.Setters>
+                                    <Setter Property="Opacity" Value="1" />
+                                    <Setter Property="Scale" Value="1" />
+                                    <Setter Property="BackgroundColor" Value="{StaticResource PanelColor}" />
+                                </VisualState.Setters>
+                            </VisualState>
+                            <VisualState x:Name="Pressed">
+                                <VisualState.Setters>
+                                    <Setter Property="Scale" Value="0.975" />
+                                </VisualState.Setters>
+                            </VisualState>
+                            <VisualState x:Name="Disabled">
+                                <VisualState.Setters>
+                                    <Setter Property="Opacity" Value="0.9" />
+                                </VisualState.Setters>
+                            </VisualState>
+                        </VisualStateGroup>
+                    </VisualStateGroupList>
+                </Setter>
+            </Style>
+
+            <Style x:Key="NavigationButton" TargetType="Button">
+                <Setter Property="Padding" Value="5" />
+                <Setter Property="Margin" Value="5,10" />
+                <Setter Property="FontFamily" Value="MaterialCommunityIcons" />
+                <Setter Property="FontSize" Value="24" />
+                <Setter Property="HeightRequest" Value="40" />
+                <Setter Property="WidthRequest" Value="40" />
+                <Setter Property="CornerRadius" Value="20" />
+                <Setter Property="BackgroundColor" Value="#fff" />
+                <Setter Property="TextColor" Value="{StaticResource DefaultColor}" />
+                <Setter Property="BorderColor" Value="{StaticResource DefaultColor}" />
+                <Setter Property="BorderWidth" Value="1" />
+                <Setter Property="VisualStateManager.VisualStateGroups">
+                    <VisualStateGroupList>
+                        <VisualStateGroup>
+                            <VisualState x:Name="Normal" />
+                            <VisualState x:Name="Pressed">
+                                <VisualState.Setters>
+                                    <Setter Property="Opacity" Value="0.8" />
+                                    <Setter Property="Scale" Value="0.975" />
+                                </VisualState.Setters>
+                            </VisualState>
+                        </VisualStateGroup>
+                    </VisualStateGroupList>
+                </Setter>
+            </Style>
+            <Style x:Key="MedicationSubDetail" TargetType="Label">
+                <Setter Property="FontSize" Value="14" />
+                <Setter Property="TextColor" Value="{StaticResource TextColor}" />
+                <Setter Property="VerticalOptions" Value="Start" />
+                <Setter Property="LineBreakMode" Value="WordWrap" />
+                <Setter Property="VerticalTextAlignment" Value="Center" />
+            </Style>
+            <Style x:Key="SwitchStyle" TargetType="Switch">
+                <Setter Property="VisualStateManager.VisualStateGroups">
+                    <VisualStateGroupList>
+                        <VisualStateGroup Name="CommonStates">
+                            <VisualState Name="On">
+                                <VisualState.Setters>
+                                    <Setter Property="ThumbColor" Value="{StaticResource TextFieldIconColor}" />
+                                    <Setter Property="OnColor" Value="{StaticResource SecondaryButtonColor}" />
+                                </VisualState.Setters>
+                            </VisualState>
+                            <VisualState Name="Off">
+                                <VisualState.Setters>
+                                    <Setter Property="ThumbColor" Value="{StaticResource SecondaryButtonColor}" />
+                                    <Setter Property="OnColor" Value="{StaticResource SecondaryBackgroudColor}" />
+                                </VisualState.Setters>
+                            </VisualState>
+                        </VisualStateGroup>
+                    </VisualStateGroupList>
+                </Setter>
+            </Style>
+            <!--<Style TargetType="SearchHandler">
+                <Setter Property="IconColor" Value="Red" />
+            </Style>-->
+        </ResourceDictionary>
+    </Application.Resources>
+</Application>

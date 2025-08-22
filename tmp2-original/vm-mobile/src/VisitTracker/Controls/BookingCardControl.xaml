@@ -1,0 +1,357 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<local:BaseContentView
+    x:Class="VisitTracker.BookingCardControl"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:domain="clr-namespace:VisitTracker.Domain;assembly=VisitTracker.Domain"
+    xmlns:local="clr-namespace:VisitTracker"
+    xmlns:material="http://schemas.enisn-projects.io/dotnet/maui/uraniumui/material"
+    xmlns:uranium="http://schemas.enisn-projects.io/dotnet/maui/uraniumui"
+    x:Name="this">
+    <ContentView.Content>
+        <Border
+            x:Name="BookingCardVerticalLayout"
+            BackgroundColor="{StaticResource PanelColor}"
+            Stroke="{StaticResource PanelBorderColor}"
+            StrokeShape="{RoundRectangle CornerRadius=5}">
+            <Border.GestureRecognizers>
+                <TapGestureRecognizer Command="{Binding OpenBookingDetailCommand, Source={x:Reference this}}" />
+            </Border.GestureRecognizers>
+
+            <VerticalStackLayout
+                Margin="8,0,5,8"
+                Spacing="2"
+                VerticalOptions="Start">
+                <VerticalStackLayout>
+                    <Grid ColumnDefinitions="Auto, *">
+                        <Label
+                            Grid.Column="0"
+                            Style="{StaticResource Heading1Style}"
+                            Text="Service User" />
+
+                        <Label
+                            Grid.Column="1"
+                            FontFamily="MaterialCommunityIcons"
+                            FontSize="18"
+                            HorizontalOptions="End"
+                            IsVisible="{Binding Visits, Converter={StaticResource IsListNullOrEmptyConverter}}"
+                            Opacity="0.6"
+                            Text="{x:Static local:MaterialCommunityIconsFont.ArrowRightThick}"
+                            TextColor="{StaticResource PrimaryTitleMainColor}"
+                            VerticalOptions="Center"
+                            VerticalTextAlignment="Center" />
+                    </Grid>
+
+                    <HorizontalStackLayout Spacing="10">
+
+                        <local:PlaceholderImageControl
+                            InputTransparent="True"
+                            SizeOption="Large"
+                            Source="{Binding ServiceUser.ImageUrl, Source={x:Reference this}, Converter={StaticResource DefaultImageSourceConverter}}" />
+
+                        <VerticalStackLayout
+                            HorizontalOptions="Fill"
+                            InputTransparent="True"
+                            Spacing="4"
+                            VerticalOptions="Center">
+
+                            <HorizontalStackLayout Spacing="2" VerticalOptions="Start">
+                                <Label
+                                    x:Name="Gender"
+                                    Margin="-3,0,0,0"
+                                    FontFamily="MaterialCommunityIcons"
+                                    FontSize="22"
+                                    HorizontalOptions="Center"
+                                    Opacity="0.75"
+                                    Text="{x:Static local:MaterialCommunityIconsFont.HumanMale}"
+                                    TextColor="{StaticResource TextColor}"
+                                    VerticalOptions="Center">
+                                    <Label.Triggers>
+                                        <DataTrigger
+                                            Binding="{Binding ServiceUser.Gender, Source={x:Reference this}}"
+                                            TargetType="Label"
+                                            Value="MALE">
+                                            <Setter Property="Text" Value="{x:Static local:MaterialCommunityIconsFont.HumanMale}" />
+                                        </DataTrigger>
+                                        <DataTrigger
+                                            Binding="{Binding ServiceUser.Gender, Source={x:Reference this}}"
+                                            TargetType="Label"
+                                            Value="FEMALE">
+                                            <Setter Property="Text" Value="{x:Static local:MaterialCommunityIconsFont.HumanFemale}" />
+                                        </DataTrigger>
+                                        <DataTrigger
+                                            Binding="{Binding ServiceUser.Gender, Source={x:Reference this}}"
+                                            TargetType="Label"
+                                            Value="OTHERS">
+                                            <Setter Property="Text" Value="{x:Static local:MaterialCommunityIconsFont.HumanMaleFemale}" />
+                                        </DataTrigger>
+                                    </Label.Triggers>
+                                </Label>
+                                <Grid WidthRequest="{Binding ., Converter={StaticResource AdjustedDeviceWidthConverter}}">
+                                    <Label
+                                        Margin="0"
+                                        Style="{StaticResource Heading2Wrapped3LinesStyle}"
+                                        Text="{Binding ServiceUser.Name, Source={x:Reference this}}"
+                                        VerticalOptions="Center"
+                                        WidthRequest="{Binding ., Converter={StaticResource AdjustedDeviceWidthConverter}}" />
+                                </Grid>
+                            </HorizontalStackLayout>
+
+                            <HorizontalStackLayout Spacing="5" VerticalOptions="Center">
+                                <Label
+                                    FontFamily="MaterialCommunityIcons"
+                                    FontSize="16"
+                                    HorizontalOptions="Center"
+                                    Opacity="0.75"
+                                    Text="{x:Static local:MaterialCommunityIconsFont.Calendar}"
+                                    TextColor="{StaticResource TextColor}"
+                                    VerticalOptions="Center" />
+                                <Grid WidthRequest="{Binding ., Converter={StaticResource AdjustedDeviceWidthConverter}}">
+                                    <Label
+                                        Style="{StaticResource LabelWrapped3LinesStyle}"
+                                        Text="{Binding Booking.BookingFromToTime, Source={x:Reference this}}"
+                                        VerticalOptions="Center"
+                                        VerticalTextAlignment="Center"
+                                        WidthRequest="{Binding ., Converter={StaticResource AdjustedDeviceWidthConverter}}" />
+                                </Grid>
+                            </HorizontalStackLayout>
+
+                            <HorizontalStackLayout
+                                IsVisible="{Binding Booking, Source={x:Reference this}, Converter={StaticResource IsNotNullConverter}}"
+                                Spacing="5"
+                                VerticalOptions="Center">
+                                <Label
+                                    FontFamily="MaterialCommunityIcons"
+                                    FontSize="16"
+                                    HorizontalOptions="Center"
+                                    Opacity="0.75"
+                                    Text="{x:Static local:MaterialCommunityIconsFont.Bookmark}"
+                                    TextColor="{StaticResource TextColor}"
+                                    VerticalOptions="Center" />
+                                <Grid WidthRequest="{Binding ., Converter={StaticResource AdjustedDeviceWidthConverter}}">
+                                    <Label
+                                        Style="{StaticResource LabelWrapped3LinesStyle}"
+                                        Text="{Binding Booking.BookingTypeWithCode, Source={x:Reference this}}"
+                                        VerticalOptions="Center"
+                                        WidthRequest="{Binding ., Converter={StaticResource AdjustedDeviceWidthConverter}}" />
+                                </Grid>
+                            </HorizontalStackLayout>
+                        </VerticalStackLayout>
+                    </HorizontalStackLayout>
+                </VerticalStackLayout>
+
+                <VerticalStackLayout Margin="0">
+                    <Label
+                        Margin="0,0,0,5"
+                        Style="{StaticResource Heading1Style}"
+                        Text="Care Worker" />
+
+                    <Grid
+                        Grid.Column="0"
+                        ColumnDefinitions="Auto,*,Auto"
+                        ColumnSpacing="18"
+                        RowDefinitions="Auto,Auto">
+                        <HorizontalStackLayout
+                            Grid.Column="0"
+                            Grid.ColumnSpan="0"
+                            InputTransparent="False">
+
+                            <Grid>
+
+                                <local:PlaceholderImageControl
+                                    InputTransparent="True"
+                                    SizeOption="Small"
+                                    Source="{Binding PrimaryCareWorker.ImageUrl, Source={x:Reference this}, Converter={StaticResource DefaultImageSourceConverter}}" />
+
+                                <Border
+                                    BackgroundColor="White"
+                                    HeightRequest="18"
+                                    HorizontalOptions="End"
+                                    StrokeShape="RoundRectangle 9"
+                                    StrokeThickness="0"
+                                    TranslationX="12"
+                                    TranslationY="-4"
+                                    VerticalOptions="Start"
+                                    WidthRequest="18">
+                                    <Label
+                                        FontFamily="MaterialCommunityIcons"
+                                        FontSize="19"
+                                        HorizontalOptions="Start"
+                                        Opacity="0.75"
+                                        Text="{x:Static local:MaterialCommunityIconsFont.StarCircle}"
+                                        TextColor="{StaticResource AlertSuccessTextColor}"
+                                        VerticalOptions="Center" />
+                                </Border>
+                            </Grid>
+
+                            <HorizontalStackLayout.GestureRecognizers>
+                                <TapGestureRecognizer CommandParameter="{Binding PrimaryCareWorker.ImageUrl}" Tapped="OnImageTapped" />
+                            </HorizontalStackLayout.GestureRecognizers>
+                        </HorizontalStackLayout>
+
+
+                        <HorizontalStackLayout
+                            Grid.Row="0"
+                            Grid.Column="1"
+                            HorizontalOptions="Start"
+                            Spacing="5"
+                            VerticalOptions="Center">
+
+                            <Grid WidthRequest="{Binding ., Converter={StaticResource AdjustedDeviceWidthConverterFullWidth}}">
+                                <Label
+                                    Style="{StaticResource Heading2Wrapped3LinesStyle}"
+                                    Text="{Binding PrimaryCareWorker.Name, Source={x:Reference this}}"
+                                    VerticalOptions="Center"
+                                    WidthRequest="{Binding ., Converter={StaticResource AdjustedDeviceWidthConverterFullWidth}}" />
+                            </Grid>
+
+                        </HorizontalStackLayout>
+
+
+                        <ScrollView
+                            Grid.Row="1"
+                            Grid.Column="1"
+                            Margin="0,-6,0,0"
+                            HorizontalOptions="Fill"
+                            IsVisible="{Binding PrimaryCareWorkerEta, Source={x:Reference this}, Converter={StaticResource IsNotNullConverter}}"
+                            Orientation="Horizontal"
+                            VerticalOptions="Center">
+                            <HorizontalStackLayout IsVisible="{Binding Visits, Converter={StaticResource IsListNullOrEmptyConverter}}" Spacing="5">
+                                <Label Style="{StaticResource Heading2Style}">
+                                    <Label.FormattedText>
+                                        <FormattedString>
+                                            <Span Text="ETA:  " TextColor="{StaticResource TextColor}" />
+                                            <Span
+                                                FontAttributes="Bold"
+                                                Text="{Binding PrimaryCareWorkerEta.Eta, Source={x:Reference this}}"
+                                                TextColor="{Binding PrimaryCareWorkerEta.EtaStatusColor, Source={x:Reference this}}" />
+                                            <Span FontAttributes="Bold" Text=" " />
+                                            <Span
+                                                FontAttributes="Bold"
+                                                Text="{Binding PrimaryCareWorkerEta.EtaStatusText, Source={x:Reference this}}"
+                                                TextColor="{Binding PrimaryCareWorkerEta.EtaStatusColor, Source={x:Reference this}}" />
+                                        </FormattedString>
+                                    </Label.FormattedText>
+                                </Label>
+                            </HorizontalStackLayout>
+                        </ScrollView>
+                    </Grid>
+
+                    <Grid
+                        Grid.Column="1"
+                        Margin="0,5,0,5"
+                        ColumnDefinitions="Auto,*,Auto"
+                        ColumnSpacing="18"
+                        IsVisible="{Binding SecondaryCareWorker, Converter={StaticResource IsNotNullConverter}}">
+
+                        <HorizontalStackLayout InputTransparent="False">
+                            <local:PlaceholderImageControl
+                                InputTransparent="True"
+                                SizeOption="Small"
+                                Source="{Binding SecondaryCareWorker.ImageUrl, Source={x:Reference this}, Converter={StaticResource DefaultImageSourceConverter}}" />
+                            <HorizontalStackLayout.GestureRecognizers>
+                                <TapGestureRecognizer CommandParameter="{Binding SecondaryCareWorker.ImageUrl}" Tapped="OnImageTapped" />
+                            </HorizontalStackLayout.GestureRecognizers>
+                        </HorizontalStackLayout>
+
+                        <HorizontalStackLayout Grid.Column="1" HorizontalOptions="Fill">
+                            <Grid WidthRequest="{Binding ., Converter={StaticResource AdjustedDeviceWidthConverterFullWidth}}">
+                                <Label
+                                    Style="{StaticResource Heading2Wrapped3LinesStyle}"
+                                    Text="{Binding SecondaryCareWorker.Name, Source={x:Reference this}}"
+                                    WidthRequest="{Binding ., Converter={StaticResource AdjustedDeviceWidthConverterFullWidth}}" />
+                            </Grid>
+                        </HorizontalStackLayout>
+
+                        <ScrollView
+                            Grid.Row="1"
+                            Grid.Column="1"
+                            Margin="0,-6,0,0"
+                            HorizontalOptions="Fill"
+                            IsVisible="{Binding Visits, Converter={StaticResource IsListNullOrEmptyConverter}}"
+                            Orientation="Horizontal"
+                            VerticalOptions="Center">
+                            <HorizontalStackLayout IsVisible="{Binding SecondaryCareWorkerEta, Source={x:Reference this}, Converter={StaticResource IsNotNullConverter}}" Spacing="5">
+                                <Label Style="{StaticResource Heading2Style}">
+                                    <Label.FormattedText>
+                                        <FormattedString>
+                                            <Span Text="ETA:  " TextColor="{StaticResource TextColor}" />
+                                            <Span
+                                                FontAttributes="Bold"
+                                                Text="{Binding SecondaryCareWorkerEta.Eta, Source={x:Reference this}}"
+                                                TextColor="{Binding SecondaryCareWorkerEta.EtaStatusColor, Source={x:Reference this}}" />
+                                            <Span FontAttributes="Bold" Text=" " />
+                                            <Span
+                                                FontAttributes="Bold"
+                                                Text="{Binding SecondaryCareWorkerEta.EtaStatusText, Source={x:Reference this}}"
+                                                TextColor="{Binding SecondaryCareWorkerEta.EtaStatusColor, Source={x:Reference this}}" />
+                                        </FormattedString>
+                                    </Label.FormattedText>
+                                </Label>
+                            </HorizontalStackLayout>
+                        </ScrollView>
+                    </Grid>
+                </VerticalStackLayout>
+
+                <VerticalStackLayout HorizontalOptions="Start" IsVisible="{Binding IsVisibleReport, Source={x:Reference this}}">
+
+                    <CollectionView IsVisible="{Binding Visits, Converter={StaticResource IsListNotNullOrEmptyConverter}}" ItemsSource="{Binding Visits, Mode=TwoWay}">
+                        <CollectionView.ItemsLayout>
+                            <GridItemsLayout
+                                HorizontalItemSpacing="5"
+                                Orientation="Vertical"
+                                Span="4"
+                                VerticalItemSpacing="5" />
+                        </CollectionView.ItemsLayout>
+                        <CollectionView.ItemTemplate>
+                            <DataTemplate x:DataType="{x:Type domain:Visit}">
+                                <material:ButtonView
+                                    Margin="0,5,0,0"
+                                    BackgroundColor="{StaticResource PanelColor}"
+                                    CommandParameter="{Binding Id}"
+                                    Stroke="{StaticResource DefaultColor}"
+                                    StrokeShape="{RoundRectangle CornerRadius=15}"
+                                    Style="{StaticResource ButtonSmallStyle}"
+                                    TappedCommand="{Binding OpenVisitCommand, Source={x:Reference this}}">
+                                    <Grid ColumnDefinitions="Auto,*">
+                                        <Label
+                                            Grid.Column="0"
+                                            Margin="4,0,0,0"
+                                            FontSize="14"
+                                            HorizontalOptions="Center"
+                                            HorizontalTextAlignment="Start"
+                                            LineBreakMode="WordWrap"
+                                            Text="{Binding DisplayName}"
+                                            TextColor="{StaticResource DarkTextColor}"
+                                            VerticalTextAlignment="Center" />
+
+                                        <Label
+                                            Grid.Column="1"
+                                            FontFamily="MaterialCommunityIcons"
+                                            FontSize="17"
+                                            HorizontalOptions="End"
+                                            IsVisible="{Binding IsSynced}"
+                                            Text="{x:Static local:MaterialCommunityIconsFont.CheckboxMarkedCircle}"
+                                            TextColor="{StaticResource SuccessColor}"
+                                            VerticalOptions="Fill"
+                                            VerticalTextAlignment="Center" />
+                                        <Label
+                                            Grid.Column="1"
+                                            Margin="2"
+                                            FontFamily="MaterialCommunityIcons"
+                                            FontSize="17"
+                                            HorizontalOptions="End"
+                                            IsVisible="{Binding IsSynced, Converter={StaticResource NotConverter}}"
+                                            Text="{x:Static local:MaterialCommunityIconsFont.AlertCircle}"
+                                            TextColor="{StaticResource DangerColor}"
+                                            VerticalTextAlignment="Center" />
+                                    </Grid>
+                                </material:ButtonView>
+                            </DataTemplate>
+                        </CollectionView.ItemTemplate>
+                    </CollectionView>
+                </VerticalStackLayout>
+            </VerticalStackLayout>
+        </Border>
+    </ContentView.Content>
+</local:BaseContentView>

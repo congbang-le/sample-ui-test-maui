@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<rxui:ReactiveShell
+    x:Class="VisitTracker.CareWorkerHomePage"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:android="clr-namespace:Microsoft.Maui.Controls.PlatformConfiguration.AndroidSpecific;assembly=Microsoft.Maui.Controls"
+    xmlns:local="clr-namespace:VisitTracker"
+    xmlns:mct="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
+    xmlns:rxui="clr-namespace:ReactiveUI.Maui;assembly=ReactiveUI.Maui"
+    android:TabbedPage.IsSmoothScrollEnabled="True"
+    android:TabbedPage.IsSwipePagingEnabled="True"
+    android:TabbedPage.ToolbarPlacement="Bottom"
+    x:DataType="local:CareWorkerHomeVm"
+    x:TypeArguments="local:CareWorkerHomeVm"
+    AutomationId="CareWorkerHomePage"
+    Shell.TabBarForegroundColor="{StaticResource PrimaryColor}">
+    <Shell.Behaviors>
+        <mct:EventToCommandBehavior Command="{Binding InitCommand}" EventName="Appearing" />
+    </Shell.Behaviors>
+
+    <Tab Title="{Binding DashboardPage.Title}" Icon="{Binding DashboardPage.IconImageSource}">
+        <ShellContent AutomationId="DashboardTab" ContentTemplate="{DataTemplate local:CareWorkerDashboardPage}" />
+    </Tab>
+    <Tab Title="{Binding BookingsPage.Title}" Icon="{Binding BookingsPage.IconImageSource}">
+        <ShellContent ContentTemplate="{DataTemplate local:BookingsPage}" />
+    </Tab>
+    <Tab Title="{Binding TabTitle, Mode=TwoWay}" Icon="{Binding OngoingPage.IconImageSource, Mode=TwoWay}">
+        <ShellContent ContentTemplate="{DataTemplate local:OngoingPage}" />
+    </Tab>
+    <Tab Title="{Binding NotificationsPage.Title}" Icon="{Binding NotificationsPage.IconImageSource}">
+        <ShellContent ContentTemplate="{DataTemplate local:NotificationsPage}" Route="notifications" />
+    </Tab>
+    <Tab Title="{Binding MiscellaneousPage.Title}" Icon="{Binding MiscellaneousPage.IconImageSource}">
+        <ShellContent ContentTemplate="{DataTemplate local:MiscellaneousPage}" />
+    </Tab>
+</rxui:ReactiveShell>

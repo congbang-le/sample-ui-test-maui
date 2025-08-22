@@ -1,0 +1,547 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<local:BaseContentPage
+    x:Class="VisitTracker.BookingDetailPage"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:domain="clr-namespace:VisitTracker.Domain;assembly=VisitTracker.Domain"
+    xmlns:input="clr-namespace:InputKit.Shared.Controls;assembly=InputKit.Maui"
+    xmlns:local="clr-namespace:VisitTracker"
+    xmlns:m="clr-namespace:UraniumUI.Icons.MaterialIcons;assembly=UraniumUI.Icons.MaterialIcons"
+    xmlns:material="http://schemas.enisn-projects.io/dotnet/maui/uraniumui/material"
+    xmlns:mct="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
+    xmlns:skia="clr-namespace:SkiaSharp.Extended.UI.Controls;assembly=SkiaSharp.Extended.UI"
+    xmlns:uranium="http://schemas.enisn-projects.io/dotnet/maui/uraniumui"
+    xmlns:validation="clr-namespace:InputKit.Shared.Validations;assembly=InputKit.Maui"
+    x:Name="this"
+    Title="{Binding BookingDetailDto.PageTitle}"
+    x:DataType="local:BookingDetailVm"
+    x:TypeArguments="local:BookingDetailVm"
+    BackgroundColor="{StaticResource MainBackgroudColor}"
+    Shell.NavBarIsVisible="True"
+    Shell.TabBarIsVisible="False">
+
+    <ContentPage.ToolbarItems>
+        <ToolbarItem
+            AutomationId="EditButton"
+            Command="{Binding CheckEditAccessCommand}"
+            IconImageSource="{Binding ToolbarIconSource}"
+            IsEnabled="{Binding EnableEditButton}"
+            Text="" />
+    </ContentPage.ToolbarItems>
+
+    <Grid Margin="0,10">
+        <ScrollView
+            HorizontalOptions="Fill"
+            IsVisible="{Binding IsNotBusy}"
+            VerticalOptions="Fill">
+
+            <VerticalStackLayout Style="{StaticResource CardsMarginStyle}">
+                <VerticalStackLayout.IsVisible>
+                    <MultiBinding Converter="{StaticResource AllValueTrueConverter}">
+                        <Binding Path="IsNotBusy" />
+                        <Binding Converter="{StaticResource IsNotNullConverter}" Path="BookingDetailDto" />
+                    </MultiBinding>
+                </VerticalStackLayout.IsVisible>
+                <Label
+                    Margin="0,0,5,0"
+                    HorizontalTextAlignment="End"
+                    IsVisible="{Binding BookingDetailDto.IsVisited, Converter={StaticResource BoolToVisibilityConverter}}"
+                    Style="{StaticResource StatuStyle}"
+                    Text="{Binding BookingDetailDto.BookingStatus}"
+                    TextColor="{Binding BookingDetailDto.BookingStatusColor}" />
+
+                <local:CardViewControl HasCardTitle="False">
+                    <local:UserCardControl
+                        IsAccessInstructionsVisible="True"
+                        IsCallVisible="True"
+                        IsDirectionVisible="True"
+                        User="{Binding BookingDetailDto.ServiceUserCard}" />
+                </local:CardViewControl>
+
+                <uranium:ExpanderView Margin="0,0,8,0">
+                    <uranium:ExpanderView.Header>
+                        <Label Style="{StaticResource Heading1Style}" Text="Booking Notes" />
+                    </uranium:ExpanderView.Header>
+                    <local:CardViewControl Margin="0,0,-8,0" HasCardTitle="False">
+                        <Grid Padding="3">
+                            <Label
+                                Padding="2"
+                                FontSize="14"
+                                HorizontalTextAlignment="Start"
+                                IsVisible="{Binding BookingDetailDto.Notes, Converter={x:StaticResource IsStringNotNullOrEmptyConverter}}"
+                                LineBreakMode="WordWrap"
+                                Text="{Binding BookingDetailDto.Notes}"
+                                TextColor="{StaticResource TextColor}"
+                                VerticalTextAlignment="Center" />
+                            <Label
+                                HorizontalTextAlignment="Center"
+                                IsVisible="{Binding BookingDetailDto.Notes, Converter={x:StaticResource IsStringNullOrEmptyConverter}}"
+                                LineBreakMode="WordWrap"
+                                Style="{StaticResource MutedTextStyles}"
+                                Text="Not Available!" />
+                        </Grid>
+                    </local:CardViewControl>
+                </uranium:ExpanderView>
+
+                <uranium:ExpanderView Margin="0,0,8,0" IsExpanded="{Binding IsHandOverNotesExpanded, Mode=TwoWay}">
+                    <uranium:ExpanderView.Header>
+                        <Label Style="{StaticResource Heading1Style}" Text="Hand-over Notes (last visit)" />
+                    </uranium:ExpanderView.Header>
+                    <local:CardViewControl Margin="0,0,-8,0" HasCardTitle="False">
+                        <Grid Padding="3">
+                            <Label
+                                Padding="2"
+                                FontSize="14"
+                                HorizontalTextAlignment="Start"
+                                IsVisible="{Binding BookingDetailDto.HandOverNotes, Converter={x:StaticResource IsStringNotNullOrEmptyConverter}}"
+                                LineBreakMode="WordWrap"
+                                Text="{Binding BookingDetailDto.HandOverNotes}"
+                                TextColor="{StaticResource TextColor}"
+                                VerticalTextAlignment="Center" />
+                            <Label
+                                HorizontalTextAlignment="Center"
+                                IsVisible="{Binding BookingDetailDto.HandOverNotes, Converter={x:StaticResource IsStringNullOrEmptyConverter}}"
+                                LineBreakMode="WordWrap"
+                                Style="{StaticResource MutedTextStyles}"
+                                Text="Not Available!" />
+                        </Grid>
+                    </local:CardViewControl>
+                </uranium:ExpanderView>
+
+                <VerticalStackLayout>
+                    <Label
+                        Margin="0,5"
+                        Style="{StaticResource Heading1Style}"
+                        Text="General Tasks" />
+
+                    <VerticalStackLayout
+                        BindableLayout.ItemsSource="{Binding BookingDetailDto.TaskList, Mode=TwoWay}"
+                        IsVisible="{Binding BookingDetailDto.TaskList, Converter={StaticResource IsListNotNullOrEmptyConverter}}"
+                        Spacing="10">
+                        <BindableLayout.ItemTemplate>
+                            <DataTemplate x:DataType="{x:Type local:TaskDto}">
+                                <material:ButtonView
+                                    Padding="5"
+                                    BackgroundColor="{StaticResource PanelColor}"
+                                    CommandParameter="{Binding Id}"
+                                    IsEnabled="{Binding IsVisited}"
+                                    StrokeShape="{RoundRectangle CornerRadius=5}"
+                                    Style="{StaticResource CardVisualStateGroup}"
+                                    TappedCommand="{Binding Source={x:Reference this}, Path=BindingContext.OpenTaskViewCommand}">
+
+                                    <Grid
+                                        Padding="3"
+                                        ColumnDefinitions="Auto,*,Auto"
+                                        ColumnSpacing="5">
+
+                                        <Label
+                                            Grid.Column="0"
+                                            FontFamily="MaterialCommunityIcons"
+                                            FontSize="18"
+                                            HorizontalOptions="End"
+                                            Opacity="0.5"
+                                            Text="{x:Static local:MaterialCommunityIconsFont.CheckboxBlankCircle}"
+                                            TextColor="{Binding CompletionStatusColor}"
+                                            VerticalOptions="Center"
+                                            VerticalTextAlignment="Center" />
+
+                                        <Label
+                                            Grid.Column="1"
+                                            Padding="2"
+                                            FontSize="14"
+                                            HorizontalOptions="Fill"
+                                            HorizontalTextAlignment="Start"
+                                            LineBreakMode="TailTruncation"
+                                            MaxLines="2"
+                                            Text="{Binding Title}"
+                                            TextColor="{StaticResource TextColor}"
+                                            VerticalOptions="Center"
+                                            VerticalTextAlignment="Center" />
+
+                                        <Grid
+                                            Grid.Column="2"
+                                            Padding="0"
+                                            RowDefinitions="*,Auto"
+                                            VerticalOptions="Center">
+
+                                            <Label
+                                                Grid.Row="0"
+                                                FontFamily="MaterialCommunityIcons"
+                                                FontSize="18"
+                                                HorizontalOptions="Fill"
+                                                HorizontalTextAlignment="End"
+                                                IsVisible="{Binding IsVisited}"
+                                                Text="{x:Static local:MaterialCommunityIconsFont.ArrowRight}"
+                                                TextColor="{Binding CompletionStatusColor, Mode=TwoWay}"
+                                                VerticalOptions="Fill"
+                                                VerticalTextAlignment="Center" />
+
+                                            <Label
+                                                Grid.Row="1"
+                                                Padding="2"
+                                                FontSize="15"
+                                                HorizontalOptions="Fill"
+                                                HorizontalTextAlignment="End"
+                                                IsVisible="{Binding CompletedOn, Converter={StaticResource IsNotNullConverter}}"
+                                                Text="{Binding CompletedOn, Mode=TwoWay, StringFormat='{0:hh:mm} hrs'}"
+                                                TextColor="{Binding CompletionStatusColor, Mode=TwoWay}"
+                                                VerticalOptions="Center"
+                                                VerticalTextAlignment="Center" />
+                                        </Grid>
+                                    </Grid>
+                                </material:ButtonView>
+                            </DataTemplate>
+                        </BindableLayout.ItemTemplate>
+                    </VerticalStackLayout>
+
+                    <local:CardViewControl HasCardTitle="False" IsVisible="{Binding BookingDetailDto.TaskList, Converter={StaticResource IsListNullOrEmptyConverter}}">
+                        <Label
+                            Padding="5"
+                            HorizontalTextAlignment="Center"
+                            IsVisible="{Binding BookingDetailDto.TaskList, Converter={StaticResource IsListNullOrEmptyConverter}}"
+                            Style="{StaticResource MutedTextStyles}"
+                            Text="No tasks found!"
+                            VerticalTextAlignment="Center" />
+                    </local:CardViewControl>
+                </VerticalStackLayout>
+
+                <VerticalStackLayout>
+                    <VerticalStackLayout.IsVisible>
+                        <MultiBinding Converter="{StaticResource AllValueTrueConverter}">
+                            <Binding Path="BookingDetailDto.IsFluidApplicable" />
+                            <Binding Converter="{StaticResource IsNotNullConverter}" Path="BookingDetailDto.Fluid" />
+                        </MultiBinding>
+                    </VerticalStackLayout.IsVisible>
+
+                    <Label
+                        Margin="0,5"
+                        Style="{StaticResource Heading1Style}"
+                        Text="Fluids" />
+
+                    <material:ButtonView
+                        Padding="5"
+                        BackgroundColor="{StaticResource PanelColor}"
+                        CommandParameter="{Binding BookingDetailDto.Fluid.Id}"
+                        IsEnabled="{Binding BookingDetailDto.IsVisited}"
+                        StrokeShape="{RoundRectangle CornerRadius=5}"
+                        Style="{StaticResource CardVisualStateGroup}"
+                        TappedCommand="{Binding OpenFluidIntakeViewCommand}">
+
+                        <Grid
+                            Padding="3"
+                            ColumnDefinitions="Auto,*,Auto"
+                            ColumnSpacing="5">
+
+                            <Label
+                                Grid.Column="0"
+                                FontFamily="MaterialCommunityIcons"
+                                FontSize="18"
+                                HorizontalOptions="End"
+                                Opacity="0.5"
+                                Text="{x:Static local:MaterialCommunityIconsFont.CheckboxBlankCircle}"
+                                TextColor="{Binding BookingDetailDto.Fluid.CompletionStatusColor}"
+                                VerticalOptions="Center"
+                                VerticalTextAlignment="Center" />
+
+                            <Label
+                                Grid.Column="1"
+                                Padding="2"
+                                FontSize="14"
+                                HorizontalOptions="Fill"
+                                HorizontalTextAlignment="Start"
+                                LineBreakMode="TailTruncation"
+                                MaxLines="2"
+                                Text="Record fluid balance"
+                                TextColor="{StaticResource TextColor}"
+                                VerticalOptions="Center"
+                                VerticalTextAlignment="Center" />
+                            <Grid
+                                Grid.Column="2"
+                                Padding="0"
+                                RowDefinitions="Auto,Auto"
+                                VerticalOptions="Center">
+
+                                <Label
+                                    Grid.Row="0"
+                                    FontFamily="MaterialCommunityIcons"
+                                    FontSize="18"
+                                    HorizontalOptions="Fill"
+                                    HorizontalTextAlignment="End"
+                                    IsVisible="{Binding BookingDetailDto.Fluid.IsVisited}"
+                                    Text="{x:Static local:MaterialCommunityIconsFont.ArrowRight}"
+                                    TextColor="{Binding BookingDetailDto.Fluid.CompletionStatusColor, Mode=TwoWay}"
+                                    VerticalOptions="Fill"
+                                    VerticalTextAlignment="Center" />
+
+                                <Label
+                                    Grid.Row="1"
+                                    Padding="2"
+                                    FontSize="15"
+                                    HorizontalOptions="Fill"
+                                    HorizontalTextAlignment="End"
+                                    IsVisible="{Binding BookingDetailDto.Fluid.CompletedOn, Converter={StaticResource IsNotNullConverter}}"
+                                    Text="{Binding BookingDetailDto.Fluid.CompletedOn, StringFormat='{0:hh:mm} hrs'}"
+                                    TextColor="{Binding BookingDetailDto.Fluid.CompletionStatusColor, Mode=TwoWay}"
+                                    VerticalOptions="Center"
+                                    VerticalTextAlignment="Center" />
+                            </Grid>
+                        </Grid>
+                    </material:ButtonView>
+                </VerticalStackLayout>
+
+                <VerticalStackLayout>
+                    <Label
+                        Margin="0,5"
+                        Style="{StaticResource Heading1Style}"
+                        Text="Medications" />
+
+                    <VerticalStackLayout
+                        BindableLayout.ItemsSource="{Binding BookingDetailDto.MedicationList, Mode=TwoWay}"
+                        IsVisible="{Binding BookingDetailDto.MedicationList, Converter={StaticResource IsListNotNullOrEmptyConverter}}"
+                        Spacing="10">
+                        <BindableLayout.ItemTemplate>
+                            <DataTemplate x:DataType="{x:Type local:MedicationDto}">
+                                <material:ButtonView
+                                    Padding="5"
+                                    BackgroundColor="{StaticResource PanelColor}"
+                                    CommandParameter="{Binding Id}"
+                                    StrokeShape="{RoundRectangle CornerRadius=5}"
+                                    Style="{StaticResource CardVisualStateGroup}"
+                                    TappedCommand="{Binding BindingContext.OpenMedicationViewCommand, Source={x:Reference this}}">
+
+                                    <Grid
+                                        Padding="3"
+                                        ColumnDefinitions="Auto,*,Auto"
+                                        ColumnSpacing="5"
+                                        HorizontalOptions="Fill"
+                                        IsEnabled="{Binding Id, Converter={StaticResource NullabeBooleanConverter}}"
+                                        RowDefinitions="Auto"
+                                        VerticalOptions="Fill">
+
+                                        <Label
+                                            Grid.Column="0"
+                                            FontFamily="MaterialCommunityIcons"
+                                            FontSize="18"
+                                            HorizontalOptions="End"
+                                            Opacity="0.5"
+                                            Text="{x:Static local:MaterialCommunityIconsFont.CheckboxBlankCircle}"
+                                            TextColor="{Binding CompletionStatusColor}"
+                                            VerticalOptions="Center"
+                                            VerticalTextAlignment="Center" />
+
+                                        <Label
+                                            Grid.Column="1"
+                                            Padding="2"
+                                            FontSize="14"
+                                            HorizontalOptions="Fill"
+                                            HorizontalTextAlignment="Start"
+                                            LineBreakMode="TailTruncation"
+                                            MaxLines="2"
+                                            Text="{Binding Name, Mode=TwoWay}"
+                                            TextColor="{StaticResource TextColor}"
+                                            VerticalOptions="Center"
+                                            VerticalTextAlignment="Center">
+                                            <Label.Triggers>
+                                                <DataTrigger
+                                                    Binding="{Binding AdminsterWarning, Converter={StaticResource NotConverter}}"
+                                                    TargetType="Label"
+                                                    Value="False">
+                                                    <DataTrigger.EnterActions>
+                                                        <local:BlinkTriggerAction />
+                                                    </DataTrigger.EnterActions>
+                                                </DataTrigger>
+                                            </Label.Triggers>
+                                        </Label>
+
+                                        <Grid
+                                            Grid.Column="2"
+                                            Margin="0,0,0,-5"
+                                            Padding="0"
+                                            RowDefinitions="*,*">
+                                            <Label
+                                                Grid.Row="0"
+                                                FontFamily="MaterialCommunityIcons"
+                                                FontSize="18"
+                                                HorizontalOptions="Fill"
+                                                HorizontalTextAlignment="End"
+                                                Text="{x:Static local:MaterialCommunityIconsFont.ArrowRight}"
+                                                TextColor="{Binding CompletionStatusColor, Mode=TwoWay}"
+                                                VerticalOptions="Center"
+                                                VerticalTextAlignment="Center" />
+
+                                            <Label
+                                                Grid.Row="1"
+                                                Padding="2"
+                                                FontSize="15"
+                                                HorizontalOptions="Fill"
+                                                HorizontalTextAlignment="End"
+                                                IsVisible="{Binding CompletedOn, Converter={StaticResource IsNotNullConverter}}"
+                                                Text="{Binding CompletedOn, Mode=TwoWay, StringFormat='{0:hh:mm} hrs'}"
+                                                TextColor="{Binding CompletionStatusColor, Mode=TwoWay}"
+                                                VerticalOptions="Center"
+                                                VerticalTextAlignment="Center" />
+                                        </Grid>
+                                    </Grid>
+                                </material:ButtonView>
+                            </DataTemplate>
+                        </BindableLayout.ItemTemplate>
+                    </VerticalStackLayout>
+
+                    <local:CardViewControl HasCardTitle="False" IsVisible="{Binding BookingDetailDto.MedicationList, Converter={StaticResource IsListNullOrEmptyConverter}}">
+                        <Label
+                            Margin="10,5"
+                            HorizontalTextAlignment="Center"
+                            Style="{StaticResource MutedTextStyles}"
+                            Text="No medications found!"
+                            VerticalTextAlignment="Center" />
+                    </local:CardViewControl>
+                </VerticalStackLayout>
+
+                <local:IncidentReportControl
+                    BaseVisitId="{Binding BookingDetailDto.Visit.Id}"
+                    IncidentReportList="{Binding BookingDetailDto.IncidentList}"
+                    IsReadOnly="True"
+                    IsVisible="{Binding BookingDetailDto.IncidentList, Converter={StaticResource IsListNotNullOrEmptyConverter}}"
+                    ServiceUserId="{Binding BookingDetailDto.ServiceUser.Id}" />
+
+                <local:CardViewControl CardTitle="Short Remarks *" IsVisible="{Binding BookingDetailDto.Visit, Converter={StaticResource IsNotNullConverter}}">
+                    <Grid Padding="3" RowDefinitions="Auto,Auto">
+                        <Label
+                            Padding="2"
+                            FontSize="14"
+                            HorizontalOptions="Fill"
+                            HorizontalTextAlignment="Start"
+                            IsVisible="{Binding BookingDetailDto.SelectedShortRemark, Converter={x:StaticResource IsStringNotNullOrEmptyConverter}}"
+                            LineBreakMode="WordWrap"
+                            Text="{Binding BookingDetailDto.SelectedShortRemark}"
+                            TextColor="{StaticResource TextColor}"
+                            TextType="Html" />
+                        <Label
+                            HorizontalTextAlignment="Center"
+                            IsVisible="{Binding BookingDetailDto.SelectedShortRemark, Converter={x:StaticResource IsStringNullOrEmptyConverter}}"
+                            LineBreakMode="WordWrap"
+                            Style="{StaticResource MutedTextStyles}"
+                            Text="Not Available!" />
+                    </Grid>
+                </local:CardViewControl>
+
+                <local:CardViewControl CardTitle="Additional Notes" IsVisible="{Binding BookingDetailDto.Visit, Converter={StaticResource IsNotNullConverter}}">
+                    <Grid Padding="3" RowDefinitions="Auto,Auto">
+                        <Label
+                            Padding="2"
+                            FontSize="14"
+                            HorizontalTextAlignment="Start"
+                            IsVisible="{Binding BookingDetailDto.Summary, Converter={x:StaticResource IsStringNotNullOrEmptyConverter}}"
+                            LineBreakMode="WordWrap"
+                            Text="{Binding BookingDetailDto.Summary}"
+                            TextColor="{StaticResource TextColor}" />
+                        <Label
+                            HorizontalTextAlignment="Center"
+                            IsVisible="{Binding BookingDetailDto.Summary, Converter={x:StaticResource IsStringNullOrEmptyConverter}}"
+                            LineBreakMode="WordWrap"
+                            Style="{StaticResource MutedTextStyles}"
+                            Text="Not Available!" />
+                    </Grid>
+                </local:CardViewControl>
+
+                <local:CardViewControl CardTitle="Health Status *" IsVisible="{Binding BookingDetailDto.Visit, Converter={StaticResource IsNotNullConverter}}">
+                    <Grid Padding="3" RowDefinitions="Auto,Auto">
+                        <Label
+                            Padding="2"
+                            FontSize="14"
+                            HorizontalTextAlignment="Start"
+                            IsVisible="{Binding BookingDetailDto.SelectedHealthStatus, Converter={x:StaticResource IsStringNotNullOrEmptyConverter}}"
+                            LineBreakMode="WordWrap"
+                            Text="{Binding BookingDetailDto.SelectedHealthStatus}"
+                            TextColor="{StaticResource TextColor}"
+                            TextType="Html" />
+                        <Label
+                            HorizontalTextAlignment="Center"
+                            IsVisible="{Binding BookingDetailDto.SelectedHealthStatus, Converter={x:StaticResource IsStringNullOrEmptyConverter}}"
+                            LineBreakMode="WordWrap"
+                            Style="{StaticResource MutedTextStyles}"
+                            Text="Not Available!" />
+                    </Grid>
+                </local:CardViewControl>
+
+                <local:CardViewControl CardTitle="Hand-over Notes (next visit)" IsVisible="{Binding BookingDetailDto.Visit, Converter={StaticResource IsNotNullConverter}}">
+                    <Grid Padding="3" RowDefinitions="Auto,Auto">
+                        <Label
+                            Padding="2"
+                            FontSize="14"
+                            HorizontalTextAlignment="Start"
+                            IsVisible="{Binding HandOverNotes, Converter={x:StaticResource IsStringNotNullOrEmptyConverter}}"
+                            LineBreakMode="WordWrap"
+                            Text="{Binding HandOverNotes}"
+                            TextColor="{StaticResource TextColor}" />
+                        <Label
+                            HorizontalOptions="Center"
+                            IsVisible="{Binding HandOverNotes, Converter={x:StaticResource IsStringNullOrEmptyConverter}}"
+                            Style="{DynamicResource MutedTextStyles}"
+                            Text="Not Available!" />
+                    </Grid>
+                </local:CardViewControl>
+                <StackLayout IsVisible="{Binding BookingDetailDto.Visit, Converter={StaticResource IsNotNullConverter}}">
+                    <Grid ColumnDefinitions="100,*" ColumnSpacing="15">
+                        <Label
+                            Grid.Column="0"
+                            Margin="0,5,0,0"
+                            HorizontalOptions="Start"
+                            Style="{StaticResource Heading1Style}"
+                            Text="Body Maps:"
+                            VerticalOptions="Center" />
+
+                        <local:HorizontalBodyMapControl
+                            Grid.Column="1"
+                            BaseVisitId="{Binding BookingDetailDto.Visit.Id}"
+                            BodyMapList="{Binding BookingDetailDto.BodyMapList, Mode=TwoWay}"
+                            IsReadOnly="True"
+                            Type="{Binding TypeName}"
+                            TypeId="{Binding BookingDetailDto.Visit.Id}"
+                            VerticalOptions="Center" />
+                    </Grid>
+                </StackLayout>
+                <StackLayout IsVisible="{Binding BookingDetailDto.Visit, Converter={StaticResource IsNotNullConverter}}">
+                    <Grid ColumnDefinitions="100,*" ColumnSpacing="15">
+                        <Label
+                            Grid.Column="0"
+                            Margin="0,5,0,0"
+                            HorizontalOptions="Start"
+                            Style="{StaticResource Heading1Style}"
+                            Text="Attachments:"
+                            VerticalOptions="Center" />
+
+                        <local:HorizontalAttachmentControl
+                            Grid.Column="1"
+                            AttachmentList="{Binding BookingDetailDto.AttachmentList, Mode=TwoWay}"
+                            BaseVisitId="{Binding BookingDetailDto.Visit.Id}"
+                            Type="{Binding TypeName}"
+                            TypeId="{Binding BookingDetailDto.Visit.Id}" />
+                    </Grid>
+                </StackLayout>
+
+                <local:CardViewControl CardTitle="Consumables Used" IsVisible="{Binding BookingDetailDto.Visit, Converter={StaticResource IsNotNullConverter}}">
+                    <Grid Padding="3" RowDefinitions="Auto,Auto">
+                        <Label
+                            Padding="2"
+                            FontSize="14"
+                            HorizontalTextAlignment="Start"
+                            IsVisible="{Binding BookingDetailDto.SelectedConsumables, Converter={x:StaticResource IsStringNotNullOrEmptyConverter}}"
+                            LineBreakMode="WordWrap"
+                            Text="{Binding BookingDetailDto.SelectedConsumables}"
+                            TextColor="{StaticResource TextColor}"
+                            TextType="Html" />
+                        <Label
+                            HorizontalTextAlignment="Center"
+                            IsVisible="{Binding BookingDetailDto.SelectedConsumables, Converter={x:StaticResource IsStringNullOrEmptyConverter}}"
+                            LineBreakMode="WordWrap"
+                            Style="{StaticResource MutedTextStyles}"
+                            Text="Not Available!" />
+                    </Grid>
+                </local:CardViewControl>
+            </VerticalStackLayout>
+        </ScrollView>
+
+        <local:CustomActivityIndicator IsBusy="{Binding IsBusy}" />
+    </Grid>
+</local:BaseContentPage>

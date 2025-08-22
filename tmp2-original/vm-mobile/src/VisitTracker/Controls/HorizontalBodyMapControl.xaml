@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<local:BaseContentView
+    x:Class="VisitTracker.HorizontalBodyMapControl"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:domain="clr-namespace:VisitTracker.Domain;assembly=VisitTracker.Domain"
+    xmlns:local="clr-namespace:VisitTracker"
+    xmlns:material="http://schemas.enisn-projects.io/dotnet/maui/uraniumui/material"
+    x:Name="this">
+    <ContentView.ControlTemplate>
+        <ControlTemplate>
+            <Grid Margin="0,10,0,0">
+                <VerticalStackLayout Margin="0,10"
+                        Spacing="10">
+                    <StackLayout Orientation="Vertical">
+                        <HorizontalStackLayout
+                            BindableLayout.ItemsSource="{Binding BodyMapList, Mode=TwoWay, Source={x:Reference this}}"
+                            IsVisible="{Binding BodyMapList, Converter={StaticResource IsListNotNullOrEmptyConverter}}"
+                            Spacing="10"
+                            VerticalOptions="Center">
+                            <BindableLayout.ItemTemplate>
+                                <DataTemplate x:DataType="domain:BodyMap">
+                                    <material:ButtonView
+                                        Padding="5"
+                                        CommandParameter="{Binding .}"
+                                        Style="{StaticResource BtnDefault}"
+                                        TappedCommand="{Binding OpenByBodyMapCommand, Source={x:Reference this}}">
+                                        <Label
+                                            FontFamily="MaterialCommunityIcons"
+                                            FontSize="20"
+                                            Opacity="0.75"
+                                            Text="{x:Static local:MaterialCommunityIconsFont.Human}"
+                                            TextColor="{StaticResource TextColor}"
+                                            VerticalTextAlignment="Center"/>
+                                    </material:ButtonView>
+                                </DataTemplate>
+                            </BindableLayout.ItemTemplate>
+                        </HorizontalStackLayout>
+
+                        <Label
+                            HorizontalTextAlignment="Start"
+                            IsVisible="{Binding BodyMapList, Converter={StaticResource IsListNullOrEmptyConverter}, Source={x:Reference this}}"
+                            Style="{StaticResource MutedTextStyles}"
+                            Text="No body map(s) found!"/>
+                    </StackLayout>
+                </VerticalStackLayout>
+            </Grid>
+        </ControlTemplate>
+    </ContentView.ControlTemplate>
+</local:BaseContentView>

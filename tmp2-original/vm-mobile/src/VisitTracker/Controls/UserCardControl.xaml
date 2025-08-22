@@ -1,0 +1,260 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<local:BaseContentView
+    x:Class="VisitTracker.UserCardControl"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:local="clr-namespace:VisitTracker"
+    xmlns:material="http://schemas.enisn-projects.io/dotnet/maui/uraniumui/material"
+    xmlns:uranium="http://schemas.enisn-projects.io/dotnet/maui/uraniumui"
+    x:Name="this">
+    <ContentView.Content>
+        <VerticalStackLayout
+            x:Name="UserCardContainer"
+            HorizontalOptions="Fill"
+            Spacing="5">
+            <Label
+                Margin="2,0,5,5"
+                IsVisible="{Binding Source={x:Reference this}, Path=HasCardTitle}"
+                Style="{StaticResource Heading1Style}"
+                Text="Service User" />
+            <HorizontalStackLayout Spacing="10">
+                <HorizontalStackLayout.GestureRecognizers>
+                    <TapGestureRecognizer Command="{Binding OpenUserDetailCommand, Source={x:Reference this}}" />
+                </HorizontalStackLayout.GestureRecognizers>
+                <local:PlaceholderImageControl
+                    InputTransparent="True"
+                    SizeOption="Custom"
+                    Source="{Binding User.ImageUrl, Source={x:Reference this}, Converter={StaticResource DefaultImageSourceConverter}}"
+                    VerticalOptions="Center" />
+
+                <VerticalStackLayout
+                    HorizontalOptions="Fill"
+                    Spacing="3"
+                    VerticalOptions="Center">
+                    <HorizontalStackLayout InputTransparent="True" Spacing="2">
+                        <Label
+                            x:Name="Gender"
+                            FontFamily="MaterialCommunityIcons"
+                            FontSize="22"
+                            HorizontalOptions="Center"
+                            Opacity="0.75"
+                            Text="{x:Static local:MaterialCommunityIconsFont.HumanMale}"
+                            TextColor="{StaticResource TextColor}"
+                            VerticalOptions="Center">
+                            <Label.Triggers>
+                                <DataTrigger
+                                    Binding="{Binding User.Gender, Source={x:Reference this}}"
+                                    TargetType="Label"
+                                    Value="MALE">
+                                    <Setter Property="Text" Value="{x:Static local:MaterialCommunityIconsFont.HumanMale}" />
+                                </DataTrigger>
+                                <DataTrigger
+                                    Binding="{Binding User.Gender, Source={x:Reference this}}"
+                                    TargetType="Label"
+                                    Value="FEMALE">
+                                    <Setter Property="Text" Value="{x:Static local:MaterialCommunityIconsFont.HumanFemale}" />
+                                </DataTrigger>
+                                <DataTrigger
+                                    Binding="{Binding User.Gender, Source={x:Reference this}}"
+                                    TargetType="Label"
+                                    Value="OTHERS">
+                                    <Setter Property="Text" Value="{x:Static local:MaterialCommunityIconsFont.HumanMaleFemale}" />
+                                </DataTrigger>
+                            </Label.Triggers>
+                        </Label>
+
+                        <Grid WidthRequest="{Binding ., Converter={StaticResource AdjustedDeviceWidthConverter}}">
+                            <Label
+                                Style="{StaticResource Heading2Wrapped3LinesStyle}"
+                                Text="{Binding User.Name, Source={x:Reference this}}"
+                                WidthRequest="{Binding ., Converter={StaticResource AdjustedDeviceWidthConverter}}" />
+                        </Grid>
+
+                    </HorizontalStackLayout>
+
+                    <VerticalStackLayout IsVisible="{Binding User.UserBookingCard, Source={x:Reference this}, Converter={x:StaticResource IsNotNullConverter}}" Spacing="2">
+                        <HorizontalStackLayout IsVisible="{Binding User.UserBookingCard.BookingFromToTime, Source={x:Reference this}, Converter={x:StaticResource IsStringNotNullOrEmptyConverter}}" Spacing="5">
+                            <Label
+                                FontFamily="MaterialCommunityIcons"
+                                FontSize="18"
+                                HorizontalOptions="Center"
+                                Opacity="0.75"
+                                Text="{x:Static local:MaterialCommunityIconsFont.Calendar}"
+                                TextColor="{StaticResource TextColor}"
+                                VerticalOptions="Center" />
+
+                            <Grid WidthRequest="{Binding ., Converter={StaticResource AdjustedDeviceWidthConverter}}">
+                                <Label
+                                    Style="{StaticResource LabelWrapped3LinesStyle}"
+                                    Text="{Binding User.UserBookingCard.BookingFromToTime, Source={x:Reference this}}"
+                                    WidthRequest="{Binding ., Converter={StaticResource AdjustedDeviceWidthConverter}}" />
+                            </Grid>
+                        </HorizontalStackLayout>
+
+                        <HorizontalStackLayout IsVisible="{Binding User.UserBookingCard.BookingTypeWithCode, Source={x:Reference this}, Converter={x:StaticResource IsStringNotNullOrEmptyConverter}}" Spacing="5">
+                            <Label
+                                FontFamily="MaterialCommunityIcons"
+                                FontSize="18"
+                                HorizontalOptions="Center"
+                                Opacity="0.75"
+                                Text="{x:Static local:MaterialCommunityIconsFont.Bookmark}"
+                                TextColor="{StaticResource TextColor}"
+                                VerticalOptions="Center" />
+
+                            <Grid WidthRequest="{Binding ., Converter={StaticResource AdjustedDeviceWidthConverter}}">
+                                <Label Style="{StaticResource LabelWrapped3LinesStyle}" Text="{Binding User.UserBookingCard.BookingTypeWithCode, Source={x:Reference this}}" />
+                            </Grid>
+                        </HorizontalStackLayout>
+                    </VerticalStackLayout>
+
+                    <HorizontalStackLayout
+                        InputTransparent="True"
+                        IsVisible="{Binding User.UserAddressCard, Source={x:Reference this}, Converter={StaticResource IsNotNullConverter}}"
+                        Spacing="5">
+                        <Label
+                            FontFamily="MaterialCommunityIcons"
+                            FontSize="20"
+                            HorizontalOptions="Center"
+                            Opacity="0.75"
+                            Text="{x:Static local:MaterialCommunityIconsFont.Home}"
+                            TextColor="{StaticResource TextColor}"
+                            VerticalOptions="Center" />
+
+                        <Grid HorizontalOptions="Start" WidthRequest="{Binding ., Converter={StaticResource AdjustedDeviceWidthConverter}}">
+                            <Label
+                                FontSize="14"
+                                HorizontalTextAlignment="Start"
+                                LineBreakMode="TailTruncation"
+                                MaxLines="4"
+                                Text="{Binding User.UserAddressCard.Address, Source={x:Reference this}}"
+                                TextColor="{StaticResource TextColor}"
+                                WidthRequest="{Binding ., Converter={StaticResource AdjustedDeviceWidthConverter}}" />
+                        </Grid>
+                    </HorizontalStackLayout>
+                </VerticalStackLayout>
+            </HorizontalStackLayout>
+
+            <HorizontalStackLayout HorizontalOptions="End" Spacing="5">
+                <material:ButtonView
+                    IsVisible="{Binding IsCallVisible, Source={x:Reference this}}"
+                    Style="{StaticResource InfoButtonStyle}"
+                    TappedCommand="{Binding CallCommand, Source={x:Reference this}}">
+                    <HorizontalStackLayout>
+                        <Label
+                            FontFamily="MaterialCommunityIcons"
+                            FontSize="16"
+                            HorizontalOptions="End"
+                            Text="{x:Static local:MaterialCommunityIconsFont.Phone}"
+                            TextColor="{StaticResource TextColor}"
+                            VerticalOptions="Center" />
+                        <Label
+                            Margin="3,0,3,0"
+                            HorizontalOptions="End"
+                            Style="{StaticResource LabelWrapped1LinesStyle}"
+                            Text="Call" />
+                    </HorizontalStackLayout>
+                </material:ButtonView>
+
+                <material:ButtonView
+                    IsVisible="{Binding IsDirectionVisible, Source={x:Reference this}}"
+                    Style="{StaticResource InfoButtonStyle}"
+                    TappedCommand="{Binding DirectionsCommand, Source={x:Reference this}}">
+                    <HorizontalStackLayout>
+                        <Label
+                            FontFamily="MaterialCommunityIcons"
+                            FontSize="16"
+                            HorizontalOptions="End"
+                            Text="{x:Static local:MaterialCommunityIconsFont.Directions}"
+                            TextColor="{StaticResource TextColor}"
+                            VerticalOptions="Center" />
+                        <Label
+                            Margin="3,0,3,0"
+                            HorizontalOptions="End"
+                            Style="{StaticResource LabelWrapped1LinesStyle}"
+                            Text="Directions" />
+                    </HorizontalStackLayout>
+                </material:ButtonView>
+            </HorizontalStackLayout>
+
+            <BoxView
+                Margin="0,5,0,-5"
+                HeightRequest="0.5"
+                HorizontalOptions="Fill"
+                IsVisible="{Binding IsAccessInstructionsVisible, Source={x:Reference this}}"
+                Opacity="0.5"
+                Color="{StaticResource MainBorderColor}" />
+
+            <uranium:ExpanderView IsVisible="{Binding IsAccessInstructionsVisible, Source={x:Reference this}}">
+                <uranium:ExpanderView.Header>
+                    <Label Style="{StaticResource Heading1Style}" Text="Access Instructions" />
+                </uranium:ExpanderView.Header>
+
+                <Grid ColumnDefinitions="Auto,*" RowDefinitions="Auto,Auto,5,Auto,Auto,5,Auto,Auto">
+                    <Label
+                        Grid.Row="0"
+                        Grid.Column="0"
+                        Style="{StaticResource Heading2Style}"
+                        Text="Key Safe PIN:"
+                        VerticalOptions="Center"
+                        VerticalTextAlignment="Center" />
+                    <Label
+                        Grid.Row="0"
+                        Grid.Column="1"
+                        HorizontalTextAlignment="End"
+                        IsVisible="{Binding User.UserAddressCard.KeySafePIN, Source={x:Reference this}, Converter={x:StaticResource IsStringNullOrEmptyConverter}}"
+                        Style="{StaticResource MutedTextStyles}"
+                        Text="(None)"
+                        VerticalOptions="Center"
+                        VerticalTextAlignment="Center" />
+                    <Label
+                        Grid.Row="0"
+                        Grid.Column="1"
+                        HorizontalTextAlignment="End"
+                        IsVisible="{Binding User.UserAddressCard.KeySafePIN, Source={x:Reference this}, Converter={x:StaticResource IsStringNotNullOrEmptyConverter}}"
+                        Style="{StaticResource LabelWrappedStyle}"
+                        Text="{Binding User.UserAddressCard.KeySafePIN, Source={x:Reference this}}" />
+                    <Label
+                        Grid.Row="3"
+                        Grid.Column="0"
+                        Style="{StaticResource Heading2Style}"
+                        Text="Entry Instructions:"
+                        VerticalTextAlignment="Center" />
+                    <Label
+                        Grid.Row="3"
+                        Grid.Column="1"
+                        HorizontalTextAlignment="End"
+                        IsVisible="{Binding User.UserAddressCard.EntryInstructions, Source={x:Reference this}, Converter={x:StaticResource IsStringNullOrEmptyConverter}}"
+                        Style="{StaticResource MutedTextStyles}"
+                        Text="(None)"
+                        VerticalTextAlignment="Center" />
+                    <Label
+                        Grid.Row="4"
+                        Grid.ColumnSpan="2"
+                        IsVisible="{Binding User.UserAddressCard.EntryInstructions, Source={x:Reference this}, Converter={x:StaticResource IsStringNotNullOrEmptyConverter}}"
+                        Style="{StaticResource LabelWrappedStyle}"
+                        Text="{Binding User.UserAddressCard.EntryInstructions, Source={x:Reference this}}" />
+                    <Label
+                        Grid.Row="6"
+                        Grid.Column="0"
+                        Style="{StaticResource Heading2Style}"
+                        Text="House Photos:"
+                        VerticalTextAlignment="Center" />
+                    <Label
+                        Grid.Row="6"
+                        Grid.Column="2"
+                        HorizontalTextAlignment="End"
+                        IsVisible="{Binding User.UserAddressCard.HousePhotos, Source={x:Reference this}, Converter={x:StaticResource IsListNullOrEmptyConverter}}"
+                        Style="{StaticResource MutedTextStyles}"
+                        Text="(None)"
+                        VerticalTextAlignment="Center" />
+                    <local:ImageVerticalListControl
+                        Grid.Row="6"
+                        Grid.ColumnSpan="2"
+                        AttachmentList="{Binding User.UserAddressCard.HousePhotos, Mode=TwoWay, Source={x:Reference this}}"
+                        HorizontalOptions="End"
+                        IsVisible="{Binding User.UserAddressCard.HousePhotos, Source={x:Reference this}, Converter={x:StaticResource IsListNotNullOrEmptyConverter}}" />
+                </Grid>
+            </uranium:ExpanderView>
+        </VerticalStackLayout>
+    </ContentView.Content>
+</local:BaseContentView>

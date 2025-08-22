@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<rxui:ReactiveShell
+    x:Class="VisitTracker.SupervisorHomePage"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:android="clr-namespace:Microsoft.Maui.Controls.PlatformConfiguration.AndroidSpecific;assembly=Microsoft.Maui.Controls"
+    xmlns:local="clr-namespace:VisitTracker"
+    xmlns:mct="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
+    xmlns:rxui="clr-namespace:ReactiveUI.Maui;assembly=ReactiveUI.Maui"
+    android:TabbedPage.IsSmoothScrollEnabled="True"
+    android:TabbedPage.IsSwipePagingEnabled="True"
+    android:TabbedPage.ToolbarPlacement="Bottom"
+    x:DataType="local:SupervisorHomeVm"
+    x:TypeArguments="local:SupervisorHomeVm"
+    AutomationId="SupervisorHomePage"
+    Shell.UnselectedColor="{StaticResource PrimaryColor}">
+    <Shell.Behaviors>
+        <mct:EventToCommandBehavior Command="{Binding InitCommand}" EventName="Appearing" />
+    </Shell.Behaviors>
+
+    <Tab Title="{Binding SupervisorDashboardPage.Title}" Icon="{Binding SupervisorDashboardPage.IconImageSource}">
+        <ShellContent ContentTemplate="{DataTemplate local:SupervisorDashboardPage}" />
+    </Tab>
+    <Tab Title="Service Users" Icon="{Binding ServiceUsersPage.IconImageSource}">
+        <ShellContent ContentTemplate="{DataTemplate local:ServiceUsersPage}" />
+    </Tab>
+    <Tab Title="{Binding CareWorkersPage.Title}" Icon="{Binding CareWorkersPage.IconImageSource}">
+        <ShellContent ContentTemplate="{DataTemplate local:CareWorkersPage}" />
+    </Tab>
+    <Tab Title="{Binding MiscellaneousPage.Title}" Icon="{Binding MiscellaneousPage.IconImageSource}">
+        <ShellContent ContentTemplate="{DataTemplate local:MiscellaneousPage}" />
+    </Tab>
+</rxui:ReactiveShell>

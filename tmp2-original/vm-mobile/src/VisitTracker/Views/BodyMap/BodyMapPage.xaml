@@ -1,0 +1,80 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<local:BaseContentPage
+    x:Class="VisitTracker.BodyMapPage"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:input="clr-namespace:InputKit.Shared.Controls;assembly=InputKit.Maui"
+    xmlns:local="clr-namespace:VisitTracker"
+    xmlns:m="clr-namespace:UraniumUI.Icons.MaterialIcons;assembly=UraniumUI.Icons.MaterialIcons"
+    xmlns:material="http://schemas.enisn-projects.io/dotnet/maui/uraniumui/material"
+    xmlns:mct="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
+    xmlns:skia="clr-namespace:SkiaSharp.Extended.UI.Controls;assembly=SkiaSharp.Extended.UI"
+    xmlns:validation="clr-namespace:InputKit.Shared.Validations;assembly=InputKit.Maui"
+    x:Name="BodyMapPageView"
+    Title="Body Map"
+    x:DataType="local:BodyMapVm"
+    x:TypeArguments="local:BodyMapVm"
+    BackgroundColor="{StaticResource PanelColor}"
+    Shell.NavBarIsVisible="True"
+    Shell.TabBarIsVisible="False">
+    <Shell.BackButtonBehavior>
+        <BackButtonBehavior Command="{Binding OnBackCommand}" />
+    </Shell.BackButtonBehavior>
+
+    <Grid>
+        <Grid
+            Margin="10"
+            IsVisible="{Binding IsNotBusy}"
+            RowDefinitions="*,Auto"
+            RowSpacing="0">
+
+            <Grid VerticalOptions="Fill">
+                <local:SKCanvasViewZoom
+                    x:Name="canvasView"
+                    BackgroundColor="{StaticResource PanelColor}"
+                    EnableTouchEvents="{Binding IsNotReadOnly}"
+                    HorizontalOptions="Fill"
+                    IsVisible="{Binding BodyMapCreate.IsChangeBodyMap, Converter={StaticResource NotConverter}}"
+                    PaintSurface="OnPaintSurface"
+                    Touch="OnBodyPartSelection"
+                    VerticalOptions="Fill" />
+
+                <local:SKCanvasViewZoom
+                    x:Name="canvasViewBack"
+                    BackgroundColor="{StaticResource PanelColor}"
+                    EnableTouchEvents="{Binding IsNotReadOnly}"
+                    HorizontalOptions="Fill"
+                    IsVisible="{Binding BodyMapCreate.IsChangeBodyMap}"
+                    PaintSurface="OnPaintSurfaceRear"
+                    Touch="OnBodyPartSelectionRearAsync"
+                    VerticalOptions="Fill" />
+            </Grid>
+
+            <Grid Grid.Row="1" ColumnDefinitions="*,*">
+                <Button
+                    x:Name="BodyMapText"
+                    Grid.Column="0"
+                    Margin="10,0,10,10"
+                    AutomationId="ChangeBodyMap"
+                    Command="{Binding ChangeBodyMapCommand}"
+                    CornerRadius="10"
+                    HorizontalOptions="Start"
+                    MinimumWidthRequest="65"
+                    Style="{StaticResource DefaultButtonStyle}"
+                    Text="{Binding BodyMapCreate.BodyMapLabel}" />
+
+                <Button
+                    Grid.Column="1"
+                    Margin="10,0,10,10"
+                    AutomationId="Notes"
+                    Command="{Binding OpenBodyMapRemarksPopupCommand}"
+                    CornerRadius="10"
+                    HorizontalOptions="End"
+                    Style="{StaticResource PrimaryButtonStyle}"
+                    Text="Notes" />
+            </Grid>
+        </Grid>
+
+        <local:CustomActivityIndicator IsBusy="{Binding IsBusy}" />
+    </Grid>
+</local:BaseContentPage>

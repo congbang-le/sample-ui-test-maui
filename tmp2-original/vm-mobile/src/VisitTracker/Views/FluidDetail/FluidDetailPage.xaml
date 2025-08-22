@@ -1,0 +1,365 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<local:BaseContentPage
+    x:Class="VisitTracker.FluidDetailPage"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:input="clr-namespace:InputKit.Shared.Controls;assembly=InputKit.Maui"
+    xmlns:local="clr-namespace:VisitTracker"
+    xmlns:m="clr-namespace:UraniumUI.Icons.MaterialIcons;assembly=UraniumUI.Icons.MaterialIcons"
+    xmlns:material="http://schemas.enisn-projects.io/dotnet/maui/uraniumui/material"
+    xmlns:skia="clr-namespace:SkiaSharp.Extended.UI.Controls;assembly=SkiaSharp.Extended.UI"
+    xmlns:validation="clr-namespace:InputKit.Shared.Validations;assembly=InputKit.Maui"
+    Title="Fluids"
+    x:DataType="local:FluidDetailVm"
+    x:TypeArguments="local:FluidDetailVm"
+    BackgroundColor="{StaticResource MainBackgroudColor}"
+    Shell.NavBarIsVisible="True"
+    Shell.TabBarIsVisible="False">
+    <Shell.BackButtonBehavior>
+        <BackButtonBehavior Command="{Binding OnBackCommand}" />
+    </Shell.BackButtonBehavior>
+
+    <Grid Margin="0,10" RowDefinitions="*,Auto">
+        <ScrollView
+            Grid.Row="0"
+            Margin="10,0"
+            IsVisible="{Binding IsNotBusy}">
+
+            <input:FormView
+                IsVisible="{Binding IsNotBusy}"
+                Spacing="10"
+                SubmitCommand="{Binding SubmitCommand}"
+                VerticalOptions="Fill">
+                <VerticalStackLayout Spacing="15">
+                    <ScrollView Orientation="Horizontal">
+                        <HorizontalStackLayout Spacing="8">
+                            <local:FluidChartButtonControl ServiceUserId="{Binding ServiceUser.Id}" />
+                        </HorizontalStackLayout>
+                    </ScrollView>
+
+                    <local:CardViewControl HasCardTitle="False">
+                        <local:UserCardControl Padding="5" User="{Binding ServiceUserCard}" />
+                    </local:CardViewControl>
+
+                    <material:TextField
+                        Title="Task"
+                        FontSize="14"
+                        HorizontalOptions="Fill"
+                        IsEnabled="{Binding IsNotReadOnly}"
+                        IsReadOnly="True"
+                        Style="{StaticResource MaterialTextField}"
+                        Text="Update fluid balance!" />
+
+                    <VerticalStackLayout>
+                        <Label Style="{StaticResource Heading1Style}" Text="Intake Details" />
+
+                        <Grid
+                            ColumnDefinitions="*,*"
+                            ColumnSpacing="10"
+                            RowDefinitions="Auto,Auto"
+                            RowSpacing="5">
+
+                            <material:TextField
+                                Title="Oral (ml)"
+                                Grid.Row="0"
+                                Grid.Column="0"
+                                FontSize="14"
+                                IsEnabled="{Binding IsNotReadOnly}"
+                                IsReadOnly="{Binding IsReadOnly}"
+                                Keyboard="Numeric"
+                                Style="{StaticResource MaterialTextField}"
+                                Text="{Binding VisitFluid.OralIntake}">
+                                <validation:DigitsOnlyValidation />
+                                <validation:MinValueValidation MinValue="0" />
+                                <validation:MaxValueValidation MaxValue="3000" />
+                            </material:TextField>
+
+                            <material:TextField
+                                Title="IV/SC (ml)"
+                                Grid.Row="0"
+                                Grid.Column="1"
+                                FontSize="14"
+                                IsEnabled="{Binding IsNotReadOnly}"
+                                IsReadOnly="{Binding IsReadOnly}"
+                                Keyboard="Numeric"
+                                Style="{StaticResource MaterialTextField}"
+                                Text="{Binding VisitFluid.IvScIntake}">
+                                <validation:DigitsOnlyValidation />
+                                <validation:MinValueValidation MinValue="0" />
+                                <validation:MaxValueValidation MaxValue="3000" />
+                            </material:TextField>
+
+                            <material:TextField
+                                Title="Other (ml)"
+                                Grid.Row="1"
+                                Grid.Column="0"
+                                FontSize="14"
+                                IsEnabled="{Binding IsNotReadOnly}"
+                                IsReadOnly="{Binding IsReadOnly}"
+                                Keyboard="Numeric"
+                                Style="{StaticResource MaterialTextField}"
+                                Text="{Binding VisitFluid.OtherIntake}">
+                                <validation:DigitsOnlyValidation />
+                                <validation:MinValueValidation MinValue="0" />
+                                <validation:MaxValueValidation MaxValue="3000" />
+                            </material:TextField>
+                        </Grid>
+                    </VerticalStackLayout>
+
+                    <VerticalStackLayout>
+                        <Label Style="{StaticResource Heading1Style}" Text="Output Details" />
+
+                        <Grid
+                            ColumnDefinitions="*,*"
+                            ColumnSpacing="10"
+                            RowDefinitions="Auto,Auto"
+                            RowSpacing="10">
+
+                            <material:TextField
+                                Title="Urine (ml)"
+                                Grid.Row="0"
+                                Grid.Column="0"
+                                FontSize="14"
+                                IsEnabled="{Binding IsNotReadOnly}"
+                                IsReadOnly="{Binding IsReadOnly}"
+                                Keyboard="Numeric"
+                                Style="{StaticResource MaterialTextField}"
+                                Text="{Binding VisitFluid.UrineOutput}">
+                                <validation:DigitsOnlyValidation />
+                                <validation:MinValueValidation MinValue="0" />
+                                <validation:MaxValueValidation MaxValue="3000" />
+                            </material:TextField>
+
+                            <material:TextField
+                                Title="Vomit (ml)"
+                                Grid.Row="0"
+                                Grid.Column="1"
+                                FontSize="14"
+                                InputBackgroundColor="{StaticResource FrameBackgroundColor}"
+                                IsEnabled="{Binding IsNotReadOnly}"
+                                IsReadOnly="{Binding IsReadOnly}"
+                                Keyboard="Numeric"
+                                Style="{StaticResource MaterialTextField}"
+                                Text="{Binding VisitFluid.VomitOutput}">
+                                <validation:DigitsOnlyValidation />
+                                <validation:MinValueValidation MinValue="0" />
+                                <validation:MaxValueValidation MaxValue="3000" />
+                            </material:TextField>
+
+                            <material:TextField
+                                Title="Tube (ml)"
+                                Grid.Row="1"
+                                Grid.Column="0"
+                                FontSize="14"
+                                IsEnabled="{Binding IsNotReadOnly}"
+                                IsReadOnly="{Binding IsReadOnly}"
+                                Keyboard="Numeric"
+                                Style="{StaticResource MaterialTextField}"
+                                Text="{Binding VisitFluid.TubeOutput}">
+                                <validation:DigitsOnlyValidation />
+                                <validation:MinValueValidation MinValue="0" />
+                                <validation:MaxValueValidation MaxValue="3000" />
+                            </material:TextField>
+
+                            <material:TextField
+                                Title="Other (ml)"
+                                Grid.Row="1"
+                                Grid.Column="1"
+                                FontSize="14"
+                                IsEnabled="{Binding IsNotReadOnly}"
+                                IsReadOnly="{Binding IsReadOnly}"
+                                Keyboard="Numeric"
+                                Style="{StaticResource MaterialTextField}"
+                                Text="{Binding VisitFluid.OtherOutput}">
+                                <validation:DigitsOnlyValidation />
+                                <validation:MinValueValidation MinValue="0" />
+                                <validation:MaxValueValidation MaxValue="3000" />
+                            </material:TextField>
+                        </Grid>
+                    </VerticalStackLayout>
+
+                    <material:InputField
+                        Title="Date and Time of Submission"
+                        HasValue="True"
+                        IsEnabled="{Binding IsNotReadOnly}"
+                        IsVisible="{Binding VisitFluid.CompletedOn, Converter={StaticResource IsNotNullConverter}}"
+                        Style="{StaticResource MaterialInputField}"
+                        VerticalOptions="Center">
+                        <Label
+                            Margin="15,0,0,0"
+                            Padding="2"
+                            FontSize="15"
+                            HorizontalOptions="Fill"
+                            HorizontalTextAlignment="Start"
+                            Text="{Binding VisitFluid.CompletedOn, StringFormat='{0:dddd, dd MMM yyyy HH:mm} hrs'}"
+                            TextColor="{StaticResource TextColor}"
+                            VerticalOptions="Center"
+                            VerticalTextAlignment="Center" />
+                    </material:InputField>
+
+                    <material:EditorField
+                        Title="Notes"
+                        IsEnabled="{Binding IsNotReadOnly}"
+                        IsReadOnly="{Binding IsReadOnly}"
+                        MaxLength="2000"
+                        Style="{StaticResource MaterialEditorField}"
+                        Text="{Binding VisitFluid.Summary}" />
+
+                    <StackLayout IsVisible="{Binding IsReadOnly}">
+                        <Grid ColumnDefinitions="100,*" ColumnSpacing="15">
+                            <Label
+                                Grid.Column="0"
+                                Margin="0,5,0,0"
+                                HorizontalOptions="Start"
+                                Style="{StaticResource Heading1Style}"
+                                Text="Attachments:"
+                                VerticalOptions="Center" />
+
+                            <local:HorizontalAttachmentControl
+                                Grid.Column="1"
+                                AttachmentList="{Binding AttachmentList, Mode=TwoWay}"
+                                BaseVisitId="{Binding BaseVisitId}"
+                                Type="{Binding TypeName}"
+                                TypeId="{Binding VisitFluid.Id}"
+                                VerticalOptions="Start" />
+                        </Grid>
+                    </StackLayout>
+
+                    <StackLayout IsVisible="{Binding IsReadOnly}">
+                        <Grid ColumnDefinitions="100,*" ColumnSpacing="15">
+                            <Label
+                                Grid.Column="0"
+                                Margin="0,5,0,0"
+                                HorizontalOptions="Start"
+                                Style="{StaticResource Heading1Style}"
+                                Text="Body Maps:"
+                                VerticalOptions="Center" />
+
+                            <local:HorizontalBodyMapControl
+                                Grid.Column="1"
+                                BaseVisitId="{Binding BaseVisitId}"
+                                BodyMapList="{Binding BodyMapList, Mode=TwoWay}"
+                                IsReadOnly="True"
+                                Type="{Binding TypeName}"
+                                TypeId="{Binding VisitFluid.Id}"
+                                VerticalOptions="Center" />
+                        </Grid>
+                    </StackLayout>
+
+                    <Border
+                        Padding="8"
+                        IsVisible="{Binding IsReadOnly, Converter={StaticResource NotConverter}}"
+                        Stroke="SlateGray"
+                        StrokeShape="{RoundRectangle CornerRadius=10}">
+                        <material:TabView>
+                            <material:TabItem Title="Attachments">
+                                <material:TabItem.HeaderTemplate>
+                                    <DataTemplate>
+                                        <material:ButtonView TappedCommand="{Binding Command}">
+                                            <Label
+                                                FontFamily="13"
+                                                HorizontalOptions="Center"
+                                                Text="Attachments"
+                                                TextColor="{StaticResource TextColor}" />
+                                            <material:ButtonView.Triggers>
+                                                <DataTrigger
+                                                    Binding="{Binding IsSelected}"
+                                                    TargetType="material:ButtonView"
+                                                    Value="True">
+                                                    <Setter Property="Style" Value="{StaticResource TabSelectedButtonStyle}" />
+                                                </DataTrigger>
+                                                <DataTrigger
+                                                    Binding="{Binding IsSelected}"
+                                                    TargetType="material:ButtonView"
+                                                    Value="False">
+                                                    <Setter Property="Style" Value="{StaticResource TabUnselectedButtonStyle}" />
+                                                </DataTrigger>
+                                            </material:ButtonView.Triggers>
+                                        </material:ButtonView>
+                                    </DataTemplate>
+                                </material:TabItem.HeaderTemplate>
+                                <material:TabItem.Content>
+                                    <local:AttachmentControl
+                                        Padding="5"
+                                        AttachmentList="{Binding AttachmentList, Mode=TwoWay}"
+                                        BaseVisitId="{Binding BaseVisitId}"
+                                        IsReadOnly="{Binding IsReadOnly}"
+                                        MaxAudios="3"
+                                        MaxImages="3"
+                                        Type="{Binding TypeName}"
+                                        TypeId="{Binding VisitFluid.Id}" />
+                                </material:TabItem.Content>
+                            </material:TabItem>
+
+                            <material:TabItem Title="Body Maps">
+                                <material:TabItem.HeaderTemplate>
+                                    <DataTemplate>
+                                        <material:ButtonView TappedCommand="{Binding Command}">
+                                            <Label
+                                                FontFamily="13"
+                                                HorizontalOptions="Center"
+                                                Text="Body Maps"
+                                                TextColor="{StaticResource TextColor}" />
+                                            <material:ButtonView.Triggers>
+                                                <DataTrigger
+                                                    Binding="{Binding IsSelected}"
+                                                    TargetType="material:ButtonView"
+                                                    Value="True">
+                                                    <Setter Property="Style" Value="{StaticResource TabSelectedButtonStyle}" />
+                                                </DataTrigger>
+                                                <DataTrigger
+                                                    Binding="{Binding IsSelected}"
+                                                    TargetType="material:ButtonView"
+                                                    Value="False">
+                                                    <Setter Property="Style" Value="{StaticResource TabUnselectedButtonStyle}" />
+                                                </DataTrigger>
+                                            </material:ButtonView.Triggers>
+                                        </material:ButtonView>
+                                    </DataTemplate>
+                                </material:TabItem.HeaderTemplate>
+                                <material:TabItem.Content>
+                                    <local:BodyMapControl
+                                        BaseVisitId="{Binding BaseVisitId}"
+                                        BodyMapList="{Binding BodyMapList, Mode=TwoWay}"
+                                        IsReadOnly="{Binding IsReadOnly}"
+                                        Type="{Binding TypeName}"
+                                        TypeId="{Binding VisitFluid.Id}" />
+                                </material:TabItem.Content>
+                            </material:TabItem>
+                        </material:TabView>
+                    </Border>
+                </VerticalStackLayout>
+            </input:FormView>
+        </ScrollView>
+
+        <input:FormView
+            Grid.Row="1"
+            Margin="10,0"
+            IsVisible="{Binding IsNotBusy}"
+            Spacing="10"
+            SubmitCommand="{Binding SubmitCommand}"
+            VerticalOptions="Fill">
+            <material:ButtonView
+                input:FormView.IsSubmitButton="True"
+                IsEnabled="{Binding IsNotBusy}"
+                IsVisible="{Binding IsNotReadOnly}"
+                Style="{StaticResource CentralizedButtonViewStyle}">
+                <Grid>
+                    <HorizontalStackLayout
+                        HorizontalOptions="Center"
+                        IsVisible="{Binding IsNotBusy}"
+                        Spacing="10">
+                        <Label Style="{StaticResource CentralizedPrimaryBtnLabelStyle}" Text="SAVE" />
+                    </HorizontalStackLayout>
+
+                    <local:CustomActivityIndicator
+                        BusyText="Saving..."
+                        IsBusy="{Binding IsBusy}"
+                        SourceFile="LoaderWhite.json"
+                        Style="{StaticResource CentralizedActivityIndicatorStyle}" />
+                </Grid>
+            </material:ButtonView>
+        </input:FormView>
+        <local:CustomActivityIndicator IsBusy="{Binding IsBusy}" />
+    </Grid>
+</local:BaseContentPage>

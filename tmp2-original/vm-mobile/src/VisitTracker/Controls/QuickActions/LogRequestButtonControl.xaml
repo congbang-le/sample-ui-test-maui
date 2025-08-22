@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<local:BaseContentView
+    x:Class="VisitTracker.LogRequestButtonControl"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:local="clr-namespace:VisitTracker"
+    xmlns:material="http://schemas.enisn-projects.io/dotnet/maui/uraniumui/material"
+    x:Name="LogRequestButton">
+    <ContentView.ControlTemplate>
+        <ControlTemplate>
+            <material:ButtonView
+                AutomationId="LogRequestButton"
+                Style="{StaticResource QuickActionsButtonStyle}"
+                TappedCommand="{Binding Source={x:Reference LogRequestButton}, Path=OpenLogRequestCommand}">
+                <HorizontalStackLayout Spacing="2">
+                    <Label Style="{StaticResource QuickActionsIconStyle}" Text="{x:Static local:MaterialCommunityIconsFont.Send}" />
+
+                    <Label Style="{StaticResource QuickActionsTextStyle}" Text="Log Request" />
+                </HorizontalStackLayout>
+            </material:ButtonView>
+        </ControlTemplate>
+    </ContentView.ControlTemplate>
+</local:BaseContentView>

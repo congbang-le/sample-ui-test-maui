@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<local:BaseContentPage
+    x:Class="VisitTracker.CareWorkersPage"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:domain="clr-namespace:VisitTracker.Domain;assembly=VisitTracker.Domain"
+    xmlns:local="clr-namespace:VisitTracker"
+    xmlns:m="clr-namespace:UraniumUI.Icons.MaterialIcons;assembly=UraniumUI.Icons.MaterialIcons"
+    xmlns:material="http://schemas.enisn-projects.io/dotnet/maui/uraniumui/material"
+    xmlns:mct="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
+    xmlns:skia="clr-namespace:SkiaSharp.Extended.UI.Controls;assembly=SkiaSharp.Extended.UI"
+    x:Name="this"
+    Title="Care Workers"
+    x:DataType="local:CareWorkersVm"
+    x:TypeArguments="local:CareWorkersVm"
+    BackgroundColor="{StaticResource MainBackgroudColor}"
+    HideSoftInputOnTapped="True"
+    IconImageSource="users"
+    Shell.BackgroundColor="{StaticResource MainBackgroudColor}"
+    Shell.NavBarHasShadow="False"
+    Shell.NavBarIsVisible="False"
+    Shell.TitleColor="{StaticResource PrimaryColor}">
+    <ContentPage.Behaviors>
+        <mct:EventToCommandBehavior Command="{Binding InitCommand}" EventName="Appearing" />
+    </ContentPage.Behaviors>
+
+    <Grid Margin="10" RowDefinitions="Auto,Auto,*">
+        <Label Style="{StaticResource PageTitleStyle}" Text="Care Workers" />
+
+        <material:TextField
+            Title="Search Care Workers"
+            Grid.Row="1"
+            Margin="0,0,0,10"
+            AllowClear="True"
+            ClearButtonVisibility="WhileEditing"
+            Icon="{FontImageSource FontFamily=MaterialRegular,
+                                   Glyph={x:Static m:MaterialRegular.Search}}"
+            Style="{StaticResource PickerFieldStyle}"
+            Text="{Binding SearchText, Mode=TwoWay}" />
+
+        <RefreshView
+            Grid.Row="2"
+            Command="{Binding RefreshCommand}"
+            IsRefreshing="{Binding IsRefreshing}"
+            IsVisible="{Binding IsNotBusy}">
+            <CollectionView ItemsSource="{Binding FilteredCareWorkers}" VerticalScrollBarVisibility="Always">
+                <CollectionView.ItemsLayout>
+                    <LinearItemsLayout ItemSpacing="10" Orientation="Vertical" />
+                </CollectionView.ItemsLayout>
+                <CollectionView.ItemTemplate>
+                    <DataTemplate x:DataType="domain:CareWorker">
+                        <material:ButtonView
+                            Padding="5"
+                            BackgroundColor="{StaticResource PanelColor}"
+                            CommandParameter="{Binding Id}"
+                            Stroke="{StaticResource PanelBorderColor}"
+                            StrokeShape="{RoundRectangle CornerRadius=10}"
+                            Style="{StaticResource ListCommonVisualStateGroup}"
+                            TappedCommand="{Binding BindingContext.OpenCareWorkerCommand, Source={x:Reference this}}">
+                            <Grid
+                                ColumnDefinitions="Auto,*"
+                                ColumnSpacing="15"
+                                HorizontalOptions="Fill"
+                                VerticalOptions="Center">
+
+                                <local:PlaceholderImageControl
+                                    Grid.Column="0"
+                                    HorizontalOptions="Start"
+                                    InputTransparent="True"
+                                    SizeOption="Custom"
+                                    Source="{Binding ImageUrl, Converter={StaticResource DefaultImageSourceConverter}}" />
+
+                                <Grid
+                                    Grid.Column="1"
+                                    ColumnDefinitions="*,Auto"
+                                    HorizontalOptions="Fill"
+                                    VerticalOptions="Center">
+
+                                    <Label
+                                        Grid.Column="0"
+                                        HorizontalOptions="Fill"
+                                        HorizontalTextAlignment="Start"
+                                        Style="{StaticResource Heading2Wrapped3LinesStyle}"
+                                        Text="{Binding Name}"
+                                        VerticalOptions="Center" />
+
+                                    <material:ButtonView
+                                        Grid.Column="1"
+                                        CommandParameter="{Binding PhoneNo}"
+                                        HorizontalOptions="End"
+                                        Style="{StaticResource InfoButtonStyle}"
+                                        TappedCommand="{Binding BindingContext.CallCommand, Source={x:Reference this}}"
+                                        VerticalOptions="Center"
+                                        WidthRequest="65">
+                                        <HorizontalStackLayout Spacing="5">
+                                            <Label
+                                                FontFamily="MaterialCommunityIcons"
+                                                FontSize="16"
+                                                HorizontalOptions="Center"
+                                                Text="{x:Static local:MaterialCommunityIconsFont.Phone}"
+                                                TextColor="{StaticResource TextColor}"
+                                                VerticalOptions="Center" />
+
+                                            <Label
+                                                Margin="0,0,3,0"
+                                                FontSize="14"
+                                                HorizontalOptions="Center"
+                                                Text="Call"
+                                                TextColor="{StaticResource TextColor}"
+                                                VerticalOptions="Center" />
+                                        </HorizontalStackLayout>
+                                    </material:ButtonView>
+                                </Grid>
+                            </Grid>
+                        </material:ButtonView>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+
+                <CollectionView.EmptyView>
+                    <local:NoDataControl />
+                </CollectionView.EmptyView>
+            </CollectionView>
+        </RefreshView>
+
+        <local:CustomActivityIndicator Grid.Row="2" IsBusy="{Binding IsBusy}" />
+    </Grid>
+</local:BaseContentPage>

@@ -1,0 +1,34 @@
+namespace VisitTracker.Domain;
+
+/// <summary>
+/// Enumeration representing different notification types to refer Notification table.
+/// This enum is used to categorize notifications based on their types.
+/// </summary>
+public enum ENotificationType
+{
+    BOOKING_ROSTER_SU,
+    BOOKING_ROSTER_CW,
+    BOOKING_ADDED,
+    BOOKING_CANCELLED,
+    BOOKING_UPDATE_BY_RESCHEDULED,
+    BOOKING_UPDATED,
+    BOOKING_REMOVED,
+    BOOKING_MISSED,
+    BOOKING_NON_MISSED,
+    LATE_MEDICATION_RESPONSE_ADMIN,
+    LATE_MEDICATION_RESPONSE_NO_RESPONSE,
+    LATE_MEDICATION_RESPONSE_SKIP,
+    EARLY_MEDICATION_RESPONSE_ADMIN,
+    EARLY_MEDICATION_RESPONSE_SKIP,
+    EARLY_MEDICATION_RESPONSE_NO_RESPONSE,
+    ADHOC_TEXT,
+    ADHOC_HTML,
+    TP_NOTIFICATION,
+    USER_REMOVED,
+    MASTER_CW_CHANGE,
+    SU_PROFILE_UPDATED,
+    CW_PROFILE_UPDATED,
+    ESTIMATED_TIME_OF_ARRIVAL,
+    GPS_SIGNAL_LOST,
+    VISIT_REPORT_UPLOADED,
+}

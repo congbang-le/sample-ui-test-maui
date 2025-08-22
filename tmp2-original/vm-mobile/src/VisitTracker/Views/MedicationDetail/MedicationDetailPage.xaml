@@ -1,0 +1,520 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<local:BaseContentPage
+    x:Class="VisitTracker.MedicationDetailPage"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:domain="clr-namespace:VisitTracker.Domain;assembly=VisitTracker.Domain"
+    xmlns:input="clr-namespace:InputKit.Shared.Controls;assembly=InputKit.Maui"
+    xmlns:local="clr-namespace:VisitTracker"
+    xmlns:m="clr-namespace:UraniumUI.Icons.MaterialIcons;assembly=UraniumUI.Icons.MaterialIcons"
+    xmlns:material="http://schemas.enisn-projects.io/dotnet/maui/uraniumui/material"
+    xmlns:mct="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
+    xmlns:skia="clr-namespace:SkiaSharp.Extended.UI.Controls;assembly=SkiaSharp.Extended.UI"
+    xmlns:uranium="http://schemas.enisn-projects.io/dotnet/maui/uraniumui"
+    xmlns:validation="clr-namespace:InputKit.Shared.Validations;assembly=InputKit.Maui"
+    Title="Medication Details"
+    x:DataType="local:MedicationDetailVm"
+    x:TypeArguments="local:MedicationDetailVm"
+    BackgroundColor="{StaticResource MainBackgroudColor}"
+    Shell.NavBarIsVisible="True"
+    Shell.TabBarIsVisible="False">
+    <Shell.BackButtonBehavior>
+        <BackButtonBehavior Command="{Binding OnBackCommand}" />
+    </Shell.BackButtonBehavior>
+
+    <Grid Margin="0,10" RowDefinitions="*,Auto">
+        <ScrollView Grid.Row="0" IsVisible="{Binding IsNotBusy}">
+            <input:FormView
+                Margin="10,0"
+                IsVisible="{Binding IsNotBusy}"
+                Spacing="10"
+                SubmitCommand="{Binding SubmitCommand}"
+                VerticalOptions="Fill">
+                <VerticalStackLayout Spacing="10">
+                    <ScrollView Orientation="Horizontal">
+                        <HorizontalStackLayout Spacing="8">
+                            <local:MarChartButtonControl ServiceUserId="{Binding ServiceUser.Id}" />
+                        </HorizontalStackLayout>
+                    </ScrollView>
+
+                    <local:CardViewControl HasCardTitle="False">
+                        <local:UserCardControl Padding="5" User="{Binding ServiceUserCard}" />
+                    </local:CardViewControl>
+
+                    <VerticalStackLayout>
+                        <Label Style="{StaticResource Heading1Wrapped4LinesStyle}" Text="{Binding Medication.Title}" />
+
+                        <material:InputField HasValue="True" Style="{StaticResource MaterialInputField}">
+                            <VerticalStackLayout Padding="10" Spacing="5">
+                                <Grid
+                                    ColumnDefinitions="*,*"
+                                    RowDefinitions="Auto,Auto,Auto,Auto,Auto"
+                                    RowSpacing="5">
+
+                                    <Label
+                                        Grid.Row="0"
+                                        Grid.Column="0"
+                                        HorizontalTextAlignment="Start"
+                                        TextColor="{StaticResource TextColor}"
+                                        VerticalOptions="Center">
+                                        <Label.FormattedText>
+                                            <FormattedString>
+                                                <Span
+                                                    FontAttributes="Bold"
+                                                    FontSize="16"
+                                                    Text="{Binding Medication.Strength}"
+                                                    TextColor="{StaticResource PrimaryColor}" />
+                                                <Span
+                                                    FontAttributes="Bold"
+                                                    FontSize="16"
+                                                    Text=" ("
+                                                    TextColor="{StaticResource PrimaryColor}" />
+                                                <Span
+                                                    FontAttributes="Bold"
+                                                    FontSize="16"
+                                                    Text="{Binding Medication.DosageUnitStr, Converter={StaticResource TitleCaseConverter}}"
+                                                    TextColor="{StaticResource PrimaryColor}" />
+                                                <Span
+                                                    FontAttributes="Bold"
+                                                    FontSize="16"
+                                                    Text=")"
+                                                    TextColor="{StaticResource PrimaryColor}" />
+                                            </FormattedString>
+                                        </Label.FormattedText>
+                                    </Label>
+
+                                    <Label
+                                        Grid.Row="0"
+                                        Grid.Column="1"
+                                        HorizontalTextAlignment="End"
+                                        Style="{StaticResource MedicationSubDetail}"
+                                        Text="{Binding Medication.MealInstructionStr, Converter={StaticResource TitleCaseConverter}}"
+                                        VerticalOptions="Center" />
+
+                                    <Label
+                                        Grid.Row="1"
+                                        Grid.Column="1"
+                                        HorizontalTextAlignment="End"
+                                        Style="{StaticResource MedicationSubDetail}"
+                                        Text="{Binding Medication.RouteStr, Converter={StaticResource TitleCaseConverter}}" />
+
+                                    <Label
+                                        Grid.Row="1"
+                                        Grid.Column="0"
+                                        Style="{StaticResource MedicationSubDetail}"
+                                        Text="{Binding Medication.AdministrationModeStr, Converter={StaticResource TitleCaseConverter}}"
+                                        VerticalOptions="Center" />
+
+                                    <Label
+                                        Grid.Row="2"
+                                        Grid.Column="0"
+                                        FontSize="14"
+                                        TextColor="{StaticResource TextColor}">
+                                        <Label.FormattedText>
+                                            <Binding Path="AllDaysStr" />
+                                        </Label.FormattedText>
+                                    </Label>
+
+                                    <Label
+                                        Grid.Row="2"
+                                        Grid.Column="2"
+                                        HorizontalTextAlignment="End"
+                                        Style="{StaticResource MedicationSubDetail}">
+                                        <Label.FormattedText>
+                                            <FormattedString>
+                                                <Span
+                                                    FontSize="14"
+                                                    Text="(Grace: "
+                                                    TextColor="{StaticResource TextColor}" />
+                                                <Span
+                                                    FontSize="14"
+                                                    Text="{Binding Medication.GracePeriod}"
+                                                    TextColor="{StaticResource TextColor}" />
+                                                <Span
+                                                    FontSize="14"
+                                                    Text="min)"
+                                                    TextColor="{StaticResource TextColor}" />
+                                            </FormattedString>
+                                        </Label.FormattedText>
+                                    </Label>
+
+                                    <Label
+                                        Grid.Row="4"
+                                        Grid.Column="0"
+                                        Grid.ColumnSpan="2"
+                                        FontSize="14">
+                                        <Label.FormattedText>
+                                            <Binding Path="AllTimeSlotsStr" />
+                                        </Label.FormattedText>
+                                    </Label>
+                                </Grid>
+
+                                <BoxView
+                                    Margin="0,5,0,-5"
+                                    HeightRequest="0.5"
+                                    HorizontalOptions="Fill"
+                                    IsVisible="{Binding MedicationImages, Converter={x:StaticResource IsListNotNullOrEmptyConverter}}"
+                                    Opacity="0.6"
+                                    Color="{StaticResource MainBorderColor}" />
+
+                                <Grid
+                                    ColumnDefinitions="Auto,*"
+                                    HorizontalOptions="Fill"
+                                    IsVisible="{Binding MedicationImages, Converter={x:StaticResource IsListNotNullOrEmptyConverter}}"
+                                    VerticalOptions="Center">
+                                    <Label
+                                        Grid.Column="0"
+                                        Style="{StaticResource Heading2Style}"
+                                        Text="Image:"
+                                        VerticalOptions="Center" />
+
+                                    <local:ImageVerticalListControl
+                                        Grid.Column="1"
+                                        AttachmentList="{Binding MedicationImages, Mode=TwoWay}"
+                                        HorizontalOptions="End" />
+                                </Grid>
+                            </VerticalStackLayout>
+                        </material:InputField>
+                    </VerticalStackLayout>
+
+                    <material:InputField HasValue="True" Style="{StaticResource MaterialInputField}">
+                        <material:InputField.IsVisible>
+                            <MultiBinding Converter="{StaticResource AllValueTrueConverter}">
+                                <Binding Path="IsNotReadOnly" />
+                                <Binding Path="IsMedicationActionMessageVisible" />
+                            </MultiBinding>
+                        </material:InputField.IsVisible>
+                        <Grid ColumnDefinitions="Auto, *">
+                            <Label
+                                Grid.Column="0"
+                                Margin="10,10"
+                                FontAttributes="Bold"
+                                FontSize="14"
+                                HorizontalOptions="Start"
+                                LineBreakMode="WordWrap"
+                                Text="Action: "
+                                TextColor="{StaticResource TextColor}"
+                                VerticalOptions="Center" />
+
+                            <material:ButtonView
+                                Grid.Column="1"
+                                Margin="0"
+                                Padding="5"
+                                BackgroundColor="{StaticResource DangerLightColor}"
+                                HeightRequest="35"
+                                HorizontalOptions="Start"
+                                IsVisible="{Binding IsEnquireOfficeVisible}"
+                                Stroke="{StaticResource AlertDangerBorderColor}"
+                                TappedCommand="{Binding OnReqMedicationAdministrationCommand}"
+                                VerticalOptions="Center">
+                                <HorizontalStackLayout Spacing="5">
+                                    <Label
+                                        FontAttributes="Bold"
+                                        FontSize="15"
+                                        HorizontalOptions="Center"
+                                        HorizontalTextAlignment="Center"
+                                        Text="{Binding MedicationActionMessage, Converter={StaticResource EnumDescriptionConverter}}"
+                                        TextColor="{StaticResource DangerLightTextColor}"
+                                        VerticalOptions="Center" />
+                                </HorizontalStackLayout>
+                            </material:ButtonView>
+
+                            <Label
+                                Grid.Column="1"
+                                FontAttributes="Bold"
+                                FontSize="16"
+                                HorizontalOptions="Start"
+                                IsVisible="{Binding IsEnquireOfficeVisible, Converter={StaticResource NotConverter}}"
+                                LineBreakMode="WordWrap"
+                                Text="{Binding MedicationActionMessage, Converter={StaticResource EnumDescriptionConverter}}"
+                                VerticalOptions="Center">
+                                <Label.Triggers>
+                                    <DataTrigger
+                                        Binding="{Binding MedicationActionMessage}"
+                                        TargetType="Label"
+                                        Value="{x:Static local:EMedicationAdministerAction.Administer}">
+                                        <Setter Property="TextColor" Value="{StaticResource SuccessColor}" />
+                                    </DataTrigger>
+                                    <DataTrigger
+                                        Binding="{Binding MedicationActionMessage}"
+                                        TargetType="Label"
+                                        Value="{x:Static local:EMedicationAdministerAction.AwaitingConfirmation}">
+                                        <Setter Property="TextColor" Value="{StaticResource DangerColor}" />
+                                    </DataTrigger>
+                                    <DataTrigger
+                                        Binding="{Binding MedicationActionMessage}"
+                                        TargetType="Label"
+                                        Value="{x:Static local:EMedicationAdministerAction.Proceed}">
+                                        <Setter Property="TextColor" Value="{StaticResource SuccessColor}" />
+                                    </DataTrigger>
+                                    <DataTrigger
+                                        Binding="{Binding MedicationActionMessage}"
+                                        TargetType="Label"
+                                        Value="{x:Static local:EMedicationAdministerAction.DoNotProceed}">
+                                        <Setter Property="TextColor" Value="{StaticResource DangerColor}" />
+                                    </DataTrigger>
+                                    <DataTrigger
+                                        Binding="{Binding MedicationActionMessage}"
+                                        TargetType="Label"
+                                        Value="{x:Static local:EMedicationAdministerAction.NoResponse}">
+                                        <Setter Property="TextColor" Value="{StaticResource AlertWarningTextColor}" />
+                                    </DataTrigger>
+                                </Label.Triggers>
+                            </Label>
+                        </Grid>
+                    </material:InputField>
+
+                    <VerticalStackLayout IsVisible="{Binding ShowCompletionStatus}" Spacing="5">
+                        <Grid
+                            Padding="0"
+                            ColumnDefinitions="*,Auto"
+                            HorizontalOptions="Fill">
+                            <Label
+                                Grid.Column="0"
+                                HorizontalOptions="Start"
+                                Style="{StaticResource Heading2Style}"
+                                Text="Medication in low supply" />
+
+                            <material:CheckBox
+                                Grid.Column="1"
+                                Margin="10,0,-7,0"
+                                HorizontalOptions="End"
+                                IsChecked="{Binding VisitMedication.MedLowSupply}"
+                                IsEnabled="{Binding IsNotReadOnly}" />
+                        </Grid>
+
+                        <material:TextField
+                            Title="Balance Now *"
+                            HorizontalOptions="Fill"
+                            IsReadOnly="{Binding IsReadOnly}"
+                            IsVisible="{Binding VisitMedication.MedLowSupply, Mode=TwoWay}"
+                            Keyboard="Numeric"
+                            MaxLength="4"
+                            Style="{StaticResource MaterialTextField}"
+                            Text="{Binding VisitMedication.MedLowSupplyQuantity, Mode=TwoWay}"
+                            VerticalOptions="Fill">
+                            <material:TextField.Attachments>
+                                <Button
+                                    BackgroundColor="{StaticResource PrimaryColor}"
+                                    FontSize="14"
+                                    IsEnabled="False"
+                                    Text="{Binding Medication.DosageUnitStr}" />
+                            </material:TextField.Attachments>
+                        </material:TextField>
+                    </VerticalStackLayout>
+
+                    <VerticalStackLayout IsVisible="{Binding ShowCompletionStatus}" Spacing="5">
+                        <material:PickerField
+                            Title="Completion Status *"
+                            AutomationId="CompletionStatus"
+                            IsEnabled="{Binding EnableCompletionStatus}"
+                            IsVisible="{Binding IsNotReadOnly}"
+                            ItemDisplayBinding="{Binding DisplayName, x:DataType=domain:Code}"
+                            ItemsSource="{Binding StatusList}"
+                            SelectedItem="{Binding SelectedStatus, Mode=TwoWay}"
+                            SelectedValueChangedCommand="{Binding StatusChangedCommand}"
+                            Style="{StaticResource PickerFieldStyle}">
+                            <validation:RequiredValidation Message="* required" />
+                        </material:PickerField>
+
+                        <material:EditorField
+                            Title="Completion Status"
+                            IsEnabled="{Binding IsNotReadOnly}"
+                            IsReadOnly="{Binding IsReadOnly}"
+                            IsVisible="{Binding IsReadOnly}"
+                            MaxLength="2000"
+                            Style="{StaticResource MaterialEditorField}"
+                            Text="{Binding SelectedStatus.DisplayName}" />
+
+                        <material:PickerField
+                            Title="Status Detail *"
+                            AutomationId="StatusDetail"
+                            IsEnabled="{Binding EnableCompletionStatus}"
+                            IsVisible="{Binding IsNotReadOnly}"
+                            ItemDisplayBinding="{Binding DisplayName, x:DataType=domain:Code}"
+                            ItemsSource="{Binding StatusDetailList}"
+                            SelectedItem="{Binding SelectedDetailStatus, Mode=TwoWay}"
+                            Style="{StaticResource PickerFieldStyle}">
+                            <validation:RequiredValidation Message="* required" />
+                        </material:PickerField>
+
+                        <material:EditorField
+                            Title="Status Detail"
+                            IsEnabled="{Binding IsNotReadOnly}"
+                            IsReadOnly="{Binding IsReadOnly}"
+                            IsVisible="{Binding IsReadOnly}"
+                            MaxLength="2000"
+                            Style="{StaticResource MaterialEditorField}"
+                            Text="{Binding SelectedDetailStatus.DisplayName}" />
+
+                        <material:EditorField
+                            Title="Notes"
+                            AutomationId="Notes"
+                            IsEnabled="{Binding IsNotReadOnly}"
+                            IsReadOnly="{Binding IsReadOnly}"
+                            MaxLength="2000"
+                            Style="{StaticResource MaterialEditorField}"
+                            Text="{Binding VisitMedication.Summary}" />
+
+                        <StackLayout IsVisible="{Binding IsReadOnly}">
+                            <Grid ColumnDefinitions="100,*" ColumnSpacing="15">
+                                <Label
+                                    Grid.Column="0"
+                                    Margin="0,5,0,0"
+                                    HorizontalOptions="Start"
+                                    Style="{StaticResource Heading1Style}"
+                                    Text="Body Maps:"
+                                    VerticalOptions="Center" />
+
+                                <local:HorizontalBodyMapControl
+                                    Grid.Column="1"
+                                    BaseVisitId="{Binding BaseVisitId}"
+                                    BodyMapList="{Binding BodyMapList, Mode=TwoWay}"
+                                    IsReadOnly="True"
+                                    Type="{Binding TypeName}"
+                                    TypeId="{Binding VisitMedication.Id}"
+                                    VerticalOptions="Center" />
+                            </Grid>
+                        </StackLayout>
+                        <StackLayout IsVisible="{Binding IsReadOnly}">
+                            <Grid ColumnDefinitions="100,*" ColumnSpacing="15">
+                                <Label
+                                    Grid.Column="0"
+                                    Margin="0,5,0,0"
+                                    HorizontalOptions="Start"
+                                    Style="{StaticResource Heading1Style}"
+                                    Text="Attachments:"
+                                    VerticalOptions="Center" />
+
+                                <local:HorizontalAttachmentControl
+                                    Grid.Column="1"
+                                    AttachmentList="{Binding AttachmentList, Mode=TwoWay}"
+                                    BaseVisitId="{Binding BaseVisitId}"
+                                    Type="{Binding TypeName}"
+                                    TypeId="{Binding VisitMedication.Id}"
+                                    VerticalOptions="Start" />
+                            </Grid>
+                        </StackLayout>
+
+                        <Border
+                            Padding="8"
+                            IsVisible="{Binding IsReadOnly, Converter={StaticResource NotConverter}}"
+                            Stroke="SlateGray"
+                            StrokeShape="{RoundRectangle CornerRadius=10}">
+                            <material:TabView>
+                                <material:TabItem Title="Attachments">
+                                    <material:TabItem.HeaderTemplate>
+                                        <DataTemplate>
+                                            <material:ButtonView TappedCommand="{Binding Command}">
+                                                <Label
+                                                    FontFamily="13"
+                                                    HorizontalOptions="Center"
+                                                    Text="Attachments"
+                                                    TextColor="{StaticResource TextColor}" />
+                                                <material:ButtonView.Triggers>
+                                                    <DataTrigger
+                                                        Binding="{Binding IsSelected}"
+                                                        TargetType="material:ButtonView"
+                                                        Value="True">
+                                                        <Setter Property="Style" Value="{StaticResource TabSelectedButtonStyle}" />
+                                                    </DataTrigger>
+                                                    <DataTrigger
+                                                        Binding="{Binding IsSelected}"
+                                                        TargetType="material:ButtonView"
+                                                        Value="False">
+                                                        <Setter Property="Style" Value="{StaticResource TabUnselectedButtonStyle}" />
+                                                    </DataTrigger>
+                                                </material:ButtonView.Triggers>
+                                            </material:ButtonView>
+                                        </DataTemplate>
+                                    </material:TabItem.HeaderTemplate>
+                                    <material:TabItem.Content>
+                                        <local:AttachmentControl
+                                            Padding="5"
+                                            AttachmentList="{Binding AttachmentList, Mode=TwoWay}"
+                                            BaseVisitId="{Binding BaseVisitId}"
+                                            IsReadOnly="{Binding IsReadOnly}"
+                                            MaxAudios="3"
+                                            MaxImages="3"
+                                            Type="{Binding TypeName}"
+                                            TypeId="{Binding VisitMedication.Id}" />
+                                    </material:TabItem.Content>
+                                </material:TabItem>
+
+                                <material:TabItem Title="Body Maps">
+                                    <material:TabItem.HeaderTemplate>
+                                        <DataTemplate>
+                                            <material:ButtonView TappedCommand="{Binding Command}">
+                                                <Label
+                                                    FontFamily="13"
+                                                    HorizontalOptions="Center"
+                                                    Text="Body Maps"
+                                                    TextColor="{StaticResource TextColor}"
+                                                    VerticalOptions="Center" />
+                                                <material:ButtonView.Triggers>
+                                                    <DataTrigger
+                                                        Binding="{Binding IsSelected}"
+                                                        TargetType="material:ButtonView"
+                                                        Value="True">
+                                                        <Setter Property="Style" Value="{StaticResource TabSelectedButtonStyle}" />
+                                                    </DataTrigger>
+                                                    <DataTrigger
+                                                        Binding="{Binding IsSelected}"
+                                                        TargetType="material:ButtonView"
+                                                        Value="False">
+                                                        <Setter Property="Style" Value="{StaticResource TabUnselectedButtonStyle}" />
+                                                    </DataTrigger>
+                                                </material:ButtonView.Triggers>
+                                            </material:ButtonView>
+                                        </DataTemplate>
+                                    </material:TabItem.HeaderTemplate>
+                                    <material:TabItem.Content>
+                                        <local:BodyMapControl
+                                            BaseVisitId="{Binding BaseVisitId}"
+                                            BodyMapList="{Binding BodyMapList, Mode=TwoWay}"
+                                            IsReadOnly="{Binding IsReadOnly}"
+                                            Type="{Binding TypeName}"
+                                            TypeId="{Binding VisitMedication.Id}" />
+                                    </material:TabItem.Content>
+                                </material:TabItem>
+                            </material:TabView>
+                        </Border>
+                    </VerticalStackLayout>
+                </VerticalStackLayout>
+            </input:FormView>
+        </ScrollView>
+
+        <input:FormView
+            Grid.Row="1"
+            Margin="10,0"
+            IsVisible="{Binding IsNotBusy}"
+            Spacing="10"
+            SubmitCommand="{Binding SubmitCommand}"
+            VerticalOptions="Fill">
+            <material:ButtonView
+                Grid.Row="1"
+                input:FormView.IsSubmitButton="True"
+                AutomationId="SaveButton"
+                IsEnabled="{Binding IsNotBusy}"
+                IsVisible="{Binding IsNotReadOnly}"
+                Style="{StaticResource CentralizedButtonViewStyle}">
+                <Grid>
+                    <HorizontalStackLayout
+                        HorizontalOptions="Center"
+                        IsVisible="{Binding IsNotBusy}"
+                        Spacing="10">
+                        <Label Style="{StaticResource CentralizedPrimaryBtnLabelStyle}" Text="SAVE" />
+                    </HorizontalStackLayout>
+
+                    <local:CustomActivityIndicator
+                        BusyText="Saving..."
+                        IsBusy="{Binding IsBusy}"
+                        SourceFile="LoaderWhite.json"
+                        Style="{StaticResource CentralizedActivityIndicatorStyle}" />
+                </Grid>
+            </material:ButtonView>
+        </input:FormView>
+
+        <local:CustomActivityIndicator IsBusy="{Binding IsBusy}" />
+    </Grid>
+</local:BaseContentPage>

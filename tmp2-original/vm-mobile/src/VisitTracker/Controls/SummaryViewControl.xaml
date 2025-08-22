@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<local:BaseContentView
+    x:Class="VisitTracker.SummaryViewControl"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:local="clr-namespace:VisitTracker"
+    xmlns:mct="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
+    x:Name="AttachmentViewPg">
+    <ContentView.Content>
+        <VerticalStackLayout Padding="5" Spacing="5">
+            <local:CardViewControl CardTitle="Summary" HasCardTitle="True">
+                <VerticalStackLayout>
+                    <Label
+                        FontSize="17"
+                        HorizontalTextAlignment="Start"
+                        IsVisible="{Binding Summary, Mode=OneWay, Source={x:Reference AttachmentViewPg}, Converter={StaticResource IsStringNotNullOrEmptyConverter}}"
+                        LineBreakMode="WordWrap"
+                        Text="{Binding Summary, Mode=OneWay, Source={x:Reference AttachmentViewPg}}" />
+                    <Label
+                        FontSize="17"
+                        HorizontalTextAlignment="Center"
+                        IsVisible="{Binding Summary, Mode=TwoWay, Source={x:Reference AttachmentViewPg}, Converter={StaticResource IsStringNullOrEmptyConverter}}"
+                        Text="No Records found!" />
+                </VerticalStackLayout>
+            </local:CardViewControl>
+            <VerticalStackLayout IsVisible="{Binding VisibleAttachmentControl, Mode=TwoWay, Source={x:Reference AttachmentViewPg}}">
+                <Label
+                    Margin="0,5"
+                    FontAttributes="Bold"
+                    FontSize="22"
+                    Text="Attachments"
+                    TextColor="{StaticResource PrimaryTitleColor}" />
+
+                <VerticalStackLayout BindableLayout.ItemsSource="{Binding AttachmentList, Mode=TwoWay, Source={x:Reference AttachmentViewPg}}" Spacing="10">
+                    <BindableLayout.ItemTemplate>
+                        <DataTemplate x:DataType="{x:Type local:AttachmentDto}">
+                            <local:CardViewControl HasCardTitle="False">
+                                <Grid ColumnDefinitions="Auto,*" ColumnSpacing="10">
+                                    <Label
+                                        Grid.Column="0"
+                                        FontFamily="MaterialCommunityIcons"
+                                        FontSize="30"
+                                        Text="{Binding DisplayIcon}"
+                                        TextColor="{StaticResource PrimaryTitleColor}"
+                                        VerticalTextAlignment="Center">
+                                        <Label.GestureRecognizers>
+                                            <TapGestureRecognizer Command="{Binding OpenAttachmentCommand, Source={x:Reference AttachmentViewPg}}" CommandParameter="{Binding .}" />
+                                        </Label.GestureRecognizers>
+                                    </Label>
+
+                                    <Label
+                                        Grid.Column="1"
+                                        FontAttributes="Bold"
+                                        FontSize="19"
+                                        LineBreakMode="TailTruncation"
+                                        Text="{Binding AttachmentType}"
+                                        VerticalTextAlignment="Center">
+                                        <Label.GestureRecognizers>
+                                            <TapGestureRecognizer Command="{Binding OpenAttachmentCommand, Source={x:Reference AttachmentViewPg}}" CommandParameter="{Binding .}" />
+                                        </Label.GestureRecognizers>
+                                    </Label>
+                                </Grid>
+                            </local:CardViewControl>
+                        </DataTemplate>
+                    </BindableLayout.ItemTemplate>
+                </VerticalStackLayout>
+            </VerticalStackLayout>
+        </VerticalStackLayout>
+    </ContentView.Content>
+</local:BaseContentView>

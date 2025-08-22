@@ -1,0 +1,36 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<local:BaseContentPage
+    x:Class="VisitTracker.LoginProviderQrScannerPage"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:local="clr-namespace:VisitTracker"
+    xmlns:mct="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
+    xmlns:qr="clr-namespace:ZXing.Net.Maui.Controls;assembly=ZXing.Net.MAUI.Controls"
+    xmlns:qrevent="clr-namespace:ZXing.Net.Maui;assembly=ZXing.Net.MAUI"
+    Title="Scan Provider QR Code"
+    x:DataType="local:LoginProviderQrScannerVm"
+    x:TypeArguments="local:LoginProviderQrScannerVm"
+    BackgroundColor="{StaticResource BasePageBackgroundColor}"
+    NavigationPage.HasNavigationBar="True"
+    Shell.NavBarIsVisible="True"
+    Shell.TabBarIsVisible="False">
+    <Grid>
+        <qr:CameraBarcodeReaderView
+            HorizontalOptions="Fill"
+            Options="{Binding QrReaderOptions}"
+            VerticalOptions="Fill">
+            <qr:CameraBarcodeReaderView.IsEnabled>
+                <MultiBinding Converter="{StaticResource AllValueTrueConverter}">
+                    <Binding Path="ShowQrScanner" />
+                    <Binding Converter="{StaticResource IsNullConverter}" Path="LoginProviderDto" />
+                </MultiBinding>
+            </qr:CameraBarcodeReaderView.IsEnabled>
+            <qr:CameraBarcodeReaderView.Behaviors>
+                <mct:EventToCommandBehavior
+                    x:TypeArguments="qrevent:BarcodeDetectionEventArgs"
+                    Command="{Binding OnBarcodeDetectedCommand}"
+                    EventName="BarcodesDetected" />
+            </qr:CameraBarcodeReaderView.Behaviors>
+        </qr:CameraBarcodeReaderView>
+    </Grid>
+</local:BaseContentPage>

@@ -1,0 +1,469 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<local:BaseContentPage
+    x:Class="VisitTracker.MarChartPage"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:local="clr-namespace:VisitTracker"
+    xmlns:mct="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
+    xmlns:skia="clr-namespace:SkiaSharp.Extended.UI.Controls;assembly=SkiaSharp.Extended.UI"
+    x:Name="this"
+    x:DataType="local:MarChartVm"
+    x:TypeArguments="local:MarChartVm"
+    BackgroundColor="{StaticResource MainBackgroudColor}"
+    Shell.NavBarIsVisible="False"
+    Shell.TabBarIsVisible="False">
+
+    <Grid RowDefinitions="*,Auto">
+        <ScrollView
+            Grid.Row="0"
+            HorizontalOptions="Fill"
+            IsVisible="{Binding IsNotBusy}"
+            VerticalOptions="Fill">
+            <VerticalStackLayout
+                Margin="10"
+                Spacing="15"
+                VerticalOptions="Fill">
+
+                <Grid ColumnDefinitions="Auto,*" HorizontalOptions="Fill">
+                    <Label
+                        Grid.Column="0"
+                        Style="{StaticResource BackIcon}"
+                        Text="{x:Static local:MaterialCommunityIconsFont.ArrowLeft}">
+                        <Label.GestureRecognizers>
+                            <TapGestureRecognizer Command="{Binding OnBackCommand}" />
+                        </Label.GestureRecognizers>
+                    </Label>
+                    <Label
+                        Grid.Column="1"
+                        Style="{StaticResource PageTitleStyle}"
+                        Text="MAR Chart" />
+                </Grid>
+                <local:CardViewControl HasCardTitle="False">
+                    <local:UserCardControl User="{Binding ServiceUserCard}" />
+                </local:CardViewControl>
+
+                <VerticalStackLayout
+                    BindableLayout.ItemsSource="{Binding Medications}"
+                    IsVisible="{Binding Medications, Converter={x:StaticResource IsListNotNullOrEmptyConverter}}"
+                    Spacing="10">
+                    <BindableLayout.ItemTemplate>
+                        <DataTemplate x:DataType="local:MedicationsDto">
+                            <local:CardViewControl CardTitle="{Binding MedicationName}">
+                                <Grid
+                                    ColumnDefinitions="2*,*"
+                                    RowDefinitions="Auto,Auto,Auto"
+                                    RowSpacing="2">
+                                    <Label
+                                        Grid.Row="0"
+                                        Grid.Column="0"
+                                        HorizontalTextAlignment="Start"
+                                        Style="{StaticResource Heading2Style}"
+                                        VerticalOptions="Start">
+                                        <Label.FormattedText>
+                                            <FormattedString>
+                                                <Span
+                                                    FontAttributes="Bold"
+                                                    FontSize="15"
+                                                    Text="{Binding Strength}"
+                                                    TextColor="{StaticResource TextColor}" />
+                                                <Span
+                                                    FontAttributes="Bold"
+                                                    FontSize="15"
+                                                    Text=" ("
+                                                    TextColor="{StaticResource TextColor}" />
+                                                <Span
+                                                    FontAttributes="Bold"
+                                                    FontSize="15"
+                                                    Text="{Binding Dosage, Converter={x:StaticResource TitleCaseConverter}}"
+                                                    TextColor="{StaticResource TextColor}" />
+                                                <Span
+                                                    FontAttributes="Bold"
+                                                    FontSize="15"
+                                                    Text=")"
+                                                    TextColor="{StaticResource TextColor}" />
+                                            </FormattedString>
+                                        </Label.FormattedText>
+                                    </Label>
+
+                                    <Label
+                                        Grid.Row="0"
+                                        Grid.Column="1"
+                                        HorizontalTextAlignment="End"
+                                        Style="{StaticResource Heading2Style}"
+                                        Text="{Binding MealInstructions, Converter={x:StaticResource TitleCaseConverter}}"
+                                        VerticalOptions="Start" />
+
+                                    <Label
+                                        Grid.Row="1"
+                                        Grid.Column="0"
+                                        FontSize="14"
+                                        HorizontalTextAlignment="Start"
+                                        Text="{Binding Mode, Converter={x:StaticResource TitleCaseConverter}}"
+                                        TextColor="{StaticResource TextColor}"
+                                        VerticalOptions="Center" />
+
+                                    <Label
+                                        Grid.Row="1"
+                                        Grid.Column="1"
+                                        FontSize="14"
+                                        HorizontalTextAlignment="End"
+                                        Text="{Binding Route, Converter={x:StaticResource TitleCaseConverter}}"
+                                        TextColor="{StaticResource TextColor}"
+                                        VerticalOptions="Center" />
+
+                                    <VerticalStackLayout
+                                        Grid.Row="2"
+                                        Grid.Column="0"
+                                        Grid.ColumnSpan="2"
+                                        BindableLayout.ItemsSource="{Binding MedicationTimeAndDetailList}">
+                                        <BindableLayout.ItemTemplate>
+                                            <DataTemplate x:DataType="local:MedicationTimeAndDetailDto">
+                                                <Grid
+                                                    x:Name="ParentGrid"
+                                                    Margin="0,0,-10,0"
+                                                    Padding="2"
+                                                    ColumnDefinitions="*,Auto"
+                                                    RowDefinitions="Auto,Auto,100,Auto">
+                                                    <Label
+                                                        Grid.Row="1"
+                                                        Grid.Column="0"
+                                                        Grid.ColumnSpan="2"
+                                                        Margin="0,2,0,10"
+                                                        FontSize="16"
+                                                        HorizontalTextAlignment="Center"
+                                                        Text="{Binding Time}"
+                                                        TextColor="{StaticResource TextColor}"
+                                                        VerticalOptions="Center" />
+
+                                                    <local:CollectionViewEx
+                                                        Grid.Row="2"
+                                                        Grid.Column="0"
+                                                        Grid.ColumnSpan="2"
+                                                        Margin="0,0,10,0"
+                                                        ItemsSource="{Binding MedicationDetails, Converter={StaticResource ReverseCollectionConverter}}"
+                                                        ItemsUpdatingScrollMode="KeepScrollOffset"
+                                                        ScrollIndex="{Binding BindingContext.SliderValue, Mode=TwoWay, Source={x:Reference this}}"
+                                                        SelectedItem="{Binding SelectedMedication}"
+                                                        SelectionChangedCommand="{Binding BindingContext.DateSelectedCommand, Source={x:Reference this}}"
+                                                        SelectionChangedCommandParameter="{Binding .}"
+                                                        SelectionMode="Single">
+                                                        <!--<local:CollectionViewEx.Behaviors>
+                                                            <mct:EventToCommandBehavior
+                                                                Command="{Binding BindingContext.HideWindowCommand, Source={x:Reference this}}"
+                                                                CommandParameter="{Binding .}"
+                                                                EventName="Scrolled" />
+                                                        </local:CollectionViewEx.Behaviors>-->
+                                                        <local:CollectionViewEx.ItemsLayout>
+                                                            <LinearItemsLayout
+                                                                Orientation="Horizontal"
+                                                                SnapPointsAlignment="End"
+                                                                SnapPointsType="None" />
+                                                        </local:CollectionViewEx.ItemsLayout>
+                                                        <local:CollectionViewEx.ItemTemplate>
+                                                            <DataTemplate x:DataType="local:MedicationDetailHistoryDto">
+                                                                <Grid
+                                                                    Padding="2"
+                                                                    BackgroundColor="{StaticResource PanelColor}"
+                                                                    HorizontalOptions="End">
+                                                                    <Ellipse
+                                                                        Margin="4,-14,0,0"
+                                                                        BackgroundColor="{StaticResource MARChartCircleBGColor}"
+                                                                        HeightRequest="72"
+                                                                        HorizontalOptions="Start"
+                                                                        Stroke="{Binding BackgroundColor}"
+                                                                        StrokeThickness="2"
+                                                                        WidthRequest="72">
+                                                                        <Ellipse.Triggers>
+                                                                            <DataTrigger
+                                                                                Binding="{Binding IsSelected}"
+                                                                                TargetType="Ellipse"
+                                                                                Value="True">
+                                                                                <Setter Property="Shadow">
+                                                                                    <Setter.Value>
+                                                                                        <Shadow
+                                                                                            Opacity="0.2"
+                                                                                            Radius="4"
+                                                                                            Offset="2,2" />
+                                                                                    </Setter.Value>
+                                                                                </Setter>
+                                                                                <Setter Property="BackgroundColor" Value="{StaticResource MARChartCircleBGColor}" />
+                                                                                <Setter Property="HeightRequest" Value="74" />
+                                                                                <Setter Property="StrokeThickness" Value="4" />
+                                                                                <Setter Property="WidthRequest" Value="74" />
+                                                                            </DataTrigger>
+
+                                                                            <DataTrigger
+                                                                                Binding="{Binding BackgroundColor}"
+                                                                                TargetType="Ellipse"
+                                                                                Value="#00CD00">
+                                                                                <Setter Property="StrokeThickness" Value="4" />
+                                                                                <Setter Property="BackgroundColor" Value="{StaticResource AlertSuccessBGColor}" />
+                                                                            </DataTrigger>
+                                                                            <DataTrigger
+                                                                                Binding="{Binding BackgroundColor}"
+                                                                                TargetType="Ellipse"
+                                                                                Value="#F9AD1F">
+                                                                                <Setter Property="StrokeThickness" Value="4" />
+                                                                                <Setter Property="BackgroundColor" Value="{StaticResource AlertWarningBGColor}" />
+                                                                            </DataTrigger>
+                                                                            <DataTrigger
+                                                                                Binding="{Binding BackgroundColor}"
+                                                                                TargetType="Ellipse"
+                                                                                Value="#000000">
+                                                                                <Setter Property="StrokeThickness" Value="2" />
+                                                                                <Setter Property="Stroke" Value="{StaticResource MARChartCircleBorderColor}" />
+                                                                            </DataTrigger>
+                                                                        </Ellipse.Triggers>
+                                                                    </Ellipse>
+
+                                                                    <VerticalStackLayout
+                                                                        Margin="4,2,0,0"
+                                                                        HeightRequest="82"
+                                                                        Spacing="0">
+                                                                        <Label
+                                                                            FontAttributes="Bold"
+                                                                            FontSize="12"
+                                                                            HorizontalOptions="Center"
+                                                                            Text="{Binding Day}"
+                                                                            TextColor="{StaticResource MARChartDayColor}"
+                                                                            VerticalOptions="End" />
+
+                                                                        <Label
+                                                                            FontAttributes="Bold"
+                                                                            FontFamily="AppBoldFontFamily"
+                                                                            FontSize="18"
+                                                                            HorizontalOptions="Center"
+                                                                            Text="{Binding Date}"
+                                                                            TextColor="{StaticResource TextColor}">
+                                                                            <Label.Triggers>
+                                                                                <DataTrigger
+                                                                                    Binding="{Binding IsSelected}"
+                                                                                    TargetType="Label"
+                                                                                    Value="True">
+                                                                                    <Setter Property="TextColor" Value="{StaticResource TextColor}" />
+                                                                                    <Setter Property="FontSize" Value="22" />
+                                                                                </DataTrigger>
+                                                                                <DataTrigger
+                                                                                    Binding="{Binding IsSelected}"
+                                                                                    TargetType="Label"
+                                                                                    Value="False">
+                                                                                    <Setter Property="TextColor" Value="{StaticResource TextColor}" />
+                                                                                </DataTrigger>
+                                                                            </Label.Triggers>
+                                                                        </Label>
+
+                                                                        <Label
+                                                                            FontAttributes="Bold"
+                                                                            FontSize="12"
+                                                                            HorizontalOptions="Center"
+                                                                            Text="{Binding Month}"
+                                                                            TextColor="{StaticResource TextColor}" />
+                                                                        <Polygon
+                                                                            Margin="0,2,0,0"
+                                                                            Fill="{Binding BackgroundColor}"
+                                                                            HorizontalOptions="Center"
+                                                                            IsVisible="{Binding IsSelected}"
+                                                                            Opacity="2"
+                                                                            Points="0,13.3 13.3,6.6 26.6,13.3"
+                                                                            Stroke="{Binding BackgroundColor}"
+                                                                            StrokeThickness="2" />
+                                                                    </VerticalStackLayout>
+                                                                </Grid>
+                                                            </DataTemplate>
+                                                        </local:CollectionViewEx.ItemTemplate>
+                                                    </local:CollectionViewEx>
+
+                                                    <Frame
+                                                        Grid.Row="3"
+                                                        Grid.Column="0"
+                                                        Grid.ColumnSpan="2"
+                                                        Margin="0,-4,10,0"
+                                                        Padding="5"
+                                                        BackgroundColor="{StaticResource MARChartCircleBGColor}"
+                                                        BorderColor="{Binding SelectedRecord.BackgroundColor}"
+                                                        CornerRadius="10"
+                                                        HasShadow="False"
+                                                        IsVisible="{Binding SelectedRecord, Converter={StaticResource IsNotNullConverter}}">
+
+                                                        <Grid
+                                                            Padding="5"
+                                                            BackgroundColor="{StaticResource MARChartCircleBGColor}"
+                                                            ColumnDefinitions="*,*"
+                                                            MaximumHeightRequest="150"
+                                                            RowDefinitions="Auto,Auto,*"
+                                                            RowSpacing="5">
+                                                            <ActivityIndicator
+                                                                Grid.RowSpan="3"
+                                                                Grid.ColumnSpan="2"
+                                                                HeightRequest="45"
+                                                                HorizontalOptions="Center"
+                                                                IsRunning="{Binding IsBusy}"
+                                                                IsVisible="{Binding IsBusy}"
+                                                                VerticalOptions="Center"
+                                                                WidthRequest="45" />
+                                                            <Grid
+                                                                Grid.RowSpan="3"
+                                                                Grid.ColumnSpan="2"
+                                                                ColumnDefinitions="*,Auto"
+                                                                IsVisible="{Binding SelectedRecord.IsAvailable, Converter={StaticResource NotConverter}}">
+                                                                <Label
+                                                                    Grid.Column="1"
+                                                                    FontSize="24"
+                                                                    HorizontalOptions="End"
+                                                                    Style="{StaticResource QuickActionsIconStyle}"
+                                                                    Text="{x:Static local:MaterialCommunityIconsFont.CloseCircleOutline}"
+                                                                    TextColor="{StaticResource AlertDangerTextColor}">
+                                                                    <Label.GestureRecognizers>
+                                                                        <TapGestureRecognizer Command="{Binding BindingContext.HideWindowCommand, Source={x:Reference this}}" CommandParameter="{Binding .}" />
+                                                                    </Label.GestureRecognizers>
+                                                                </Label>
+                                                                <Label
+                                                                    Grid.Column="0"
+                                                                    FontSize="14"
+                                                                    HorizontalTextAlignment="Center"
+                                                                    Text="No medication record exists!"
+                                                                    TextColor="{StaticResource TextColor}"
+                                                                    VerticalTextAlignment="Center" />
+                                                            </Grid>
+                                                            <Grid
+                                                                Grid.Row="0"
+                                                                Grid.Column="0"
+                                                                Grid.ColumnSpan="2"
+                                                                ColumnDefinitions="Auto,*,Auto">
+                                                                <Grid.IsVisible>
+                                                                    <MultiBinding Converter="{StaticResource AllValueTrueConverter}">
+                                                                        <Binding Converter="{StaticResource NotConverter}" Path="IsBusy" />
+                                                                        <Binding Path="SelectedRecord.IsAvailable" />
+                                                                    </MultiBinding>
+                                                                </Grid.IsVisible>
+
+                                                                <Label
+                                                                    Grid.Column="0"
+                                                                    FontSize="14"
+                                                                    Text="{Binding SelectedRecord.Time, StringFormat='{0:hh:mm}'}"
+                                                                    TextColor="{StaticResource TextColor}" />
+
+                                                                <Label
+                                                                    Grid.Column="1"
+                                                                    FontSize="14"
+                                                                    HorizontalTextAlignment="End"
+                                                                    Text="{Binding SelectedRecord.Completion}"
+                                                                    TextColor="{StaticResource TextColor}" />
+
+                                                                <Label
+                                                                    Grid.Column="2"
+                                                                    FontSize="24"
+                                                                    HorizontalOptions="End"
+                                                                    Style="{StaticResource QuickActionsIconStyle}"
+                                                                    Text="{x:Static local:MaterialCommunityIconsFont.CloseCircleOutline}"
+                                                                    TextColor="{StaticResource AlertDangerTextColor}">
+                                                                    <Label.GestureRecognizers>
+                                                                        <TapGestureRecognizer Command="{Binding BindingContext.HideWindowCommand, Source={x:Reference this}}" CommandParameter="{Binding .}" />
+                                                                    </Label.GestureRecognizers>
+                                                                </Label>
+                                                            </Grid>
+
+                                                            <BoxView
+                                                                Grid.Row="1"
+                                                                Grid.Column="0"
+                                                                Grid.ColumnSpan="2"
+                                                                HeightRequest="1"
+                                                                HorizontalOptions="Fill"
+                                                                Color="SlateGray">
+                                                                <BoxView.IsVisible>
+                                                                    <MultiBinding Converter="{StaticResource AllValueTrueConverter}">
+                                                                        <Binding Converter="{StaticResource NotConverter}" Path="IsBusy" />
+                                                                        <Binding Path="SelectedRecord.IsAvailable" />
+                                                                    </MultiBinding>
+                                                                </BoxView.IsVisible>
+                                                            </BoxView>
+
+                                                            <ScrollView
+                                                                Grid.Row="2"
+                                                                Grid.Column="0"
+                                                                Grid.ColumnSpan="2">
+                                                                <ScrollView.IsVisible>
+                                                                    <MultiBinding Converter="{StaticResource AllValueTrueConverter}">
+                                                                        <Binding Converter="{StaticResource NotConverter}" Path="IsBusy" />
+                                                                        <Binding Path="SelectedRecord.IsAvailable" />
+                                                                    </MultiBinding>
+                                                                </ScrollView.IsVisible>
+                                                                <VerticalStackLayout>
+                                                                    <Label
+                                                                        FontAttributes="Bold"
+                                                                        FontSize="14"
+                                                                        Text="Summary: "
+                                                                        TextColor="{StaticResource TextColor}" />
+
+                                                                    <Label
+                                                                        FontAttributes="Bold"
+                                                                        FontSize="14"
+                                                                        Text="{Binding SelectedRecord.Summary}"
+                                                                        TextColor="{StaticResource TextColor}" />
+                                                                </VerticalStackLayout>
+                                                            </ScrollView>
+                                                        </Grid>
+                                                    </Frame>
+                                                </Grid>
+                                            </DataTemplate>
+                                        </BindableLayout.ItemTemplate>
+                                    </VerticalStackLayout>
+                                </Grid>
+                            </local:CardViewControl>
+                        </DataTemplate>
+                    </BindableLayout.ItemTemplate>
+                </VerticalStackLayout>
+            </VerticalStackLayout>
+        </ScrollView>
+
+        <VerticalStackLayout HorizontalOptions="Center" VerticalOptions="Center">
+            <VerticalStackLayout.IsVisible>
+                <MultiBinding Converter="{StaticResource AllValueTrueConverter}">
+                    <Binding Path="IsNotBusy" />
+                    <Binding Path="IsVisibleNoDataControl" />
+                </MultiBinding>
+            </VerticalStackLayout.IsVisible>
+
+            <local:NoDataControl />
+        </VerticalStackLayout>
+
+        <local:CardViewControl
+            Grid.Row="1"
+            Margin="10"
+            CardTitle="Day Slider">
+            <local:CardViewControl.IsVisible>
+                <MultiBinding Converter="{StaticResource AllValueTrueConverter}">
+                    <Binding Path="IsNotBusy" />
+                    <Binding Converter="{StaticResource IsListNotNullOrEmptyConverter}" Path="Medications" />
+                </MultiBinding>
+            </local:CardViewControl.IsVisible>
+
+            <Grid
+                Padding="5"
+                ColumnDefinitions="Auto,*"
+                ColumnSpacing="10">
+                <Label
+                    Grid.Column="0"
+                    HorizontalTextAlignment="Center"
+                    Style="{StaticResource Heading2Style}"
+                    Text="{Binding SliderValueText}" />
+
+                <Slider
+                    Grid.Column="1"
+                    Maximum="{Binding SliderMaxValue}"
+                    Minimum="{Binding SliderMinValue}"
+                    Value="{Binding SliderValue, Mode=TwoWay}">
+                    <Slider.Behaviors>
+                        <mct:EventToCommandBehavior Command="{Binding OnSlideCommand}" EventName="ValueChanged" />
+                    </Slider.Behaviors>
+                </Slider>
+            </Grid>
+        </local:CardViewControl>
+
+        <local:CustomActivityIndicator
+            Grid.Row="0"
+            Grid.RowSpan="2"
+            IsBusy="{Binding IsBusy}"
+            VerticalOptions="Center" />
+    </Grid>
+</local:BaseContentPage>

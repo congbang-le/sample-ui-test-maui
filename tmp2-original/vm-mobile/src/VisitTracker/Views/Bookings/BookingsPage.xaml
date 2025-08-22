@@ -1,0 +1,114 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<local:BaseContentPage
+    x:Class="VisitTracker.BookingsPage"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:local="clr-namespace:VisitTracker"
+    xmlns:mct="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
+    xmlns:skia="clr-namespace:SkiaSharp.Extended.UI.Controls;assembly=SkiaSharp.Extended.UI"
+    xmlns:uranium="http://schemas.enisn-projects.io/dotnet/maui/uraniumui"
+    Title="Bookings"
+    x:DataType="local:BookingsVm"
+    x:TypeArguments="local:BookingsVm"
+    AutomationId="BookingsPage"
+    BackgroundColor="{StaticResource MainBackgroudColor}"
+    IconImageSource="bookings"
+    Shell.NavBarHasShadow="False"
+    Shell.NavBarIsVisible="False">
+    <ContentPage.Behaviors>
+        <mct:EventToCommandBehavior Command="{Binding InitCommand}" EventName="Appearing" />
+    </ContentPage.Behaviors>
+
+    <Grid Margin="10,0,10,0" RowDefinitions="Auto,Auto,*,Auto">
+        <Label Style="{StaticResource PageTitleStyle}" Text="Bookings" />
+
+        <HorizontalStackLayout
+            Grid.Row="1"
+            Margin="5,5,0,5"
+            HorizontalOptions="End"
+            IsVisible="{Binding ShowPastReportsView}"
+            VerticalOptions="Center">
+            <Button
+                AutomationId="PastReportsButton"
+                Command="{Binding OpenPastReportsCommand}"
+                Style="{StaticResource DefaultButtonSmallStyle}"
+                Text="Archives" />
+        </HorizontalStackLayout>
+
+        <Border
+            Grid.Row="2"
+            Margin="0,0,0,0"
+            Padding="0"
+            BackgroundColor="Transparent"
+            IsVisible="{Binding IsNotBusy}"
+            StrokeShape="{RoundRectangle CornerRadius=10}">
+            <CollectionView ItemsSource="{Binding Bookings}" VerticalScrollBarVisibility="Always">
+                <CollectionView.ItemsLayout>
+                    <LinearItemsLayout ItemSpacing="5" Orientation="Vertical" />
+                </CollectionView.ItemsLayout>
+                <CollectionView.ItemTemplate>
+                    <DataTemplate x:DataType="{x:Type local:BookingCardDto}">
+                        <local:BookingCardControl
+                            Booking="{Binding Booking}"
+                            IsVisibleReport="True"
+                            PrimaryCareWorker="{Binding PrimaryCareWorker}"
+                            PrimaryCareWorkerEta="{Binding PrimaryCareWorkerEta}"
+                            SecondaryCareWorker="{Binding SecondaryCareWorker}"
+                            SecondaryCareWorkerEta="{Binding SecondaryCareWorkerEta}"
+                            ServiceUser="{Binding ServiceUser}"
+                            Visits="{Binding Visits}" />
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+                <CollectionView.EmptyView>
+                    <local:NoDataControl />
+                </CollectionView.EmptyView>
+            </CollectionView>
+        </Border>
+
+        <Grid
+            Grid.Row="3"
+            ColumnDefinitions="Auto,*,Auto"
+            IsVisible="{Binding IsNotBusy}">
+            <HorizontalStackLayout Grid.Column="0" Spacing="0">
+                <Button
+                    AutomationId="PrevDayButton"
+                    Command="{Binding PrevDayCommand}"
+                    Style="{StaticResource NavigationButton}"
+                    Text="{x:Static local:MaterialCommunityIconsFont.ChevronLeft}" />
+            </HorizontalStackLayout>
+            <HorizontalStackLayout
+                Grid.Column="1"
+                HorizontalOptions="Center"
+                Spacing="3"
+                VerticalOptions="Center">
+                <Label
+                    FontAttributes="Bold"
+                    FontSize="15"
+                    HorizontalOptions="Start"
+                    HorizontalTextAlignment="Start"
+                    Text="{Binding DisplayDate, StringFormat='{0:ddd, dd MMM yyyy}'}"
+                    TextColor="{StaticResource TextColor}" />
+
+                <Label
+                    FontAttributes="Bold"
+                    FontFamily="AppBoldFontFamily"
+                    FontSize="16"
+                    HorizontalOptions="Start"
+                    HorizontalTextAlignment="Start"
+                    IsVisible="{Binding IsToday}"
+                    Text="(Today)"
+                    TextColor="{StaticResource PrimaryColor}" />
+            </HorizontalStackLayout>
+
+            <HorizontalStackLayout Grid.Column="2" Spacing="0">
+                <Button
+                    AutomationId="NextDayButton"
+                    Command="{Binding NextDayCommand}"
+                    Style="{StaticResource NavigationButton}"
+                    Text="{x:Static local:MaterialCommunityIconsFont.ChevronRight}" />
+            </HorizontalStackLayout>
+        </Grid>
+
+        <local:CustomActivityIndicator Grid.RowSpan="3" IsBusy="{Binding IsBusy}" />
+    </Grid>
+</local:BaseContentPage>

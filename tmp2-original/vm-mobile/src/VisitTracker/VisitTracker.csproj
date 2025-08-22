@@ -1,0 +1,475 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+	<!--[START] added due to the bug Refer:https://github.com/dotnet/macios/issues/22591  -->
+	<Target Name="_OverrideFirebaseStripBitcodeFromFrameworksMasterDependsOnTargets" BeforeTargets="_ResolveNativeReferencesForFirebaseCore">
+		<PropertyGroup>
+			<_FirebaseStripBitcodeFromFrameworksMasterDependsOnTargets Condition="'$(OS)'=='Unix'">
+				_OverrideFirebaseStripBitcodeFromFrameworksOnMac
+			</_FirebaseStripBitcodeFromFrameworksMasterDependsOnTargets>
+
+			<_FirebaseStripBitcodeFromFrameworksMasterDependsOnTargets Condition="'$(OS)'!='Unix'">
+				_OverrideFirebaseStripBitcodeFromFrameworksOnWindows
+			</_FirebaseStripBitcodeFromFrameworksMasterDependsOnTargets>
+		</PropertyGroup>
+	</Target>
+
+	<Target Name="_OverrideFirebaseStripBitcodeFromFrameworksOnMac" />
+	<Target Name="_OverrideFirebaseStripBitcodeFromFrameworksOnWindows" />
+	<!-- [END] -->
+	
+	<PropertyGroup>
+		<TargetFrameworks>net9.0-android;net9.0-ios;</TargetFrameworks>
+		<OutputType>Exe</OutputType>
+		<RootNamespace>VisitTracker</RootNamespace>
+		<UseMaui>true</UseMaui>
+		<MauiVersion>9.0.60</MauiVersion>
+		<SingleProject>true</SingleProject>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<NoWarn>$(NoWarn);CA1416;CA1422</NoWarn>
+
+		<!-- Display name -->
+		<ApplicationTitle>Artivis</ApplicationTitle>
+
+		<!-- App Identifier -->
+		<ApplicationId>com.artivis.vm</ApplicationId>
+
+		<!-- Versions -->
+		<ApplicationDisplayVersion>1.0</ApplicationDisplayVersion>
+
+		<!-- Required for C# Hot Reload -->
+		<UseInterpreter Condition="'$(Configuration)' == 'Debug'">True</UseInterpreter>
+
+		<SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'ios'">16.0</SupportedOSPlatformVersion>
+		<TargetPlatformMinVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android'">30.0</TargetPlatformMinVersion>
+		<SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android'">30.0</SupportedOSPlatformVersion>
+	</PropertyGroup>
+
+	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|net9.0-android|AnyCPU'">
+		<EmbedAssembliesIntoApk>True</EmbedAssembliesIntoApk>
+	</PropertyGroup>
+
+	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Test|net9.0-android|AnyCPU'">
+		<DefineConstants>$(DefineConstants);TEST</DefineConstants>
+		<EmbedAssembliesIntoApk>True</EmbedAssembliesIntoApk>
+	</PropertyGroup>
+
+	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|net9.0-android|AnyCPU'">
+		<ApplicationVersion>21</ApplicationVersion>
+	</PropertyGroup>
+
+	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|net9.0-ios|AnyCPU'">
+		<ApplicationVersion>11</ApplicationVersion>
+		<BuildIpa>True</BuildIpa>
+		<MtouchUseLlvm>True</MtouchUseLlvm>
+		<MtouchLink>SdkOnly</MtouchLink>
+		<UseInterpreter>True</UseInterpreter>
+		<!-- Use ios-arm64 for physical devices and iossimulator-arm64 for simulators -->
+		<RuntimeIdentifier>ios-arm64</RuntimeIdentifier>
+		<!-- <RuntimeIdentifier>iossimulator-arm64</RuntimeIdentifier> -->
+	</PropertyGroup>
+
+	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|net9.0-ios|AnyCPU'">
+		<!-- Use ios-arm64 for physical devices and iossimulator-arm64 for simulators -->
+		<RuntimeIdentifier>iossimulator-arm64</RuntimeIdentifier>
+		<!-- <RuntimeIdentifier>ios-arm64</RuntimeIdentifier> -->
+		<BuildIpa>False</BuildIpa>
+		<MtouchLink>None</MtouchLink>
+		<UseInterpreter>true</UseInterpreter>
+	</PropertyGroup>	
+
+	<ItemGroup>
+		<!-- App Icon -->
+		<MauiIcon Include="Resources\AppIcon\appicon.svg" ForegroundFile="Resources\AppIcon\appiconfg.svg" Color="#007aff" />
+
+		<!-- Splash Screen -->
+		<MauiSplashScreen Include="Resources\Splash\splash.svg" Color="#0064F7" BaseSize="128,128" />
+
+		<!-- Images -->
+		<MauiImage Include="Resources\Images\*" />
+
+		<!-- Custom Fonts -->
+		<MauiFont Include="Resources\Fonts\*" />
+
+		<MauiImage Update="Resources\Images\**" BaseSize="20,20" />
+
+		<!-- Provider Images -->
+		<MauiImage Update="Resources\Images\wave.svg" BaseSize="100,100" />
+
+		<MauiImage Update="Resources\Images\logo_vertical.svg" BaseSize="100,100" />
+		
+		<!-- Raw Assets (also remove the "Resources\Raw" prefix) -->
+		<MauiAsset Include="Resources\Raw\**" LogicalName="%(RecursiveDir)%(Filename)%(Extension)" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<AndroidResource Remove="Resources\Strings\**" />
+		<Compile Remove="Resources\Strings\**" />
+		<EmbeddedResource Remove="Resources\Strings\**" />
+		<MauiCss Remove="Resources\Strings\**" />
+		<MauiXaml Remove="Resources\Strings\**" />
+		<None Remove="Resources\Strings\**" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<PackageReference Include="Microsoft.Maui.Controls" Version="$(MauiVersion)" />
+		<PackageReference Include="Microsoft.Maui.Controls.Compatibility" Version="$(MauiVersion)" />
+
+		<PackageReference Include="CommunityToolkit.Maui" Version="7.0.1" />
+		<PackageReference Include="CommunityToolkit.Mvvm" Version="8.3.2" />
+
+		<PackageReference Include="Plugin.Maui.Audio" Version="4.0.0" />
+		<PackageReference Include="Plugin.Maui.Biometric" Version="0.0.2" />
+
+		<PackageReference Include="Realm" Version="20.0.0" />
+		<PackageReference Include="Sentry.Maui" Version="5.4.0" />
+		<PackageReference Include="PropertyChanged.Fody" Version="4.1.0" PrivateAssets="All" />
+		<PackageReference Include="ReactiveUI.Fody" Version="19.5.41" PrivateAssets="All" />
+		<PackageReference Include="SkiaSharp.Extended.UI.Maui" Version="2.0.0" />
+		<PackageReference Include="SkiaSharp.Views.Maui.Controls" Version="2.88.8" />
+		<PackageReference Include="SkiaSharp.Views.Maui.Core" Version="2.88.8" />
+		<PackageReference Include="UraniumUI.Icons.MaterialIcons" Version="2.8.1" />
+		<PackageReference Include="UraniumUI.Material" Version="2.8.1" />
+
+		<PackageReference Include="Xamarin.Build.Download" Version="0.11.4" />
+
+		<PackageReference Include="AWSSDK.SimpleNotificationService" Version="3.7.400.36" />
+		<PackageReference Include="ZXing.Net.Maui.Controls" Version="0.4.0" />
+	</ItemGroup>
+	
+	<PropertyGroup>
+		<FodyWeavingLog>true</FodyWeavingLog>
+	</PropertyGroup>
+	
+	<ItemGroup Condition="'$(TargetFramework)' == 'net9.0-android'">
+		<PackageReference Include="Xamarin.Firebase.Messaging" Version="123.1.2" />
+		<PackageReference Include="Xamarin.GooglePlayServices.Base" Version="118.1.0.1" />
+
+		<GoogleServicesJson Include="Platforms\Android\google-services.json" />
+	</ItemGroup>
+
+	<ItemGroup Condition="'$(TargetFramework)' == 'net9.0-ios'">
+		<PackageReference Include="Xamarin.Firebase.iOS.CloudMessaging" Version="8.10.0.3" />
+
+		<BundleResource Include="Platforms\iOS\GoogleService-Info.plist" Link="GoogleService-Info.plist" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<ProjectReference Include="..\Libraries\VisitTracker.Services\VisitTracker.Services.csproj" />
+		<ProjectReference Include="..\Libraries\VisitTracker.Domain\VisitTracker.Domain.csproj" />
+	</ItemGroup>
+	<!-- Privacy policy, adding privacy policy for missing libraries -->
+	<ItemGroup Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'ios'">
+		<BundleResource Include="Platforms\iOS\Resources\PrivacyInfo.xcprivacy" LogicalName="PrivacyInfo.xcprivacy" />
+	</ItemGroup>
+
+	<ItemGroup Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'ios'">
+		<BundleResource Include="Platforms\iOS\PrivacyManifests\FBLPromises.xcprivacy">
+			<LogicalName>Frameworks\FBLPromises.framework\PrivacyInfo.xcprivacy</LogicalName>
+		</BundleResource>
+
+		<BundleResource Include="Platforms\iOS\PrivacyManifests\FirebaseCore.xcprivacy">
+			<LogicalName>Frameworks\FirebaseCore.framework\PrivacyInfo.xcprivacy</LogicalName>
+		</BundleResource>
+
+		<BundleResource Include="Platforms\iOS\PrivacyManifests\FirebaseCoreDiagnostics.xcprivacy">
+			<LogicalName>Frameworks\FirebaseCoreDiagnostics.framework\PrivacyInfo.xcprivacy</LogicalName>
+		</BundleResource>
+
+		<BundleResource Include="Platforms\iOS\PrivacyManifests\FirebaseInstallations.xcprivacy">
+			<LogicalName>Frameworks\FirebaseInstallations.framework\PrivacyInfo.xcprivacy</LogicalName>
+		</BundleResource>
+
+		<BundleResource Include="Platforms\iOS\PrivacyManifests\GTMSessionFetcher.xcprivacy">
+			<LogicalName>Frameworks\GTMSessionFetcher.framework\PrivacyInfo.xcprivacy</LogicalName>
+		</BundleResource>
+
+		<BundleResource Include="Platforms\iOS\PrivacyManifests\GoogleDataTransport.xcprivacy">
+			<LogicalName>Frameworks\GoogleDataTransport.framework\PrivacyInfo.xcprivacy</LogicalName>
+		</BundleResource>
+
+		<BundleResource Include="Platforms\iOS\PrivacyManifests\GoogleToolboxForMac.xcprivacy">
+			<LogicalName>Frameworks\GoogleToolboxForMac.framework\PrivacyInfo.xcprivacy</LogicalName>
+		</BundleResource>
+
+		<BundleResource Include="Platforms\iOS\PrivacyManifests\GoogleUtilities.xcprivacy">
+			<LogicalName>Frameworks\GoogleUtilities.framework\PrivacyInfo.xcprivacy</LogicalName>
+		</BundleResource>
+
+		<BundleResource Include="Platforms\iOS\PrivacyManifests\Protobuf.xcprivacy">
+			<LogicalName>Frameworks\Protobuf.framework\PrivacyInfo.xcprivacy</LogicalName>
+		</BundleResource>
+
+		<BundleResource Include="Platforms\iOS\PrivacyManifests\Leveldb.xcprivacy">
+			<LogicalName>Frameworks\leveldb.framework\PrivacyInfo.xcprivacy</LogicalName>
+		</BundleResource>
+
+		<BundleResource Include="Platforms\iOS\PrivacyManifests\Nanopb.xcprivacy">
+			<LogicalName>Frameworks\nanopb.framework\PrivacyInfo.xcprivacy</LogicalName>
+		</BundleResource>
+
+		<BundleResource Include="Platforms\iOS\PrivacyManifests\FirebaseMessaging.xcprivacy">
+			<LogicalName>Frameworks\FirebaseMessaging.framework\PrivacyInfo.xcprivacy</LogicalName>
+		</BundleResource>
+
+	</ItemGroup>
+
+
+	<ItemGroup>
+		<Compile Update="Controls\HorizontalAttachmentControl.xaml.cs">
+			<DependentUpon>HorizontalAttachmentControl.xaml</DependentUpon>
+		</Compile>
+		<Compile Update="Controls\HorizontalBodyMapControl.xaml.cs">
+			<DependentUpon>HorizontalBodyMapControl.xaml</DependentUpon>
+		</Compile>
+		<Compile Update="Controls\ImageListControl.xaml.cs">
+			<DependentUpon>ImageListControl.xaml</DependentUpon>
+		</Compile>
+		<Compile Update="Controls\BorderViewControl.xaml.cs">
+			<DependentUpon>BorderViewControl.xaml</DependentUpon>
+		</Compile>
+		<Compile Update="Controls\CustomActivityIndicator.xaml.cs">
+			<DependentUpon>CustomActivityIndicator.xaml</DependentUpon>
+		</Compile>
+		<Compile Update="Controls\CardViewControl.xaml.cs">
+			<DependentUpon>CardViewControl.xaml</DependentUpon>
+		</Compile>
+		<Compile Update="Controls\QuickActions\LogRequestButtonControl.xaml.cs">
+			<DependentUpon>LogRequestButtonControl.xaml</DependentUpon>
+		</Compile>
+		<Compile Update="Controls\QuickActions\SubmitFormsButtonControl.xaml.cs">
+			<DependentUpon>SubmitFormsButtonControl.xaml</DependentUpon>
+		</Compile>
+		<Compile Update="Controls\AttachmentControl.xaml.cs">
+			<DependentUpon>AttachmentControl.xaml</DependentUpon>
+		</Compile>
+		<Compile Update="Controls\BookingCardControl.xaml.cs">
+			<DependentUpon>BookingCardControl.xaml</DependentUpon>
+		</Compile>
+		<Compile Update="Platforms\Android\Services\CareWorkerLocationService.cs">
+			<ExcludeFromCurrentConfiguration>false</ExcludeFromCurrentConfiguration>
+		</Compile>
+		<Compile Update="Resources\Localization\Strings.Designer.cs">
+		  <DesignTime>True</DesignTime>
+		  <AutoGen>True</AutoGen>
+		  <DependentUpon>Strings.resx</DependentUpon>
+		</Compile>
+		<Compile Update="Views\BookingEdit\BookingEditPage.xaml.cs">
+			<DependentUpon>BookingEditPage.xaml</DependentUpon>
+		</Compile>
+		<Compile Update="Views\Dashboard\ServiceUserDashboardPage.xaml.cs">
+			<DependentUpon>ServiceUserDashboardPage.xaml</DependentUpon>
+		</Compile>
+		<Compile Update="Views\Dashboard\SupervisorDashboardPage.xaml.cs">
+			<DependentUpon>SupervisorDashboardPage.xaml</DependentUpon>
+		</Compile>
+		<Compile Update="Views\Dashboard\CareWorkerDashboardPage.xaml.cs">
+			<DependentUpon>CareWorkerDashboardPage.xaml</DependentUpon>
+		</Compile>
+		<Compile Update="Views\Home\ServiceUserHomePage.xaml.cs">
+			<DependentUpon>ServiceUserHomePage.xaml</DependentUpon>
+		</Compile>
+		<Compile Update="Views\Home\SupervisorHomePage.xaml.cs">
+			<DependentUpon>SupervisorHomePage.xaml</DependentUpon>
+		</Compile>
+		<Compile Update="Views\Home\CareWorkerHomePage.xaml.cs">
+			<DependentUpon>CareWorkerHomePage.xaml</DependentUpon>
+		</Compile>
+		<Compile Update="Views\LoginProvider\LoginProviderPage.xaml.cs">
+			<DependentUpon>%(Filename)</DependentUpon>
+		</Compile>
+		<Compile Update="Views\Login\LoginPage.xaml.cs">
+			<DependentUpon>%(Filename)</DependentUpon>
+		</Compile>
+		<Compile Update="Views\CareWorkers\CareWorkerDetailPage.xaml.cs">
+			<DependentUpon>CareWorkerDetailPage.xaml</DependentUpon>
+		</Compile>
+		<Compile Update="Views\CareWorkers\ServiceUsersPage.xaml.cs">
+			<DependentUpon>%(Filename)</DependentUpon>
+		</Compile>
+	</ItemGroup>
+
+	<ItemGroup>
+	  <EmbeddedResource Update="Resources\Localization\Strings.resx">
+	    <Generator>PublicResXFileCodeGenerator</Generator>
+	    <LastGenOutput>Strings.Designer.cs</LastGenOutput>
+	  </EmbeddedResource>
+	</ItemGroup>
+
+	<ItemGroup>
+		<MauiAsset Update="Resources\Raw\Loader.json">
+			<LogicalName>%(RecursiveDir)%(Filename)%(Extension)</LogicalName>
+		</MauiAsset>
+	</ItemGroup>
+
+	<ItemGroup>
+		<MauiXaml Update="Controls\ImageListControl.xaml">
+			<Generator>MSBuild:Compile</Generator>
+		</MauiXaml>
+		<MauiXaml Update="Controls\BodyMapControl.xaml">
+			<Generator>MSBuild:Compile</Generator>
+		</MauiXaml>
+		<MauiXaml Update="Controls\BorderViewControl.xaml">
+			<Generator>MSBuild:Compile</Generator>
+		</MauiXaml>
+		<MauiXaml Update="Controls\CardViewControl.xaml">
+			<Generator>MSBuild:Compile</Generator>
+		</MauiXaml>
+		<MauiXaml Update="Controls\CustomActivityIndicator.xaml">
+			<Generator>MSBuild:Compile</Generator>
+		</MauiXaml>
+		<MauiXaml Update="Controls\EntryBorderControl.xaml">
+			<Generator>MSBuild:Compile</Generator>
+		</MauiXaml>
+		<MauiXaml Update="Controls\ImageVerticalListControl.xaml">
+			<Generator>MSBuild:Compile</Generator>
+		</MauiXaml>
+		<MauiXaml Update="Controls\IncidentReportControl.xaml">
+			<Generator>MSBuild:Compile</Generator>
+		</MauiXaml>
+		<MauiXaml Update="Controls\NoDataControl.xaml">
+			<Generator>MSBuild:Compile</Generator>
+		</MauiXaml>
+		<MauiXaml Update="Controls\PlaceholderImageControl.xaml">
+			<Generator>MSBuild:Compile</Generator>
+		</MauiXaml>
+		<MauiXaml Update="Controls\QuickActions\LogRequestButtonControl.xaml">
+			<Generator>MSBuild:Compile</Generator>
+		</MauiXaml>
+		<MauiXaml Update="Controls\QuickActions\SubmitFormsButtonControl.xaml">
+			<Generator>MSBuild:Compile</Generator>
+		</MauiXaml>
+		<MauiXaml Update="Controls\BookingCardControl.xaml">
+			<Generator>MSBuild:Compile</Generator>
+		</MauiXaml>
+		<MauiXaml Update="Controls\Popups\ImagePopup.xaml">
+			<Generator>MSBuild:Compile</Generator>
+		</MauiXaml>
+		<MauiXaml Update="Resources\Themes\LightTheme.xaml">
+			<Generator>MSBuild:Compile</Generator>
+		</MauiXaml>
+		<MauiXaml Update="Controls\UserCardControl.xaml">
+			<Generator>MSBuild:Compile</Generator>
+		</MauiXaml>
+		<MauiXaml Update="Views\BodyMap\BodyMapNotesPopup.xaml">
+			<Generator>MSBuild:Compile</Generator>
+		</MauiXaml>
+		<MauiXaml Update="Controls\QuickActions\CallOfficeButtonControl.xaml">
+			<Generator>MSBuild:Compile</Generator>
+		</MauiXaml>
+		<MauiXaml Update="Controls\QuickActions\EmergencyButtonControl.xaml">
+			<Generator>MSBuild:Compile</Generator>
+		</MauiXaml>
+		<MauiXaml Update="Controls\QuickActions\FluidChartButtonControl.xaml">
+			<Generator>MSBuild:Compile</Generator>
+		</MauiXaml>
+		<MauiXaml Update="Controls\QuickActions\IncidentReportButtonControl.xaml">
+			<Generator>MSBuild:Compile</Generator>
+		</MauiXaml>
+		<MauiXaml Update="Controls\QuickActions\MarChartButtonControl.xaml">
+			<Generator>MSBuild:Compile</Generator>
+		</MauiXaml>
+		<MauiXaml Update="Controls\AttachmentControl.xaml">
+			<Generator>MSBuild:Compile</Generator>
+		</MauiXaml>
+		<MauiXaml Update="Controls\SummaryViewControl.xaml">
+			<Generator>MSBuild:Compile</Generator>
+		</MauiXaml>
+		<MauiXaml Update="Views\BodyMap\BodyMapPage.xaml">
+			<Generator>MSBuild:Compile</Generator>
+		</MauiXaml>
+		<MauiXaml Update="Views\BookingDetail\BookingDetailPage.xaml">
+			<Generator>MSBuild:Compile</Generator>
+		</MauiXaml>
+		<MauiXaml Update="Views\BookingEdit\BookingEditPage.xaml">
+			<Generator>MSBuild:Compile</Generator>
+		</MauiXaml>
+		<MauiXaml Update="Views\Bookings\BookingsPage.xaml">
+			<Generator>MSBuild:Compile</Generator>
+		</MauiXaml>
+		<MauiXaml Update="Views\Dashboard\ServiceUserDashboardPage.xaml">
+			<Generator>MSBuild:Compile</Generator>
+		</MauiXaml>
+		<MauiXaml Update="Views\Dashboard\SupervisorDashboardPage.xaml">
+			<Generator>MSBuild:Compile</Generator>
+		</MauiXaml>
+		<MauiXaml Update="Views\Dashboard\CareWorkerDashboardPage.xaml">
+			<Generator>MSBuild:Compile</Generator>
+		</MauiXaml>
+		<MauiXaml Update="Views\FluidChart\FluidChartPage.xaml">
+			<Generator>MSBuild:Compile</Generator>
+		</MauiXaml>
+		<MauiXaml Update="Views\FluidDetail\FluidDetailPage.xaml">
+			<Generator>MSBuild:Compile</Generator>
+		</MauiXaml>
+		<MauiXaml Update="Views\Home\ServiceUserHomePage.xaml">
+			<Generator>MSBuild:Compile</Generator>
+		</MauiXaml>
+		<MauiXaml Update="Views\Home\SupervisorHomePage.xaml">
+			<Generator>MSBuild:Compile</Generator>
+		</MauiXaml>
+		<MauiXaml Update="Views\Home\CareWorkerHomePage.xaml">
+			<Generator>MSBuild:Compile</Generator>
+		</MauiXaml>
+		<MauiXaml Update="Views\HtmlPage\HtmlPage.xaml">
+			<Generator>MSBuild:Compile</Generator>
+		</MauiXaml>
+		<MauiXaml Update="Views\IncidentReport\IncidentReportPage.xaml">
+			<Generator>MSBuild:Compile</Generator>
+		</MauiXaml>
+		<MauiXaml Update="Views\Loader\LoaderPage.xaml">
+			<Generator>MSBuild:Compile</Generator>
+		</MauiXaml>
+		<MauiXaml Update="Views\LoginProvider\LoginProviderPage.xaml">
+			<Generator>MSBuild:Compile</Generator>
+		</MauiXaml>
+		<MauiXaml Update="Views\LoginProvider\LoginProviderQrScannerPage.xaml">
+			<Generator>MSBuild:Compile</Generator>
+		</MauiXaml>
+		<MauiXaml Update="Views\Login\LoginPage.xaml">
+			<Generator>MSBuild:Compile</Generator>
+		</MauiXaml>
+		<MauiXaml Update="Views\MarChart\MarChartPage.xaml">
+			<Generator>MSBuild:Compile</Generator>
+		</MauiXaml>
+		<MauiXaml Update="Views\MedicationDetail\MedicationDetailPage.xaml">
+			<Generator>MSBuild:Compile</Generator>
+		</MauiXaml>
+		<MauiXaml Update="Views\Ongoing\OngoingPage.xaml">
+			<Generator>MSBuild:Compile</Generator>
+		</MauiXaml>
+		<MauiXaml Update="Views\CareWorkers\CareWorkerDetailPage.xaml">
+			<Generator>MSBuild:Compile</Generator>
+		</MauiXaml>
+		<MauiXaml Update="Views\CareWorkers\ServiceUsersPage.xaml">
+			<Generator>MSBuild:Compile</Generator>
+		</MauiXaml>
+		<MauiXaml Update="Views\ServiceUsers\ServiceUserDetailPage.xaml">
+			<Generator>MSBuild:Compile</Generator>
+		</MauiXaml>
+		<MauiXaml Update="Views\ServiceUsers\ServiceUsersPage.xaml">
+			<Generator>MSBuild:Compile</Generator>
+		</MauiXaml>
+		<MauiXaml Update="Views\TaskDetail\TaskDetailPage.xaml">
+			<Generator>MSBuild:Compile</Generator>
+		</MauiXaml>
+	</ItemGroup>
+
+	<ItemGroup>
+	  <Folder Include="Platforms\iOS\Resources\" />
+	</ItemGroup>
+
+	<ProjectExtensions>
+		<VisualStudio>
+			<UserProperties XamarinHotReloadDebuggerTimeoutExceptionVisitTrackerHideInfoBar="True" XamarinHotReloadGenericExceptionInfoBarVisitTrackerHideInfoBar="True" />
+		</VisualStudio>
+	</ProjectExtensions>
+	
+	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|net9.0-ios|AnyCPU'">
+		<CreatePackage>false</CreatePackage>
+	</PropertyGroup>
+	
+	<PropertyGroup Condition="'$(TargetFramework)'=='net9.0-ios'">
+		<ProvisioningType>manual</ProvisioningType>
+		<CodesignProvision>VM Mobile Dev</CodesignProvision>
+	</PropertyGroup>
+	
+</Project>

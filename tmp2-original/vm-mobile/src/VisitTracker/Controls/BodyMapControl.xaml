@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<local:BaseContentView
+    x:Class="VisitTracker.BodyMapControl"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:domain="clr-namespace:VisitTracker.Domain;assembly=VisitTracker.Domain"
+    xmlns:local="clr-namespace:VisitTracker"
+    xmlns:material="http://schemas.enisn-projects.io/dotnet/maui/uraniumui/material"
+    x:Name="BodyMapContentPg">
+    <ContentView.ControlTemplate>
+        <ControlTemplate>
+            <VerticalStackLayout Margin="0,10" Spacing="10">
+                <Grid>
+                    <VerticalStackLayout
+                        BindableLayout.ItemsSource="{Binding BodyMapList, Mode=TwoWay, Source={x:Reference BodyMapContentPg}}"
+                        IsVisible="{Binding BodyMapList, Converter={StaticResource IsListNotNullOrEmptyConverter}}"
+                        Spacing="10">
+                        <BindableLayout.ItemTemplate>
+                            <DataTemplate x:DataType="domain:BodyMap">
+                                <local:CardViewControl HasCardTitle="False">
+                                    <Grid ColumnDefinitions="*,Auto,Auto" ColumnSpacing="10">
+                                        <Label
+                                            Grid.Column="0"
+                                            LineBreakMode="TailTruncation"
+                                            Style="{StaticResource Heading2Style}"
+                                            Text="Body Map"
+                                            VerticalTextAlignment="Center" />
+
+                                        <material:ButtonView
+                                            Grid.Column="1"
+                                            Padding="5"
+                                            CommandParameter="{Binding .}"
+                                            Style="{StaticResource BtnDefault}"
+                                            TappedCommand="{Binding OpenByBodyMapCommand, Source={x:Reference BodyMapContentPg}}">
+                                            <Label
+                                                FontFamily="MaterialCommunityIcons"
+                                                FontSize="20"
+                                                Text="{x:Static local:MaterialCommunityIconsFont.Eye}"
+                                                TextColor="{StaticResource TextColor}"
+                                                VerticalTextAlignment="Center" />
+                                        </material:ButtonView>
+
+                                        <material:ButtonView
+                                            Grid.Column="2"
+                                            Padding="5"
+                                            BackgroundColor="{StaticResource DangerColor}"
+                                            CommandParameter="{Binding .}"
+                                            IsVisible="{Binding IsReadOnly, Converter={StaticResource NotConverter}, Source={x:Reference BodyMapContentPg}}"
+                                            TappedCommand="{Binding OpenDeleteConfirmationCommand, Source={x:Reference BodyMapContentPg}}">
+                                            <Label
+                                                FontFamily="MaterialCommunityIcons"
+                                                FontSize="20"
+                                                Text="{x:Static local:MaterialCommunityIconsFont.Delete}"
+                                                TextColor="{StaticResource SecondaryColor}"
+                                                VerticalTextAlignment="Center" />
+                                        </material:ButtonView>
+                                    </Grid>
+                                </local:CardViewControl>
+                            </DataTemplate>
+                        </BindableLayout.ItemTemplate>
+                    </VerticalStackLayout>
+
+                    <Label
+                        HorizontalTextAlignment="Center"
+                        IsVisible="{Binding BodyMapList, Converter={StaticResource IsListNullOrEmptyConverter}, Source={x:Reference BodyMapContentPg}}"
+                        Style="{StaticResource MutedTextStyles}"
+                        Text="No body map(s) found!" />
+                </Grid>
+
+                <Grid HorizontalOptions="Fill">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="0.2*" />
+                        <ColumnDefinition Width="0.6*" />
+                        <ColumnDefinition Width="0.2*" />
+                    </Grid.ColumnDefinitions>
+
+                    <material:ButtonView
+                        Grid.Column="1"
+                        BackgroundColor="{StaticResource MainBackgroudColor}"
+                        HorizontalOptions="Center"
+                        IsVisible="{Binding IsReadOnly, Converter={StaticResource NotConverter}, Source={x:Reference BodyMapContentPg}}"
+                        Stroke="{StaticResource MainBorderColor}"
+                        TappedCommand="{Binding OpenBodyMapCommand, Source={x:Reference BodyMapContentPg}}">
+                        <HorizontalStackLayout
+                            HorizontalOptions="Center"
+                            IsVisible="{Binding IsNotBusy}"
+                            Spacing="10">
+                            <Label
+                                FontFamily="MaterialCommunityIcons"
+                                FontSize="20"
+                                Opacity="0.7"
+                                Text="{x:Static local:MaterialCommunityIconsFont.PlusBox}"
+                                TextColor="{StaticResource TextColor}"
+                                VerticalTextAlignment="Center" />
+                            <Label
+                                FontSize="14"
+                                Text="New Body Map"
+                                TextColor="{StaticResource TextColor}"
+                                VerticalTextAlignment="Center" />
+                        </HorizontalStackLayout>
+                    </material:ButtonView>
+                </Grid>
+            </VerticalStackLayout>
+        </ControlTemplate>
+    </ContentView.ControlTemplate>
+</local:BaseContentView>

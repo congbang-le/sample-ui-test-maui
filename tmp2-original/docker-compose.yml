@@ -1,0 +1,151 @@
+version: '3.8'
+
+services:
+  # android-emulator:
+  #   container_name: emulator
+  #   image: halimqarroum/docker-android:api-33
+  #   privileged: true
+  #   devices:
+  #     - /dev/kvm
+  #   network_mode: host
+  #   shm_size: 2g
+  #   environment:
+  #     - AVD_NAME=android33
+  #   healthcheck:
+  #     test: ["CMD", "adb", "shell", "getprop", "sys.boot_completed"]
+  #     interval: 30s
+  #     timeout: 10s
+  #     retries: 10
+  #     start_period: 300s
+
+  appium:
+    container_name: appium
+    image: appium/appium
+    network_mode: host
+    # depends_on:
+    #   - android-emulator
+    depends_on: []
+
+  app-builder:
+    container_name: app-builder
+    build:
+      context: .
+      dockerfile: app_builder.dockerfile
+    network_mode: host
+    depends_on:
+    #   android-emulator:
+    #     condition: service_healthy
+      appium:
+        condition: service_started
+    stdin_open: true
+    tty: true
+
+  test-runner:
+    container_name: test-runner
+    build:
+      context: .
+      dockerfile: test_runner.dockerfile
+    network_mode: host
+    depends_on:
+    #   android-emulator:
+    #     condition: service_healthy
+      appium:
+        condition: service_started
+    # depends_on: []
+    volumes:
+      - ./output:/home/app/output
+    environment:
+      - TERM=xterm-256color
+      - PACKAGE_NAME=com.companyname.basicappiumsample
+    stdin_open: true
+    tty: true
+  vm-app:
+    container_name: vm-app
+    image: vm-app:latest
+    restart: unless-stopped
+    # working_dir: ${APP_CODE}
+    # volumes:
+    #     - /home/ec2-user/.appSettings/vm-app.json:${APP_CODE}/appsettings.json:ro
+    depends_on:
+      vm-event-broker:
+        condition: service_healthy
+      # db:
+      #     condition: service_healthy
+    environment:
+      - ASPNETCORE_URLS=http://${VM_HOST}:${VM_PORT}
+    network_mode: "host"
+
+  vm-vs-sync-app:
+      container_name: vm-vs-sync-app
+      image: vm-vs-sync-app:latest
+      restart: unless-stopped
+      # working_dir: ${APP_CODE}
+      # volumes:
+      #     - /home/ec2-user/.appSettings/vm-app.json:/app/appsettings.json:ro
+      depends_on:
+        vm-event-broker:
+          condition: service_healthy
+        # db:
+        #     condition: service_healthy
+      environment:
+        - ASPNETCORE_URLS=http://${VM_VS_SYNC_HOST}:${VM_VS_SYNC_PORT}
+      network_mode: "host"
+
+  vm-tt-app:
+      container_name: vm-tt-app
+      image: vm-tt-app:latest
+      restart: unless-stopped
+      command: bash -c "uwsgi --chdir=/app --module=ttGeneratorApp.wsgi:application --socket=${VM_TT_HOST}:${VM_TT_PORT} --processes=2 --master --strict"
+      depends_on:
+        vm-event-broker:
+          condition: service_healthy
+        # db:
+        #     condition: service_healthy
+      env_file:
+        - ttg.env
+      network_mode: "host"
+
+  vm-event-broker:
+      container_name: vm-event-broker
+      image: rabbitmq:3.13.7-alpine
+      restart: unless-stopped
+      environment:
+        - RABBITMQ_DEFAULT_USER=${RABBITMQ_USER}
+        - RABBITMQ_DEFAULT_PASS=${RABBITMQ_PASSWORD}
+      network_mode: "host"
+      healthcheck:
+        test: [ "CMD", "rabbitmq-diagnostics", "-q", "ping" ]
+        interval: 10s
+        timeout: 120s
+
+    # db:
+    #   container_name: "db"
+    #   image: kartoza/postgis:17-3.5
+    #   restart: unless-stopped
+    #   volumes:
+    #       - vol-db-vm:/var/lib/postgresql/data/
+    #       - ./vm-backend/.devcontainer/data/ttgDb.sql:/docker-entrypoint-initdb.d/ttgDb.sql
+    #       - ./vm-backend/.devcontainer/data/ttgOsmDb.sql:/docker-entrypoint-initdb.d/ttgOsmDb.sql
+    #   environment:
+    #       - POSTGRES_MULTIPLE_EXTENSIONS=postgis,hstore,pgrouting
+    #       - POSTGRES_PORT=${DB_PORT}
+    #       - POSTGRES_DB=${DB_NAME_VM},${DB_NAME_TT}
+    #       - POSTGRES_USER=${DB_USER}
+    #       - POSTGRES_PASS=${DB_PASSWORD}
+    #       - PASSWORD_AUTHENTICATION=md5
+    #   healthcheck:
+    #       test: [ "CMD-SHELL", "su postgres -c 'pg_isready -U ${DB_USER}'" ]
+    #       interval: 30s
+    #       timeout: 180s
+    #       retries: 5
+    #   ports:
+    #       - "${DB_PORT}:${DB_PORT}"
+    #   env_file:
+    #       - .env
+
+volumes:
+  vol-db-vm:
+    # external: true
+  vol-pgadmin:
+    # external: true
+

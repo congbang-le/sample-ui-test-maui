@@ -1,0 +1,232 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<local:BaseContentPage
+    x:Class="VisitTracker.LoginProviderPage"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:input="clr-namespace:InputKit.Shared.Controls;assembly=InputKit.Maui"
+    xmlns:local="clr-namespace:VisitTracker"
+    xmlns:material="http://schemas.enisn-projects.io/dotnet/maui/uraniumui/material"
+    xmlns:mct="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
+    xmlns:res="clr-namespace:VisitTracker.Resources.Localization;assembly=VisitTracker"
+    xmlns:skia="clr-namespace:SkiaSharp.Extended.UI.Controls;assembly=SkiaSharp.Extended.UI"
+    xmlns:uranium="http://schemas.enisn-projects.io/dotnet/maui/uraniumui"
+    xmlns:validation="clr-namespace:InputKit.Shared.Validations;assembly=InputKit.Maui"
+    x:DataType="local:LoginProviderVm"
+    x:TypeArguments="local:LoginProviderVm"
+    AutomationId="LoginProviderPage"
+    BackgroundColor="{StaticResource DefaultLightColor}"
+    HideSoftInputOnTapped="True"
+    NavigationPage.HasNavigationBar="False"
+    Shell.NavBarIsVisible="False"
+    Shell.TabBarIsVisible="False">
+    <ContentPage.Behaviors>
+        <mct:EventToCommandBehavior Command="{Binding InitCommand}" EventName="Appearing" />
+    </ContentPage.Behaviors>
+    <ScrollView Orientation="Vertical">
+        <Grid
+            BackgroundColor="{StaticResource MainBackgroudColor}"
+            IgnoreSafeArea="{OnPlatform Android=False,
+                                        iOS=True}"
+            RowDefinitions="*,*">
+
+            <!--  Provider Code  -->
+            <Grid Grid.RowSpan="2" RowDefinitions="Auto,*">
+                <Grid.IsVisible>
+                    <MultiBinding Converter="{StaticResource AllValueTrueConverter}">
+                        <Binding Path="IsNotBusy" />
+                        <Binding Converter="{StaticResource IsNullConverter}" Path="Provider" />
+                    </MultiBinding>
+                </Grid.IsVisible>
+                <Border HeightRequest="{Binding PanelHeight}" StrokeThickness="0">
+                    <Grid RowDefinitions="*,*,*">
+                        <Grid.Background>
+                            <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
+                                <GradientStop Offset="0.0" Color="#0258c4" />
+                                <GradientStop Offset="1.0" Color="#004DAE" />
+                            </LinearGradientBrush>
+                        </Grid.Background>
+
+                        <Image
+                            Grid.Row="1"
+                            Margin="0,0,0,15"
+                            Aspect="AspectFit"
+                            HorizontalOptions="Center"
+                            Scale="1.2"
+                            Source="logo_vertical"
+                            VerticalOptions="Center" />
+
+                        <Image
+                            Grid.Row="2"
+                            Margin="5"
+                            Aspect="AspectFit"
+                            HorizontalOptions="Center"
+                            Scale="4"
+                            Source="wave"
+                            VerticalOptions="Center" />
+                    </Grid>
+                </Border>
+
+
+                <Grid
+                    Grid.Row="1"
+                    Margin="40,0"
+                    RowDefinitions="*,*,*"
+                    VerticalOptions="Center">
+
+                    <VerticalStackLayout Grid.Row="1" Spacing="10">
+                        <Label
+                            Margin="0,5"
+                            Style="{StaticResource PageTitleStyle}"
+                            Text="{x:Static res:Strings.Label_ProviderIdentification}"
+                            VerticalOptions="Start" />
+
+                        <input:FormView
+                            Orientation="Vertical"
+                            Spacing="15"
+                            SubmitCommand="{Binding LoginCommand}"
+                            VerticalOptions="Center">
+
+                            <material:TextField
+                                Title="{x:Static res:Strings.Label_ProviderCode}"
+                                AllowClear="True"
+                                AutomationId="ProviderCode"
+                                IsPassword="True"
+                                IsTextPredictionEnabled="True"
+                                Keyboard="Numeric"
+                                MaxLength="10"
+                                ReturnCommand="{Binding LoginCommand}"
+                                ReturnType="Done"
+                                Style="{StaticResource MaterialTextFieldLogin}"
+                                Text="{Binding AccessCode}">
+                                <validation:RequiredValidation Message="* required" />
+                                <material:TextField.Attachments>
+                                    <material:TextFieldPasswordShowHideAttachment />
+                                </material:TextField.Attachments>
+                            </material:TextField>
+
+                            <material:ButtonView
+                                input:FormView.IsSubmitButton="True"
+                                AutomationId="LoginButton"
+                                IsEnabled="{Binding IsNotBusy}"
+                                Style="{StaticResource CentralizedButtonViewStyle}">
+                                <Label
+                                    HorizontalOptions="Center"
+                                    Style="{StaticResource CentralizedPrimaryBtnLabelStyle}"
+                                    Text="{x:Static res:Strings.Button_Proceed}" />
+                            </material:ButtonView>
+                        </input:FormView>
+                        <Label
+                            FontAttributes="Bold"
+                            FontSize="14"
+                            HorizontalOptions="Center"
+                            Text="{x:Static res:Strings.Label_ForgotProviderCode}"
+                            TextColor="{StaticResource Primary}"
+                            TextDecorations="Underline">
+                            <Label.GestureRecognizers>
+                                <TapGestureRecognizer Command="{Binding ForgotCodeCommand}" />
+                            </Label.GestureRecognizers>
+                        </Label>
+                    </VerticalStackLayout>
+                </Grid>
+            </Grid>
+
+            <!--  Provider Details  -->
+            <Grid
+                Grid.RowSpan="2"
+                BackgroundColor="{StaticResource PrimaryDarkColor}"
+                RowDefinitions="100, *, *">
+
+                <Grid.IsVisible>
+                    <MultiBinding Converter="{StaticResource AllValueTrueConverter}">
+                        <Binding Path="IsNotBusy" />
+                        <Binding Converter="{StaticResource IsNotNullConverter}" Path="Provider" />
+                    </MultiBinding>
+                </Grid.IsVisible>
+
+                <Border
+                    Grid.Row="0"
+                    Margin="20"
+                    Padding="0"
+                    AutomationId="BackButton"
+                    BackgroundColor="Transparent"
+                    HeightRequest="54"
+                    HorizontalOptions="Start"
+                    Stroke="{StaticResource SecondaryColor}"
+                    StrokeShape="RoundRectangle 27"
+                    WidthRequest="54">
+
+                    <Label
+                        FontFamily="MaterialCommunityIcons"
+                        FontSize="30"
+                        HorizontalTextAlignment="Center"
+                        IsVisible="{Binding IsNotBusy}"
+                        Text="{x:Static local:MaterialCommunityIconsFont.ArrowLeft}"
+                        TextColor="{StaticResource SecondaryColor}"
+                        VerticalTextAlignment="Center">
+                        <Label.IsEnabled>
+                            <MultiBinding Converter="{StaticResource AllValueTrueConverter}">
+                                <Binding Converter="{StaticResource IsNotNullConverter}" Path="Provider" />
+                                <Binding Path="IsNotBusy" />
+                            </MultiBinding>
+                        </Label.IsEnabled>
+                    </Label>
+
+                    <Border.GestureRecognizers>
+                        <TapGestureRecognizer Command="{Binding ReturnCommand}" />
+                    </Border.GestureRecognizers>
+                </Border>
+
+
+                <VerticalStackLayout
+                    Grid.Row="1"
+                    Spacing="5"
+                    VerticalOptions="Center">
+
+                    <local:PlaceholderImageControl
+                        HorizontalOptions="Center"
+                        InputTransparent="True"
+                        SizeOption="LargePlus"
+                        Source="{Binding Provider.ImageUrl, Converter={StaticResource DefaultImageSourceConverter}}" />
+
+                    <Label
+                        FontSize="20"
+                        HorizontalOptions="Center"
+                        Text="{Binding Provider.Name}"
+                        TextColor="{StaticResource SecondaryColor}"
+                        VerticalOptions="Center" />
+
+                    <Label
+                        Margin="20,0"
+                        FontSize="16"
+                        HorizontalOptions="Center"
+                        HorizontalTextAlignment="Center"
+                        Text="{Binding Provider.Address}"
+                        TextColor="{StaticResource SecondaryColor}"
+                        VerticalOptions="Center" />
+                </VerticalStackLayout>
+
+                <material:ButtonView
+                    Grid.Row="2"
+                    Margin="40,0"
+                    input:FormView.IsSubmitButton="True"
+                    AutomationId="ConfirmButton"
+                    BackgroundColor="#F6F7F9"
+                    IsEnabled="{Binding IsNotBusy}"
+                    Style="{StaticResource CentralizedButtonViewStyle}"
+                    TappedCommand="{Binding ConfirmCommand}"
+                    VerticalOptions="Start">
+                    <Label
+                        HorizontalTextAlignment="Center"
+                        Style="{DynamicResource CentralizedPrimaryInvertBtnLabelStyle}"
+                        Text="{x:Static res:Strings.Button_Proceed}"
+                        VerticalTextAlignment="Center" />
+                </material:ButtonView>
+            </Grid>
+
+            <local:CustomActivityIndicator
+                Grid.Row="1"
+                BusyTextColor="{StaticResource PrimaryColor}"
+                IsBusy="{Binding IsBusy}" />
+        </Grid>
+    </ScrollView>
+</local:BaseContentPage>

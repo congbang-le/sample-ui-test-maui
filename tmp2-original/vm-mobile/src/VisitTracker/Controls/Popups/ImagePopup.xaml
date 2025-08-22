@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<mct:Popup
+    x:Class="VisitTracker.ImagePopup"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:local="clr-namespace:VisitTracker"
+    xmlns:material="http://schemas.enisn-projects.io/dotnet/maui/uraniumui/material"
+    xmlns:mct="clr-namespace:CommunityToolkit.Maui.Views;assembly=CommunityToolkit.Maui"
+    CanBeDismissedByTappingOutsideOfPopup="True">
+    <AbsoluteLayout
+        Padding="15"
+        BackgroundColor="{StaticResource MainBackgroudColor}"
+        HeightRequest="300"
+        WidthRequest="300">
+
+        <Button
+            Margin="-10"
+            Padding="0"
+            AbsoluteLayout.LayoutBounds="1, 0, 30, 30"
+            AbsoluteLayout.LayoutFlags="PositionProportional"
+            BackgroundColor="Transparent"
+            Command="{Binding CloseCommand}"
+            CornerRadius="15"
+            FontFamily="MaterialCommunityIcons"
+            FontSize="18"
+            HeightRequest="30"
+            HorizontalOptions="End"
+            Text="{x:Static local:MaterialCommunityIconsFont.Close}"
+            TextColor="{StaticResource TextColor}"
+            VerticalOptions="Start"
+            WidthRequest="30" />
+
+        <Image
+            AbsoluteLayout.LayoutBounds="0.5, 0.5, AutoSize, AutoSize"
+            AbsoluteLayout.LayoutFlags="PositionProportional"
+            Aspect="AspectFit"
+            HeightRequest="300"
+            Source="{Binding ImageSource}"
+            WidthRequest="300" />
+    </AbsoluteLayout>
+</mct:Popup>

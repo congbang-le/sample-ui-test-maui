@@ -1,0 +1,137 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<local:BaseContentPage
+    x:Class="VisitTracker.MiscellaneousPage"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:local="clr-namespace:VisitTracker"
+    xmlns:material="http://schemas.enisn-projects.io/dotnet/maui/uraniumui/material"
+    xmlns:mct="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
+    xmlns:skia="clr-namespace:SkiaSharp.Extended.UI.Controls;assembly=SkiaSharp.Extended.UI"
+    x:Name="this"
+    Title="More"
+    x:DataType="local:MiscellaneousVm"
+    x:TypeArguments="local:MiscellaneousVm"
+    BackgroundColor="{StaticResource BasePageBackgroundColor}"
+    IconImageSource="misc"
+    Shell.NavBarHasShadow="False"
+    Shell.NavBarIsVisible="False">
+    <ContentPage.Behaviors>
+        <mct:EventToCommandBehavior Command="{Binding InitCommand}" EventName="Appearing" />
+    </ContentPage.Behaviors>
+    <ScrollView>
+        <Grid>
+            <Grid
+                Margin="10,20"
+                IsVisible="{Binding IsNotBusy}"
+                RowDefinitions="Auto,Auto,Auto,*"
+                RowSpacing="15">
+                <local:CardViewControl Grid.Row="0" HasCardTitle="False">
+                    <Grid
+                        Padding="5"
+                        ColumnSpacing="10"
+                        RowDefinitions="Auto,*"
+                        RowSpacing="10">
+                        <local:PlaceholderImageControl
+                            Grid.Row="0"
+                            HorizontalOptions="Center"
+                            SizeOption="Large"
+                            Source="{Binding ProfileImageUrl, Converter={StaticResource DefaultImageSourceConverter}}" />
+
+                        <Label
+                            Grid.Row="1"
+                            HorizontalTextAlignment="Center"
+                            LineBreakMode="CharacterWrap"
+                            Style="{StaticResource PageTitleStyle}"
+                            Text="{Binding ProfileName}"
+                            VerticalTextAlignment="Start" />
+                    </Grid>
+                </local:CardViewControl>
+
+                <Border
+                    Grid.Row="1"
+                    Padding="8"
+                    BackgroundColor="{StaticResource PanelColor}"
+                    Stroke="#b7babc"
+                    StrokeShape="{RoundRectangle CornerRadius=5}"
+                    StrokeThickness="1">
+                    <CollectionView
+                        Margin="0,5,0,0"
+                        IsVisible="{Binding IsNotBusy}"
+                        ItemsSource="{Binding ExternalLinks}">
+                        <CollectionView.ItemsLayout>
+                            <GridItemsLayout
+                                Orientation="Vertical"
+                                Span="3"
+                                VerticalItemSpacing="25" />
+                        </CollectionView.ItemsLayout>
+                        <CollectionView.ItemTemplate>
+                            <DataTemplate x:DataType="{x:Type local:ExternalLinkDto}">
+                                <VerticalStackLayout>
+                                    <VerticalStackLayout.GestureRecognizers>
+                                        <TapGestureRecognizer Command="{Binding BindingContext.OpenMiscDetailPageCommand, Source={x:Reference this}}" CommandParameter="{Binding .}" />
+                                    </VerticalStackLayout.GestureRecognizers>
+                                    <Button
+                                        Command="{Binding BindingContext.OpenMiscDetailPageCommand, Source={x:Reference this}}"
+                                        CommandParameter="{Binding .}"
+                                        Style="{StaticResource MiscellaneousBtnStyle}"
+                                        Text="{Binding Icon}" />
+
+                                    <Label
+                                        FontSize="14"
+                                        HorizontalOptions="Center"
+                                        HorizontalTextAlignment="Center"
+                                        LineBreakMode="WordWrap"
+                                        Text="{Binding Title}"
+                                        TextColor="{StaticResource TextColor}"
+                                        VerticalOptions="Center"
+                                        WidthRequest="100" />
+                                </VerticalStackLayout>
+                            </DataTemplate>
+                        </CollectionView.ItemTemplate>
+                    </CollectionView>
+                </Border>
+
+                <Border
+                    Grid.Row="2"
+                    Padding="8"
+                    BackgroundColor="{StaticResource PanelColor}"
+                    Stroke="#b7babc"
+                    StrokeShape="{RoundRectangle CornerRadius=5}">
+                    <CollectionView Margin="0,5,0,0" ItemsSource="{Binding Actions}">
+                        <CollectionView.ItemsLayout>
+                            <GridItemsLayout
+                                Orientation="Vertical"
+                                Span="3"
+                                VerticalItemSpacing="25" />
+                        </CollectionView.ItemsLayout>
+                        <CollectionView.ItemTemplate>
+                            <DataTemplate x:DataType="{x:Type local:MiscActionVm}">
+                                <VerticalStackLayout>
+                                    <VerticalStackLayout.GestureRecognizers>
+                                        <TapGestureRecognizer Command="{Binding Command}" />
+                                    </VerticalStackLayout.GestureRecognizers>
+                                    <Button
+                                        Command="{Binding Command}"
+                                        Style="{StaticResource MiscellaneousBtnStyle}"
+                                        Text="{Binding Icon}" />
+
+                                    <Label
+                                        FontSize="14"
+                                        HorizontalOptions="Center"
+                                        HorizontalTextAlignment="Center"
+                                        Text="{Binding Text}"
+                                        TextColor="{StaticResource TextColor}"
+                                        VerticalOptions="Center" />
+                                </VerticalStackLayout>
+                            </DataTemplate>
+                        </CollectionView.ItemTemplate>
+                    </CollectionView>
+                </Border>
+
+                <VerticalStackLayout Grid.Row="3" />
+            </Grid>
+
+            <local:CustomActivityIndicator IsBusy="{Binding IsBusy}" />
+        </Grid>
+    </ScrollView>
+</local:BaseContentPage>

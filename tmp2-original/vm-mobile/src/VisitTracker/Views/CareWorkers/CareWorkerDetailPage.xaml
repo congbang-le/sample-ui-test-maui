@@ -1,0 +1,328 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<local:BaseContentPage
+    x:Class="VisitTracker.CareWorkerDetailPage"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:input="clr-namespace:InputKit.Shared.Controls;assembly=InputKit.Maui"
+    xmlns:local="clr-namespace:VisitTracker"
+    xmlns:m="clr-namespace:UraniumUI.Icons.MaterialIcons;assembly=UraniumUI.Icons.MaterialIcons"
+    xmlns:material="http://schemas.enisn-projects.io/dotnet/maui/uraniumui/material"
+    xmlns:mct="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
+    xmlns:service="clr-namespace:VisitTracker.Services;assembly=VisitTracker.Services"
+    xmlns:skia="clr-namespace:SkiaSharp.Extended.UI.Controls;assembly=SkiaSharp.Extended.UI"
+    xmlns:uranium="http://schemas.enisn-projects.io/dotnet/maui/uraniumui"
+    xmlns:validation="clr-namespace:InputKit.Shared.Validations;assembly=InputKit.Maui"
+    x:Name="this"
+    Title="{Binding Title}"
+    x:DataType="local:CareWorkerDetailVm"
+    x:TypeArguments="local:CareWorkerDetailVm"
+    BackgroundColor="{StaticResource MainBackgroudColor}"
+    Shell.NavBarIsVisible="True"
+    Shell.TabBarIsVisible="False">
+
+    <Grid>
+        <Grid
+            Margin="10,5"
+            RowDefinitions="Auto,Auto,Auto,*"
+            RowSpacing="10">
+            <local:CardViewControl Grid.Row="0" HasCardTitle="False">
+                <Grid
+                    Padding="0"
+                    ColumnDefinitions="Auto,*"
+                    ColumnSpacing="15"
+                    HorizontalOptions="Fill"
+                    VerticalOptions="Center">
+
+                    <local:PlaceholderImageControl SizeOption="Custom" Source="{Binding CareWorker.ImageUrl, Converter={StaticResource DefaultImageSourceConverter}}" />
+
+                    <Grid
+                        Grid.Column="1"
+                        ColumnDefinitions="*,Auto"
+                        HorizontalOptions="Fill"
+                        VerticalOptions="Center">
+
+                        <Label
+                            Grid.Column="0"
+                            HorizontalOptions="Fill"
+                            HorizontalTextAlignment="Start"
+                            MaxLines="2"
+                            Style="{StaticResource Heading2Style}"
+                            Text="{Binding CareWorker.Name}"
+                            VerticalOptions="Center" />
+
+                        <material:ButtonView
+                            Grid.Column="1"
+                            CommandParameter="{Binding CareWorker.PhoneNo}"
+                            HorizontalOptions="End"
+                            Style="{StaticResource InfoButtonStyle}"
+                            TappedCommand="{Binding BindingContext.CallCommand, Source={x:Reference this}}"
+                            VerticalOptions="Center"
+                            WidthRequest="65">
+                            <HorizontalStackLayout Spacing="5">
+                                <Label
+                                    FontFamily="MaterialCommunityIcons"
+                                    FontSize="16"
+                                    HorizontalOptions="Center"
+                                    Text="{x:Static local:MaterialCommunityIconsFont.Phone}"
+                                    TextColor="{StaticResource TextColor}"
+                                    VerticalOptions="Center" />
+                                <Label
+                                    Margin="0,0,3,0"
+                                    FontSize="14"
+                                    HorizontalOptions="Center"
+                                    Text="Call"
+                                    TextColor="{StaticResource TextColor}"
+                                    VerticalOptions="Center" />
+                            </HorizontalStackLayout>
+                        </material:ButtonView>
+                    </Grid>
+                </Grid>
+            </local:CardViewControl>
+
+            <Border
+                Grid.Row="3"
+                Padding="8"
+                IsVisible="{Binding IsNotBusy}"
+                Stroke="SlateGray"
+                StrokeShape="{RoundRectangle CornerRadius=10}"
+                VerticalOptions="Fill">
+                <material:TabView SelectedTabChangedCommand="{Binding TabChangeCommand}">
+                    <material:TabItem Title="{Binding BindingContext.RosterTabText, Source={x:Reference this}}">
+                        <material:TabItem.HeaderTemplate>
+                            <DataTemplate>
+                                <material:ButtonView TappedCommand="{Binding Command}">
+                                    <Label
+                                        FontFamily="13"
+                                        HorizontalOptions="Center"
+                                        Text="Rosters"
+                                        TextColor="{StaticResource TextColor}" />
+                                    <material:ButtonView.Triggers>
+                                        <DataTrigger
+                                            Binding="{Binding IsSelected}"
+                                            TargetType="material:ButtonView"
+                                            Value="True">
+                                            <Setter Property="Style" Value="{StaticResource TabSelectedButtonStyle}" />
+                                        </DataTrigger>
+                                        <DataTrigger
+                                            Binding="{Binding IsSelected}"
+                                            TargetType="material:ButtonView"
+                                            Value="False">
+                                            <Setter Property="Style" Value="{StaticResource TabUnselectedButtonStyle}" />
+                                        </DataTrigger>
+                                    </material:ButtonView.Triggers>
+                                </material:ButtonView>
+                            </DataTemplate>
+                        </material:TabItem.HeaderTemplate>
+                        <material:TabItem.Content>
+
+                            <StackLayout
+                                Margin="0,10,0,0"
+                                MinimumHeightRequest="150"
+                                Orientation="Vertical"
+                                Spacing="10">
+                                <HorizontalStackLayout HorizontalOptions="Center" Spacing="10">
+                                    <material:DatePickerField
+                                        Title="Choose Date"
+                                        AutomationId="DatePicker"
+                                        Date="{Binding BookingsDate, Mode=TwoWay}"
+                                        Format="dd/MM/yyyy"
+                                        HorizontalOptions="Center"
+                                        MaximumDate="{Binding BookingMaxDate}"
+                                        MinimumDate="{Binding BookingsMinDate}"
+                                        Style="{StaticResource DatePickerFieldStyle}"
+                                        VerticalOptions="Center" />
+                                </HorizontalStackLayout>
+                                <CollectionView
+                                    HeightRequest="{Binding CardViewHeight}"
+                                    ItemsSource="{Binding Bookings}"
+                                    VerticalOptions="Fill"
+                                    VerticalScrollBarVisibility="Always">
+                                    <CollectionView.IsVisible>
+                                        <MultiBinding Converter="{StaticResource AllValueTrueConverter}">
+                                            <Binding Path="IsNotBusy" />
+                                            <Binding Converter="{StaticResource IsNotNullConverter}" Path="BookingsDate" />
+                                        </MultiBinding>
+                                    </CollectionView.IsVisible>
+                                    <CollectionView.ItemsLayout>
+                                        <LinearItemsLayout ItemSpacing="5" Orientation="Vertical" />
+                                    </CollectionView.ItemsLayout>
+                                    <CollectionView.ItemTemplate>
+                                        <DataTemplate x:DataType="{x:Type local:BookingCardDto}">
+                                            <local:BookingCardControl
+                                                Booking="{Binding Booking}"
+                                                PrimaryCareWorker="{Binding PrimaryCareWorker}"
+                                                SecondaryCareWorker="{Binding SecondaryCareWorker}"
+                                                ServiceUser="{Binding ServiceUser}"
+                                                Visits="{Binding Visits}" />
+                                        </DataTemplate>
+                                    </CollectionView.ItemTemplate>
+                                    <CollectionView.EmptyView>
+                                        <local:NoDataControl IsVisible="{Binding IsBookingNotAvailable}" />
+                                    </CollectionView.EmptyView>
+                                </CollectionView>
+                            </StackLayout>
+
+                        </material:TabItem.Content>
+                    </material:TabItem>
+
+                    <material:TabItem Title="{Binding BindingContext.IncidentTabText, Source={x:Reference this}}">
+                        <material:TabItem.HeaderTemplate>
+                            <DataTemplate>
+                                <material:ButtonView TappedCommand="{Binding Command}">
+                                    <Label
+                                        FontFamily="13"
+                                        HorizontalOptions="Center"
+                                        Text="Incidents"
+                                        TextColor="{StaticResource TextColor}" />
+                                    <material:ButtonView.Triggers>
+                                        <DataTrigger
+                                            Binding="{Binding IsSelected}"
+                                            TargetType="material:ButtonView"
+                                            Value="True">
+                                            <Setter Property="Style" Value="{StaticResource TabSelectedButtonStyle}" />
+                                        </DataTrigger>
+                                        <DataTrigger
+                                            Binding="{Binding IsSelected}"
+                                            TargetType="material:ButtonView"
+                                            Value="False">
+                                            <Setter Property="Style" Value="{StaticResource TabUnselectedButtonStyle}" />
+                                        </DataTrigger>
+                                    </material:ButtonView.Triggers>
+                                </material:ButtonView>
+                            </DataTemplate>
+                        </material:TabItem.HeaderTemplate>
+                        <material:TabItem.Content>
+                            <VerticalStackLayout Margin="0,10,0,0" Spacing="10">
+                                <local:NoDataControl
+                                    Margin="20"
+                                    IsVisible="{Binding IsIncidentNotAvailable}"
+                                    VerticalOptions="Center" />
+                                <CollectionView
+                                    HeightRequest="{Binding CardViewHeight}"
+                                    IsVisible="{Binding !IsIncidentNotAvailable}"
+                                    ItemsSource="{Binding Incidents, Mode=TwoWay}"
+                                    VerticalOptions="Fill"
+                                    VerticalScrollBarVisibility="Always">
+                                    <CollectionView.ItemsLayout>
+                                        <LinearItemsLayout ItemSpacing="5" Orientation="Vertical" />
+                                    </CollectionView.ItemsLayout>
+                                    <CollectionView.ItemTemplate>
+                                        <DataTemplate x:DataType="{x:Type service:IncidentResponseDto}">
+                                            <VerticalStackLayout>
+                                                <VerticalStackLayout.GestureRecognizers>
+                                                    <TapGestureRecognizer Command="{Binding BindingContext.OpenIncidentReportCommand, Source={x:Reference this}}" CommandParameter="{Binding .}" />
+                                                </VerticalStackLayout.GestureRecognizers>
+
+                                                <local:CardViewControl HasCardTitle="False">
+                                                    <Grid
+                                                        ColumnDefinitions="Auto,*"
+                                                        ColumnSpacing="10"
+                                                        RowDefinitions="Auto,Auto,Auto"
+                                                        RowSpacing="5">
+                                                        <Label
+                                                            Grid.Row="0"
+                                                            Grid.ColumnSpan="2"
+                                                            FontSize="14"
+                                                            HorizontalOptions="Start"
+                                                            HorizontalTextAlignment="Start"
+                                                            Style="{StaticResource Heading1Style}"
+                                                            VerticalTextAlignment="Center">
+                                                            <Label.FormattedText>
+                                                                <FormattedString>
+                                                                    <Span
+                                                                        FontAttributes="Bold"
+                                                                        Text="Incident Time:"
+                                                                        TextColor="{StaticResource TextColor}" />
+                                                                    <Span Text=" " TextColor="{StaticResource TextColor}" />
+                                                                    <Span Text="{Binding IncidentTime}" TextColor="{StaticResource TextColor}" />
+                                                                </FormattedString>
+                                                            </Label.FormattedText>
+                                                        </Label>
+
+                                                        <local:PlaceholderImageControl
+                                                            Grid.Row="1"
+                                                            Grid.Column="0"
+                                                            InputTransparent="True"
+                                                            SizeOption="Large"
+                                                            Source="{Binding ServiceUserImageUrl, Converter={StaticResource DefaultImageSourceConverter}}" />
+
+                                                        <VerticalStackLayout
+                                                            Grid.Row="1"
+                                                            Grid.Column="1"
+                                                            HorizontalOptions="Fill"
+                                                            Spacing="3"
+                                                            VerticalOptions="Center">
+                                                            <Label
+                                                                FontSize="14"
+                                                                HorizontalOptions="Fill"
+                                                                HorizontalTextAlignment="Start"
+                                                                LineBreakMode="TailTruncation"
+                                                                MaxLines="3"
+                                                                Text="{Binding ServiceUserName}"
+                                                                TextColor="{StaticResource TextColor}"
+                                                                VerticalOptions="Center"
+                                                                VerticalTextAlignment="Center" />
+
+                                                            <Label
+                                                                FontSize="14"
+                                                                HorizontalOptions="Fill"
+                                                                HorizontalTextAlignment="Start"
+                                                                Text="(SERVICE USER)"
+                                                                TextColor="{StaticResource TextColor}"
+                                                                VerticalOptions="Center"
+                                                                VerticalTextAlignment="Center" />
+                                                        </VerticalStackLayout>
+
+                                                        <VerticalStackLayout
+                                                            Grid.Row="2"
+                                                            Grid.ColumnSpan="2"
+                                                            HorizontalOptions="Fill"
+                                                            VerticalOptions="Center">
+                                                            <Label
+                                                                FontSize="14"
+                                                                HorizontalOptions="Start"
+                                                                HorizontalTextAlignment="Start"
+                                                                Style="{StaticResource Heading1Style}"
+                                                                Text="Submitted By:" />
+
+                                                            <Label
+                                                                FontSize="14"
+                                                                HorizontalOptions="Fill"
+                                                                HorizontalTextAlignment="Start"
+                                                                LineBreakMode="TailTruncation"
+                                                                MaxLines="2"
+                                                                VerticalOptions="Center"
+                                                                VerticalTextAlignment="Center">
+                                                                <Label.FormattedText>
+                                                                    <FormattedString>
+                                                                        <Span Text="{Binding SubmittedByName}" TextColor="{StaticResource TextColor}" />
+                                                                        <Span Text=" (" TextColor="{StaticResource TextColor}" />
+                                                                        <Span
+                                                                            Text="{Binding SubmittedByType}"
+                                                                            TextColor="{StaticResource TextColor}"
+                                                                            TextTransform="Uppercase" />
+                                                                        <Span Text=")" TextColor="{StaticResource TextColor}" />
+                                                                    </FormattedString>
+                                                                </Label.FormattedText>
+                                                            </Label>
+                                                        </VerticalStackLayout>
+                                                    </Grid>
+                                                </local:CardViewControl>
+                                            </VerticalStackLayout>
+                                        </DataTemplate>
+                                    </CollectionView.ItemTemplate>
+                                    <!--  TODO: Review and fix the EmptyView implementation for CollectionView  -->
+                                    <!--<CollectionView.EmptyView>
+                                            <local:NoDataControl />
+                                        </CollectionView.EmptyView>-->
+                                </CollectionView>
+                            </VerticalStackLayout>
+                        </material:TabItem.Content>
+                    </material:TabItem>
+                </material:TabView>
+            </Border>
+        </Grid>
+
+        <local:CustomActivityIndicator IsBusy="{Binding IsBusy}" />
+    </Grid>
+</local:BaseContentPage>
